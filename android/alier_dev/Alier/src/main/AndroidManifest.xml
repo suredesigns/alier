@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <application
+        android:allowBackup="true"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true"
+        tools:targetApi="23">
+
+
+        <activity android:name=".BaseMainActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/library_name"
+            android:launchMode="singleTask"
+            >
+        </activity>
+
+        <!--   通知タップ用: 通知タップ時に呼び出す一時的なActivity: チラつき防止のため透明     -->
+        <activity android:name=".IntermediateActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+        </activity>
+        <!-- ブロードキャストレシーバの登録:通知契機用      -->
+        <receiver
+            android:name=".NotificationBase"
+            android:exported="false"
+            >
+            <intent-filter>
+                <action android:name="com.example.NOTIFICATION_CLICKED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".NotificationTriggerReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+        <!--  簡単な通知用      -->
+        <receiver
+            android:name=".SimpleDefaultNotification"
+            android:exported="false"
+            >
+            <intent-filter>
+                <action android:name="com.example.NOTIFICATION_CLICKED" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+
+
+</manifest>

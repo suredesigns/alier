@@ -1,0 +1,752 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		2D306C952A936A3C003B4B1E /* alier_target */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 2D306C962A936A3C003B4B1E /* Build configuration list for PBXAggregateTarget "alier_target" */;
+			buildPhases = (
+				2D306C992A936A41003B4B1E /* ShellScript */,
+			);
+			dependencies = (
+				2D306CCC2A946B81003B4B1E /* PBXTargetDependency */,
+			);
+			name = alier_target;
+			productName = Alier_target;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		23E937852D93AC4800D2C748 /* _ExtensionURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23E937842D93AC1B00D2C748 /* _ExtensionURL.swift */; };
+		2D306C1D2A934754003B4B1E /* AlierDevApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D306C1C2A934754003B4B1E /* AlierDevApp.swift */; };
+		2D306C1F2A934754003B4B1E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D306C1E2A934754003B4B1E /* ContentView.swift */; };
+		2D306C212A934756003B4B1E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D306C202A934756003B4B1E /* Assets.xcassets */; };
+		2D306C242A934756003B4B1E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D306C232A934756003B4B1E /* Preview Assets.xcassets */; };
+		2D306C322A93480A003B4B1E /* alier.h in Headers */ = {isa = PBXBuildFile; fileRef = 2D306C312A93480A003B4B1E /* alier.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2D306C352A93480A003B4B1E /* alier.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D306C2F2A93480A003B4B1E /* alier.framework */; };
+		2D306C362A93480A003B4B1E /* alier.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2D306C2F2A93480A003B4B1E /* alier.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2D306C772A934E43003B4B1E /* _Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D306C6B2A934E43003B4B1E /* _Coordinator.swift */; };
+		2D306C782A934E43003B4B1E /* _NativeFunctionInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D306C6C2A934E43003B4B1E /* _NativeFunctionInterface.swift */; };
+		2D306C7B2A934E43003B4B1E /* _ScriptMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D306C6F2A934E43003B4B1E /* _ScriptMessageHandler.swift */; };
+		2D306C7C2A934E43003B4B1E /* _PathRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D306C702A934E43003B4B1E /* _PathRegistry.swift */; };
+		2D306C7E2A934E43003B4B1E /* _BaseMainActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D306C722A934E43003B4B1E /* _BaseMainActivity.swift */; };
+		2D306C812A934E43003B4B1E /* _ResourceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D306C752A934E43003B4B1E /* _ResourceManager.swift */; };
+		2D306C822A934E43003B4B1E /* _FileOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D306C762A934E43003B4B1E /* _FileOperation.swift */; };
+		2D5F7FA92DA8EC4D00DB20A1 /* _LocalPushNotificationTrigger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5F7FA82DA8EC4D00DB20A1 /* _LocalPushNotificationTrigger.swift */; };
+		2D5F7FAB2DA8EC5500DB20A1 /* _LocalPushNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5F7FAA2DA8EC5500DB20A1 /* _LocalPushNotification.swift */; };
+		2D84F6672B6A2AF3009DA9ED /* _EventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D84F6662B6A2AF3009DA9ED /* _EventHandler.swift */; };
+		2DF24D562B85C2C900F867EB /* test_app in Resources */ = {isa = PBXBuildFile; fileRef = 2DF24D552B85C2C900F867EB /* test_app */; };
+		2DF24D582B85C2E200F867EB /* mobile in Resources */ = {isa = PBXBuildFile; fileRef = 2DF24D572B85C2E200F867EB /* mobile */; };
+		2F72F4B22BE0FB5E0028B901 /* _AlierLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F72F4B12BE0FB5E0028B901 /* _AlierLog.swift */; };
+		892DC3C22C4656A300CB3E5B /* _FetchApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892DC3C12C4656A200CB3E5B /* _FetchApi.swift */; };
+		892DC3C72C48FE3B00CB3E5B /* Headers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892DC3C62C48FE3B00CB3E5B /* Headers.swift */; };
+		892DC3C92C4A4F3900CB3E5B /* Envelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892DC3C82C4A4F3900CB3E5B /* Envelope.swift */; };
+		892DC3CB2C4E36FD00CB3E5B /* FetchRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892DC3CA2C4E36FD00CB3E5B /* FetchRequest.swift */; };
+		892DC3CD2C4E378E00CB3E5B /* ResponseData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892DC3CC2C4E378D00CB3E5B /* ResponseData.swift */; };
+		892DC3CF2C4E381900CB3E5B /* HttpConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892DC3CE2C4E381900CB3E5B /* HttpConnection.swift */; };
+		892DC3D52C50E1E300CB3E5B /* HttpsConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892DC3D42C50E1E300CB3E5B /* HttpsConnection.swift */; };
+		892DC3D72C50E33800CB3E5B /* NaiveByteBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892DC3D62C50E33800CB3E5B /* NaiveByteBuffer.swift */; };
+		892DC3D92C5CC68200CB3E5B /* QuotedPrintable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892DC3D82C5CC68200CB3E5B /* QuotedPrintable.swift */; };
+		892DC3DB2C61F25E00CB3E5B /* URLConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892DC3DA2C61F25E00CB3E5B /* URLConnection.swift */; };
+		89D532F42B31830100BB8E8B /* _AlierDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89D532F32B31830100BB8E8B /* _AlierDB.swift */; };
+		89E5633B2BC047F500E13D28 /* _LaunchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89E5633A2BC047F500E13D28 /* _LaunchManager.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2D306C332A93480A003B4B1E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2D306C112A934754003B4B1E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2D306C2E2A93480A003B4B1E;
+			remoteInfo = Alier;
+		};
+		2D306CCB2A946B81003B4B1E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2D306C112A934754003B4B1E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2D306C2E2A93480A003B4B1E;
+			remoteInfo = Alier;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2D306C3A2A93480A003B4B1E /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				2D306C362A93480A003B4B1E /* alier.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		23E937842D93AC1B00D2C748 /* _ExtensionURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _ExtensionURL.swift; sourceTree = "<group>"; };
+		2D306C192A934754003B4B1E /* alier_dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = alier_dev.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2D306C1C2A934754003B4B1E /* AlierDevApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlierDevApp.swift; sourceTree = "<group>"; };
+		2D306C1E2A934754003B4B1E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2D306C202A934756003B4B1E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2D306C232A934756003B4B1E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		2D306C2F2A93480A003B4B1E /* alier.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = alier.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2D306C312A93480A003B4B1E /* alier.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = alier.h; sourceTree = "<group>"; };
+		2D306C6B2A934E43003B4B1E /* _Coordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _Coordinator.swift; sourceTree = "<group>"; };
+		2D306C6C2A934E43003B4B1E /* _NativeFunctionInterface.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _NativeFunctionInterface.swift; sourceTree = "<group>"; };
+		2D306C6F2A934E43003B4B1E /* _ScriptMessageHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _ScriptMessageHandler.swift; sourceTree = "<group>"; };
+		2D306C702A934E43003B4B1E /* _PathRegistry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _PathRegistry.swift; sourceTree = "<group>"; };
+		2D306C722A934E43003B4B1E /* _BaseMainActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _BaseMainActivity.swift; sourceTree = "<group>"; };
+		2D306C752A934E43003B4B1E /* _ResourceManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _ResourceManager.swift; sourceTree = "<group>"; };
+		2D306C762A934E43003B4B1E /* _FileOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _FileOperation.swift; sourceTree = "<group>"; };
+		2D5F7FA82DA8EC4D00DB20A1 /* _LocalPushNotificationTrigger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _LocalPushNotificationTrigger.swift; sourceTree = "<group>"; };
+		2D5F7FAA2DA8EC5500DB20A1 /* _LocalPushNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _LocalPushNotification.swift; sourceTree = "<group>"; };
+		2D84F6662B6A2AF3009DA9ED /* _EventHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _EventHandler.swift; sourceTree = "<group>"; };
+		2DF24D552B85C2C900F867EB /* test_app */ = {isa = PBXFileReference; lastKnownFileType = folder; name = test_app; path = ../../../test_app; sourceTree = "<group>"; };
+		2DF24D572B85C2E200F867EB /* mobile */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mobile; path = ../../../src/mobile; sourceTree = "<group>"; };
+		2F72F4B12BE0FB5E0028B901 /* _AlierLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _AlierLog.swift; sourceTree = "<group>"; };
+		892DC3C12C4656A200CB3E5B /* _FetchApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _FetchApi.swift; sourceTree = "<group>"; };
+		892DC3C62C48FE3B00CB3E5B /* Headers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Headers.swift; sourceTree = "<group>"; };
+		892DC3C82C4A4F3900CB3E5B /* Envelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Envelope.swift; sourceTree = "<group>"; };
+		892DC3CA2C4E36FD00CB3E5B /* FetchRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchRequest.swift; sourceTree = "<group>"; };
+		892DC3CC2C4E378D00CB3E5B /* ResponseData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseData.swift; sourceTree = "<group>"; };
+		892DC3CE2C4E381900CB3E5B /* HttpConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpConnection.swift; sourceTree = "<group>"; };
+		892DC3D42C50E1E300CB3E5B /* HttpsConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpsConnection.swift; sourceTree = "<group>"; };
+		892DC3D62C50E33800CB3E5B /* NaiveByteBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NaiveByteBuffer.swift; sourceTree = "<group>"; };
+		892DC3D82C5CC68200CB3E5B /* QuotedPrintable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedPrintable.swift; sourceTree = "<group>"; };
+		892DC3DA2C61F25E00CB3E5B /* URLConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLConnection.swift; sourceTree = "<group>"; };
+		89D532F32B31830100BB8E8B /* _AlierDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _AlierDB.swift; sourceTree = "<group>"; };
+		89E563022B97033300E13D28 /* alier-dev-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "alier-dev-Info.plist"; sourceTree = SOURCE_ROOT; };
+		89E5633A2BC047F500E13D28 /* _LaunchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _LaunchManager.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2D306C162A934754003B4B1E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2D306C352A93480A003B4B1E /* alier.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2D306C2C2A93480A003B4B1E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2D306C102A934754003B4B1E = {
+			isa = PBXGroup;
+			children = (
+				2D306C1B2A934754003B4B1E /* alier_dev */,
+				2D306C302A93480A003B4B1E /* alier */,
+				2D306C1A2A934754003B4B1E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2D306C1A2A934754003B4B1E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2D306C192A934754003B4B1E /* alier_dev.app */,
+				2D306C2F2A93480A003B4B1E /* alier.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2D306C1B2A934754003B4B1E /* alier_dev */ = {
+			isa = PBXGroup;
+			children = (
+				89E563022B97033300E13D28 /* alier-dev-Info.plist */,
+				2D306C1C2A934754003B4B1E /* AlierDevApp.swift */,
+				2D306C1E2A934754003B4B1E /* ContentView.swift */,
+				2D306C202A934756003B4B1E /* Assets.xcassets */,
+				2DF24D552B85C2C900F867EB /* test_app */,
+				2D306C222A934756003B4B1E /* Preview Content */,
+			);
+			path = alier_dev;
+			sourceTree = "<group>";
+		};
+		2D306C222A934756003B4B1E /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				2D306C232A934756003B4B1E /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		2D306C302A93480A003B4B1E /* alier */ = {
+			isa = PBXGroup;
+			children = (
+				892DC3C32C48F9CE00CB3E5B /* http */,
+				2D306C312A93480A003B4B1E /* alier.h */,
+				2F72F4B12BE0FB5E0028B901 /* _AlierLog.swift */,
+				2D306C6B2A934E43003B4B1E /* _Coordinator.swift */,
+				89D532F32B31830100BB8E8B /* _AlierDB.swift */,
+				2D306C702A934E43003B4B1E /* _PathRegistry.swift */,
+				2D306C762A934E43003B4B1E /* _FileOperation.swift */,
+				2D306C722A934E43003B4B1E /* _BaseMainActivity.swift */,
+				2D306C6C2A934E43003B4B1E /* _NativeFunctionInterface.swift */,
+				89E5633A2BC047F500E13D28 /* _LaunchManager.swift */,
+				2D306C752A934E43003B4B1E /* _ResourceManager.swift */,
+				2D306C6F2A934E43003B4B1E /* _ScriptMessageHandler.swift */,
+				2D84F6662B6A2AF3009DA9ED /* _EventHandler.swift */,
+				23E937842D93AC1B00D2C748 /* _ExtensionURL.swift */,
+				2D5F7FAA2DA8EC5500DB20A1 /* _LocalPushNotification.swift */,
+				2D5F7FA82DA8EC4D00DB20A1 /* _LocalPushNotificationTrigger.swift */,
+				2DF24D572B85C2E200F867EB /* mobile */,
+			);
+			path = alier;
+			sourceTree = "<group>";
+		};
+		892DC3C32C48F9CE00CB3E5B /* http */ = {
+			isa = PBXGroup;
+			children = (
+				892DC3C52C48F9F800CB3E5B /* fetch */,
+				892DC3C42C48F9F000CB3E5B /* data */,
+				892DC3CE2C4E381900CB3E5B /* HttpConnection.swift */,
+				892DC3D42C50E1E300CB3E5B /* HttpsConnection.swift */,
+				892DC3DA2C61F25E00CB3E5B /* URLConnection.swift */,
+			);
+			path = http;
+			sourceTree = "<group>";
+		};
+		892DC3C42C48F9F000CB3E5B /* data */ = {
+			isa = PBXGroup;
+			children = (
+				892DC3C62C48FE3B00CB3E5B /* Headers.swift */,
+				892DC3C82C4A4F3900CB3E5B /* Envelope.swift */,
+				892DC3CC2C4E378D00CB3E5B /* ResponseData.swift */,
+				892DC3D62C50E33800CB3E5B /* NaiveByteBuffer.swift */,
+				892DC3D82C5CC68200CB3E5B /* QuotedPrintable.swift */,
+			);
+			path = data;
+			sourceTree = "<group>";
+		};
+		892DC3C52C48F9F800CB3E5B /* fetch */ = {
+			isa = PBXGroup;
+			children = (
+				892DC3C12C4656A200CB3E5B /* _FetchApi.swift */,
+				892DC3CA2C4E36FD00CB3E5B /* FetchRequest.swift */,
+			);
+			path = fetch;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		2D306C2A2A93480A003B4B1E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2D306C322A93480A003B4B1E /* alier.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		2D306C182A934754003B4B1E /* alier_dev */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2D306C272A934756003B4B1E /* Build configuration list for PBXNativeTarget "alier_dev" */;
+			buildPhases = (
+				2D306C152A934754003B4B1E /* Sources */,
+				2D306C162A934754003B4B1E /* Frameworks */,
+				2D306C172A934754003B4B1E /* Resources */,
+				2D306C3A2A93480A003B4B1E /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2D306C342A93480A003B4B1E /* PBXTargetDependency */,
+			);
+			name = alier_dev;
+			productName = AlierDevelopmentProject;
+			productReference = 2D306C192A934754003B4B1E /* alier_dev.app */;
+			productType = "com.apple.product-type.application";
+		};
+		2D306C2E2A93480A003B4B1E /* alier */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2D306C372A93480A003B4B1E /* Build configuration list for PBXNativeTarget "alier" */;
+			buildPhases = (
+				2D306C2A2A93480A003B4B1E /* Headers */,
+				2D306C2B2A93480A003B4B1E /* Sources */,
+				2D306C2C2A93480A003B4B1E /* Frameworks */,
+				2D306C2D2A93480A003B4B1E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = alier;
+			productName = Alier;
+			productReference = 2D306C2F2A93480A003B4B1E /* alier.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2D306C112A934754003B4B1E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1430;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					2D306C182A934754003B4B1E = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
+					2D306C2E2A93480A003B4B1E = {
+						CreatedOnToolsVersion = 14.3.1;
+						LastSwiftMigration = 1430;
+					};
+					2D306C952A936A3C003B4B1E = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
+				};
+			};
+			buildConfigurationList = 2D306C142A934754003B4B1E /* Build configuration list for PBXProject "alier_dev" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 2D306C102A934754003B4B1E;
+			productRefGroup = 2D306C1A2A934754003B4B1E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2D306C182A934754003B4B1E /* alier_dev */,
+				2D306C2E2A93480A003B4B1E /* alier */,
+				2D306C952A936A3C003B4B1E /* alier_target */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2D306C172A934754003B4B1E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2DF24D562B85C2C900F867EB /* test_app in Resources */,
+				2D306C242A934756003B4B1E /* Preview Assets.xcassets in Resources */,
+				2D306C212A934756003B4B1E /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2D306C2D2A93480A003B4B1E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2DF24D582B85C2E200F867EB /* mobile in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		2D306C992A936A41003B4B1E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 12;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n# 出力先ディレクトリ（プロジェクトの直下）\nOUTPUT_DIR=${PROJECT_DIR}/Output\n\n# 中間ファイルの出力先ディレクトリ\nDERIVED_DIR=${OUTPUT_DIR}/${CONFIGURATION}-derived\n\n# archiveの出力先ディレクトリ\nARCHIVE_DIR=${OUTPUT_DIR}/${CONFIGURATION}-archive\n\n# xcframeworkの出力先ディレクトリ\nXCFRAMEWORK_DIR=${OUTPUT_DIR}/${CONFIGURATION}-xcframework\n\n# 出力先ディレクトリ削除\nrm -rf ${OUTPUT_DIR}\n\n# 中間ファイルの出力先ディレクトリ作成\nmkdir -p ${DERIVED_DIR}\n\n# アーカイブファイルの出力先ディレクトリ作成\nmkdir -p ${ARCHIVE_DIR}\n\n# xcframeworkの出力先ディレクトリ作成\nmkdir -p ${XCFRAMEWORK_DIR}\n\n# iOS実機用のarchiveファイル\nARCHIVE_FILE_IOS=${ARCHIVE_DIR}/ios.xcarchive\necho \"ARCHIVE_FILE_IOS:${ARCHIVE_FILE_IOS}\"\n\n# iOSシミュレータ用のarchiveファイル\nARCHIVE_FILE_IOS_SIMULATOR=${ARCHIVE_DIR}/iossimulator.xcarchive\necho \"ARCHIVE_FILE_IOS_SIMULATOR:${ARCHIVE_FILE_IOS_SIMULATOR}\"\n\n# iOS実機用のarchiveファイル作成\nxcodebuild archive -scheme ${PROJECT_NAME} -destination=\"iOS\" -archivePath $ARCHIVE_FILE_IOS -derivedDataPath $DERIVED_DIR -sdk iphoneos SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES\n\n# iOSシミュレータ用のarchiveファイル作成\nxcodebuild archive -scheme ${PROJECT_NAME} -destination=\"iOS Simulator\" -archivePath $ARCHIVE_FILE_IOS_SIMULATOR -derivedDataPath $DERIVED_DIR -sdk iphonesimulator SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES\n\n# xcframework作成\nxcodebuild -create-xcframework -framework $ARCHIVE_FILE_IOS/Products/Library/Frameworks/alier.framework -framework $ARCHIVE_FILE_IOS_SIMULATOR/Products/Library/Frameworks/alier.framework -output $XCFRAMEWORK_DIR/alier.xcframework\n\n# xcframeworkの出力ディレクトリをFinderで開く\nopen ${XCFRAMEWORK_DIR}\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2D306C152A934754003B4B1E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2D306C1F2A934754003B4B1E /* ContentView.swift in Sources */,
+				2D306C1D2A934754003B4B1E /* AlierDevApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2D306C2B2A93480A003B4B1E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				892DC3CB2C4E36FD00CB3E5B /* FetchRequest.swift in Sources */,
+				892DC3DB2C61F25E00CB3E5B /* URLConnection.swift in Sources */,
+				89D532F42B31830100BB8E8B /* _AlierDB.swift in Sources */,
+				892DC3C92C4A4F3900CB3E5B /* Envelope.swift in Sources */,
+				89E5633B2BC047F500E13D28 /* _LaunchManager.swift in Sources */,
+				892DC3D52C50E1E300CB3E5B /* HttpsConnection.swift in Sources */,
+				892DC3C22C4656A300CB3E5B /* _FetchApi.swift in Sources */,
+				2D5F7FA92DA8EC4D00DB20A1 /* _LocalPushNotificationTrigger.swift in Sources */,
+				23E937852D93AC4800D2C748 /* _ExtensionURL.swift in Sources */,
+				2F72F4B22BE0FB5E0028B901 /* _AlierLog.swift in Sources */,
+				2D306C822A934E43003B4B1E /* _FileOperation.swift in Sources */,
+				892DC3D72C50E33800CB3E5B /* NaiveByteBuffer.swift in Sources */,
+				892DC3C72C48FE3B00CB3E5B /* Headers.swift in Sources */,
+				2D306C812A934E43003B4B1E /* _ResourceManager.swift in Sources */,
+				892DC3D92C5CC68200CB3E5B /* QuotedPrintable.swift in Sources */,
+				2D306C7B2A934E43003B4B1E /* _ScriptMessageHandler.swift in Sources */,
+				2D5F7FAB2DA8EC5500DB20A1 /* _LocalPushNotification.swift in Sources */,
+				2D306C782A934E43003B4B1E /* _NativeFunctionInterface.swift in Sources */,
+				892DC3CD2C4E378E00CB3E5B /* ResponseData.swift in Sources */,
+				2D306C7E2A934E43003B4B1E /* _BaseMainActivity.swift in Sources */,
+				2D306C7C2A934E43003B4B1E /* _PathRegistry.swift in Sources */,
+				892DC3CF2C4E381900CB3E5B /* HttpConnection.swift in Sources */,
+				2D306C772A934E43003B4B1E /* _Coordinator.swift in Sources */,
+				2D84F6672B6A2AF3009DA9ED /* _EventHandler.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2D306C342A93480A003B4B1E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2D306C2E2A93480A003B4B1E /* alier */;
+			targetProxy = 2D306C332A93480A003B4B1E /* PBXContainerItemProxy */;
+		};
+		2D306CCC2A946B81003B4B1E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2D306C2E2A93480A003B4B1E /* alier */;
+			targetProxy = 2D306CCB2A946B81003B4B1E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2D306C252A934756003B4B1E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		2D306C262A934756003B4B1E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2D306C282A934756003B4B1E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"alier_dev/Preview Content\"";
+				DEVELOPMENT_TEAM = P5KGAZM355;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "alier-dev-Info.plist";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Alier.alier-dev";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2D306C292A934756003B4B1E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"alier_dev/Preview Content\"";
+				DEVELOPMENT_TEAM = P5KGAZM355;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "alier-dev-Info.plist";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Alier.alier-dev";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		2D306C382A93480A003B4B1E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = P5KGAZM355;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "(c) 2025 SureDesigns Inc.";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = alier.alier;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		2D306C392A93480A003B4B1E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = P5KGAZM355;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "(c) 2025 SureDesigns Inc.";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = alier.alier;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		2D306C972A936A3C003B4B1E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = P5KGAZM355;
+				LD_RUNPATH_SEARCH_PATHS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		2D306C982A936A3C003B4B1E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = P5KGAZM355;
+				LD_RUNPATH_SEARCH_PATHS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2D306C142A934754003B4B1E /* Build configuration list for PBXProject "alier_dev" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D306C252A934756003B4B1E /* Debug */,
+				2D306C262A934756003B4B1E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2D306C272A934756003B4B1E /* Build configuration list for PBXNativeTarget "alier_dev" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D306C282A934756003B4B1E /* Debug */,
+				2D306C292A934756003B4B1E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2D306C372A93480A003B4B1E /* Build configuration list for PBXNativeTarget "alier" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D306C382A93480A003B4B1E /* Debug */,
+				2D306C392A93480A003B4B1E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2D306C962A936A3C003B4B1E /* Build configuration list for PBXAggregateTarget "alier_target" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D306C972A936A3C003B4B1E /* Debug */,
+				2D306C982A936A3C003B4B1E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2D306C112A934754003B4B1E /* Project object */;
+}

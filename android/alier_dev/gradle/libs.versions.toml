@@ -1,0 +1,114 @@
+#   TOML syntax: <https://toml.io/en/v1.0.0>
+#   Gradle version catalogs: <https://docs.gradle.org/current/userguide/version_catalogs.html>
+#   Migrate to version catalogs: <https://developer.android.com/build/migrate-to-catalogs>
+#   Naming convention: <https://blog.gradle.org/best-practices-naming-version-catalog-entries>
+
+[versions]
+####
+#   to define:
+#       dependency-name = "version name"
+#   to refer from build.gradle:
+#       libs.versions.dependency.name
+#   
+#   NOTE:
+#       values MUST be strings even if they are supposed to be interpreted as numbers.
+#       Hence, type casting such like `libs.versions.minSdk.get().toInteger()` is required whenever using values as numbers.
+#       see <https://docs.gradle.org/current/userguide/version_catalogs.html#sec:common-version-numbers>
+
+framework-versionCode = "1"
+framework-versionName = "0.2.0"
+
+project-compileSdk = "35"
+project-targetSdk  = "35"
+project-minSdk     = "21"
+
+#   JDK version used for compiling Java/Kotlin source codes.
+#
+#   see <https://developer.android.com/build/jdks#compileSdk>
+#   see <https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support>
+#   NOTE:
+#       By default, you need to install manually appropriate version of JDK on your machine
+#       whenever changing the Java language version.
+#       This process can be automated by using the plugin
+#       "org.gradle.toolchains.foojay-resolver-convention" or its alternatives.
+#
+#       The toolchain resolver plugin is managed in settings.gradle
+#       and version catalog (this file) cannot be applied to settings.gradle,
+#       hence the resolver plugin and its version is described in settings.gradle directly.
+#
+#       see <https://docs.gradle.org/current/userguide/toolchains.html>
+#       see <https://plugins.gradle.org/plugin/org.gradle.toolchains.foojay-resolver-convention>
+#   NOTE:
+#       Kotlin/JVM compatibility is shown below:
+#
+#       | Kotlin version | Supported JVM version | reference                                                  |
+#       |:--------------:|:---------------------:|:-----------------------------------------------------------|
+#       |     2.1.0      |          23           | <https://kotlinlang.org/docs/whatsnew21.html#kotlin-jvm>   |
+#       |     2.0.0      |          22           | <https://kotlinlang.org/docs/whatsnew20.html#kotlin-jvm>   |
+#       |     1.9.20     |          21           | <https://kotlinlang.org/docs/whatsnew1920.html#kotlin-jvm> |
+#       |     1.9.0      |          20           | <https://kotlinlang.org/docs/whatsnew19.html#kotlin-jvm>   |
+#       |     1.8.0      |          19           | <https://kotlinlang.org/docs/whatsnew18.html#kotlin-jvm>   |
+#
+#   NOTE:
+#       Supported JVM versions on Android is showm below:
+#
+#       | API level  | Supported JVM version |
+#       |:----------:|:---------------------:|
+#       |  34 -- 35  |          17           |
+#       |  32 -- 33  |          11           |
+#
+#       Target JVM version must be OpenJDK LTS version.
+java-toolchain-languageVersion = "17"
+
+#   NOTE:
+#       Android Gradle Plugin compatibility can be checked from the following URL.
+#           <https://developer.android.com/build/releases/gradle-plugin#compatibility>
+#       AGP version may affect:
+#           -   compileSdk
+#           -   Gradle version
+#           -   SDK build tools version
+#           -   NDK version
+#           -   JDK version
+android-gradle = "8.8.0"
+kotlin = "1.9.20"
+
+activity-ktx = "1.10.0"
+appcompat = "1.7.0"
+core-ktx = "1.15.0"
+material = "1.12.0"
+gms-playServicesBasement = "18.5.0"
+
+junit = "4.13.2"
+ext-junit = "1.2.1"
+espresso-core = "3.6.1"
+datastoreCoreAndroid = "1.1.4"
+
+[libraries]
+#   to define:
+#       dependency-name = { group = "package-name", name = "dependency", version.ref = "corresponding-key" }
+#   to refer from build.gradle:
+#       libs.dependency.name
+
+activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity-ktx" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx"}
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+gms-playServicesBasement = { group = "com.google.android.gms", name = "play-services-basement", version.ref = "gms-playServicesBasement" }
+
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "ext-junit" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
+datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastoreCoreAndroid" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
+
+
+[plugins]
+#   to define:
+#       plugin-name = { id = "package-name", version.ref = "corresponding-key" }
+#   to referer from build.gradle:
+#       libs.plugins.plugin.name
+
+android-application = { id = "com.android.application", version.ref = "android-gradle" }
+android-library = { id = "com.android.library", version.ref = "android-gradle" }
+kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

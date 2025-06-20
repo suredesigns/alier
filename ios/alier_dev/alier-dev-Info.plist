@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>For push notification test</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>alier-dev</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>alier-dev</string>
+			</array>
+		</dict>
+	</array>
+	<key>UIApplicationShortcutItems</key>
+	<array>
+		<dict>
+			<key>UIApplicationShortcutItemIconType</key>
+			<string>UIApplicationShortcutIconTypeSearch</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Shortcut test</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>ショートカットアイテムタイプ1</string>
+			<key>UIApplicationShortcutItemUserInfo</key>
+			<dict>
+				<key>shortcut1</key>
+				<string>shortcut test</string>
+			</dict>
+			<key>sub1</key>
+			<string>sub text1</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemIconType</key>
+			<string>UIApplicationShortcutIconTypeShare</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>First view test</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>ショートカットアイテムタイプ2</string>
+			<key>UIApplicationShortcutItemUserInfo</key>
+			<dict>
+				<key>shortcut</key>
+				<string>StartupParams_LaunchAppView</string>
+			</dict>
+			<key>sub2</key>
+			<string>sub text2</string>
+		</dict>
+	</array>
+</dict>
+</plist>

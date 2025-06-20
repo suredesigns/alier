@@ -1,0 +1,197 @@
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin)
+    id 'maven-publish'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(libs.versions.java.toolchain.languageVersion.get())
+    }
+}
+
+android {
+    compileSdk = libs.versions.project.compileSdk.get().toInteger()
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+    defaultConfig {
+        minSdk    = libs.versions.project.minSdk.get().toInteger()
+        targetSdk = libs.versions.project.targetSdk.get().toInteger()
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    testFixtures {
+        enable = true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled = false
+            proguardFiles(getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro')
+        }
+    }
+
+    def repositoryRootDir = file("$projectDir/../../../")
+
+    sourceSets {
+        main {
+            resources.srcDirs += layout.buildDirectory.dir("generated-resources")
+            assets.srcDirs = ["$repositoryRootDir/src/mobile"]
+        }
+    }
+    packaging {
+        resources.merges += 'META-INF/LICENSE.txt'
+        resources.merges += 'META-INF/NOTICE.txt'
+        resources.merges += 'META-INF/LICENSE'
+        resources.merges += 'META-INF/NOTICE'
+    }
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+        }
+    }
+
+    namespace = 'com.suredesigns.alier'
+}
+
+dependencies {
+    implementation libs.activity.ktx
+    implementation libs.core.ktx
+    implementation libs.appcompat
+    implementation libs.material
+    implementation libs.gms.playServicesBasement
+    implementation libs.datastore.core.android
+    implementation(libs.androidx.datastore.preferences)
+    api libs.kotlin.reflect
+
+    testImplementation libs.junit
+
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'com.suredesigns'
+            artifactId = 'alier'
+            version = libs.versions.framework.versionName.get().toString()
+
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = 'local'
+            url = layout.buildDirectory.dir('.repo')
+        }
+    }
+}
+
+tasks.register('makeGeneratedResourcesDir') {
+    def baseDir = layout.buildDirectory.dir('generated-resources').get().asFile
+    def dirs = [
+            '',
+            'META-INF'
+    ].collect {
+        new File(baseDir, it)
+    }.findAll {
+        !it.exists()
+    }
+
+    onlyIf {
+        !dirs.isEmpty()
+    }
+    doLast {
+        def failedDirs = []
+        dirs.forEach {
+            if (!it.mkdirs() && !it.exists()) {
+                failedDirs.add(it.toString())
+            }
+        }
+        if (!failedDirs.isEmpty()) {
+            throw new TaskExecutionException(
+                    it,
+                    new IOException("Failed to make the following directories:\n\t${failedDirs.join("\n\t")}")
+            )
+        }
+    }
+}
+
+tasks.register('generateMetaInf') {
+    dependsOn('makeGeneratedResourcesDir')
+
+    def text = [
+            versionCode: libs.versions.framework.versionCode.get().toString(),
+            versionName: libs.versions.framework.versionName.get().toString()
+    ].collect {
+        "${it.key}=${it.value}"
+    }.join('\n')
+
+    def metaInf = new File(layout.buildDirectory.dir('generated-resources').get().asFile, 'META-INF')
+    def metaProperties = new File(metaInf, 'alier.properties')
+    def parentDir = metaProperties.parentFile
+
+    onlyIf {
+        !metaProperties.exists()
+        || metaProperties.text != text
+    }
+    doLast {
+        //  An expression like `file.text = someText` invokes `GroovyMethods.setText(file, someText)`.
+        //  The `setText()` is a synonym for `GroovyMethods.write()` and it uses
+        //  `FileOutputStream(file)` constructor. The `FileOutputStream` constructor throws
+        //  a `FileNotFoundException` in one of the following cases:
+        //
+        //  1.  a `file` points to an existing directory
+        //  2.  a `file` points to a non-existent file but it cannot be created
+        //  3.  a `file` points to an existing file but it cannot be opened
+        //
+        //  (2) and (3) of the above conditions are depending on file system's behaviour and hence
+        //  the build script may produce different results on different platforms.
+        //  see. Java SE & JDK 17 API Specification, java.io.FileOutputStream
+        //      <https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/FileOutputStream.html#%3Cinit%3E(java.io.File)>
+
+        //  make all non-existent parent directories
+        if (!parentDir.mkdirs() && !parentDir.exists()) {
+            throw new TaskExecutionException(it, new IOException("Failed to make the parent directory:\n\t$parentDir"))
+        }
+        //  java.io.File.createNewFile() creates an empty file iff the target file does not exist yet
+        metaProperties.createNewFile()
+        metaProperties.text = text
+    }
+}
+
+tasks.register('copyMetaResources', Copy) {
+    dependsOn('makeGeneratedResourcesDir')
+
+    def baseDir = layout.buildDirectory.dir('generated-resources').get().asFile
+    def metaResourceList = [
+            'LICENSE.txt'
+    ]
+    def metaResources = metaResourceList.collect {
+        file("${projectDir}/../../../${it}")
+    }.findAll {src ->
+        def dst = new File(baseDir, src.name)
+        src.exists() && (!dst.exists() || src.lastModified > dst.lastModified)
+    }
+
+    onlyIf {
+        !metaResources.isEmpty()
+    }
+    from(metaResources)
+    into(new File(baseDir, 'META-INF'))
+}
+
+tasks.named('preBuild') {
+    dependsOn(
+            'generateMetaInf',
+            'copyMetaResources'
+    )
+}
