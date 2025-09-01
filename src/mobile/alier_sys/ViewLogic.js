@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const { ProtoViewLogic } = await Alier.import("/alier_sys/ProtoViewLogic.js");
+import { ProtoViewLogic } from "./ProtoViewLogic.js";
 
 /**
  * @class
@@ -29,23 +29,23 @@ class ViewLogic extends ProtoViewLogic {
     get container() { return this.#container; }
     
     /**
-     * A {@link ViewElement} hosting this `ViewLogic` instance.
+     * A {@link AlierView} hosting this `ViewLogic` instance.
      * 
      * `this.host` changes to `null` when the host has detached this ViewLogic.
      * 
-     * `this.host` changes to some `ViewElement` when that `ViewElement` has attached this ViewLogic.
+     * `this.host` changes to some `AlierView` when that `AlierView` has attached this ViewLogic.
      * 
      * By default, this value is `null`.
      * 
      * @see
-     * - {@link ViewElement.prototype.attach}
-     * - {@link ViewElement.prototype.detach}
+     * - {@link AlierView.prototype.attach}
+     * - {@link AlierView.prototype.detach}
      */
     get host() { return this.#host; }
     
     /**
      * A &lt;div&gt; element containing &lt;style&gt; elements as its children.
-     * Any CSS rules in this &lt;div&gt; is applied to the DOM tree under the host `ViewElement`.
+     * Any CSS rules in this &lt;div&gt; is applied to the DOM tree under the host `AlierView`.
      * 
      * &lt;style&gt; elements are moved from its original document when contents are loaded to the container.
      * 
@@ -599,22 +599,22 @@ class ViewLogic extends ProtoViewLogic {
     }
 
     /**
-     * Attaches the given ViewLogic to the given ViewElement.
+     * Attaches the given ViewLogic to the given AlierView.
      * 
-     * Suppose `vl` is the given ViewLogic and `ve` is the given ViewElement,
-     * then this function is equivalent to `ve.attach(vl)`.
+     * Suppose `vl` is the given ViewLogic and `av` is the given AlierView,
+     * then this function is equivalent to `av.attach(vl)`.
      * 
      * @param {ViewLogic} containerToBeAttached
      * ViewLogic to be attached.
      * 
-     * @param {ViewElement} newHost
-     * ViewElement to which the given ViewLogic will be attached.
+     * @param {AlierView} newHost
+     * AlierView to which the given ViewLogic will be attached.
      * 
      * @returns
      * detached ViewLogic if it was attached, `null` otherwise.
      * 
      * @see
-     * - {@link ViewElement.prototype.attach}
+     * - {@link AlierView.prototype.attach}
      */
     static attachTo(containerToBeAttached, newHost) {
         const vl = containerToBeAttached;
@@ -623,8 +623,8 @@ class ViewLogic extends ProtoViewLogic {
 
         if (!(vl instanceof ViewLogic)) {
             throw new TypeError(`${vl} is not a ${ViewLogic.name}`);
-        } else if (!(new_host instanceof ViewElement)) {
-            throw new TypeError(`${new_host} is not a ${ViewElement.name}`);
+        } else if (!(new_host instanceof AlierView)) {
+            throw new TypeError(`${new_host} is not a ${AlierView.name}`);
         } else if (new_host === old_host) {
             return null;
         } else if (new_host.container !== vl) {
@@ -648,22 +648,22 @@ class ViewLogic extends ProtoViewLogic {
     }
     
     /**
-     * Detaches the given ViewLogic from the given ViewElement.
+     * Detaches the given ViewLogic from the given AlierView.
      * 
-     * Suppose `vl` is the given ViewLogic and `ve` is the given ViewElement,
-     * then this function is equivalent to `ve.detach()` if `vl` is attached to `ve`.
+     * Suppose `vl` is the given ViewLogic and `av` is the given AlierView,
+     * then this function is equivalent to `av.detach()` if `vl` is attached to `av`.
      * 
      * @param {ViewLogic} containerToBeDetached
      * ViewLogic to be detached.
      * 
-     * @param {ViewElement} oldHost
-     * ViewElement from which the given ViewLogic will be detached.
+     * @param {AlierView} oldHost
+     * AlierView from which the given ViewLogic will be detached.
      * 
      * @returns
      * detached ViewLogic if it was attached, `null` otherwise.
      * 
      * @see
-     * - {@link ViewElement.prototype.detach}
+     * - {@link AlierView.prototype.detach}
      */
     static detachFrom(containerToBeDetached, oldHost) {
         const vl = containerToBeDetached;
@@ -671,8 +671,8 @@ class ViewLogic extends ProtoViewLogic {
 
         if (!(vl instanceof ViewLogic)) {
             throw new TypeError(`${vl} is not a ${ViewLogic.name}`);
-        } else if (!(old_host instanceof ViewElement)) {
-            throw new TypeError(`${old_host} is not a ${ViewElement.name}`);
+        } else if (!(old_host instanceof AlierView)) {
+            throw new TypeError(`${old_host} is not a ${AlierView.name}`);
         } else if (old_host !== vl.#host) {
             return null;
         } else if (old_host.container !== null) {
@@ -732,24 +732,25 @@ class ViewLogic extends ProtoViewLogic {
             }
         }
 
-        container.remove();
-        container.prepend(...Array.from(doc.head.children));
+        //  Move all the nodes in `<head>` to the container.
+        //  This in intended to import `<style>`s or something affect the entire document
+        //  described in `<head>`.
+        container.prepend(...doc.head.childNodes);
 
-        //  Import custom tags into the main document.
-        const stack = [container];
-        while (stack.length > 0) {
-            const element = stack.pop();
+        //  Move ownership of container from the parsed document
+        //  to the main document.
+        //  `adoptNode()` does the followings:
+        //  -   removes `container` from its document tree
+        //      (this is equivalent to `container.remove()`)
+        //  -   sets `container` and its descendants' `ownerDocument`
+        document.adoptNode(container);
 
-            if (!(element instanceof HTMLElement)) { continue; }
-            
-            stack.push(...Array.from(element.children));
-
-            if (!element.tagName.includes("-")) { continue; }
-            //  importNode() creates a clone of `element`.
-            //  The definition of the custom tag is applied to the clone.
-            const imported_element = document.importNode(element, false);
-            element.replaceWith(imported_element);
-        }
+        //  Apply custom elements' definitions.
+        //  This should be done after adopting the node to upgrade.
+        //  Otherwise, `upgrade()` will do nothing because
+        //  the upgraded node's owner document is not associated with
+        //  the global custom element registry `customElements`.
+        customElements.upgrade(container);
 
         return container;
     }
@@ -875,9 +876,9 @@ class ViewLogic extends ProtoViewLogic {
     #container = document.createElement("div");
     
     /**
-     * a {@link ViewElement} attaching this ViewLogic.
+     * a {@link AlierView} attaching this ViewLogic.
      * 
-     * @type {ViewElement | null}
+     * @type {AlierView | null}
      * @see {@link ViewLogic.prototype.host}
      */
     #host = null;
@@ -888,4 +889,4 @@ class ViewLogic extends ProtoViewLogic {
     static #DOM_PARSER = new DOMParser();
 }
 
-await Alier.export({ ViewLogic });
+export { ViewLogic };

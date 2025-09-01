@@ -93,7 +93,7 @@ function _setInterface(element, position, class_name) {
                 }
             }
             const attributes = element.attributes;
-            const locale = attributes.getNamedItem("locale").value;
+            const locale = attributes.getNamedItem("locale")?.value ?? "local";
             if (locale === "local") {
                 if (class_name) {
                     const model_class = new model_module[class_name]();
@@ -104,12 +104,6 @@ function _setInterface(element, position, class_name) {
                         position[name] = func.bind(model_class);
                     }
                 }
-            } else if (locale === "native") {
-                const path = attributes.getNamedItem("path").value;
-                const name = attributes.getNamedItem("name").value;
-                position[name] = (...args) => {
-                    return Alier.Native[path](args);
-                };
             }
             break;
         }
@@ -123,7 +117,7 @@ function _setInterface(element, position, class_name) {
             if (class_name) {
                 const model_class = new model_module[class_name]();
                 const attributes = element.attributes;
-                const locale = attributes.getNamedItem("locale").value;
+                const locale = attributes.getNamedItem("locale")?.value ?? "local";
                 if (locale === "local") {
                     const path = attributes.getNamedItem("path").value;
                     const name = attributes.getNamedItem("name").value;
@@ -138,8 +132,6 @@ function _setInterface(element, position, class_name) {
                                 () => {}
                         };
                     }
-                } else if (locale === "native") {
-                    //native
                 }
             }
             break;
@@ -154,7 +146,7 @@ function _setInterface(element, position, class_name) {
             if (class_name) {
                 const model_class = new model_module[class_name]();
                 const attributes = element.attributes;
-                const locale = attributes.getNamedItem("locale").value;
+                const locale = attributes.getNamedItem("locale")?.value ?? "local";
                 if (locale === "local") {
                     const path = attributes.getNamedItem("path").value;
                     const name = attributes.getNamedItem("name").value;
@@ -178,7 +170,7 @@ function _setInterface(element, position, class_name) {
             if (class_name) {
                 const model_class = new model_module[class_name]();
                 const attributes = element.attributes;
-                const locale = attributes.getNamedItem("locale").value;
+                const locale = attributes.getNamedItem("locale")?.value ?? "local";
                 if (locale === "local") {
                     const path = attributes.getNamedItem("path").value;
                     const name = attributes.getNamedItem("name").value;
@@ -200,7 +192,7 @@ function _setInterface(element, position, class_name) {
                 }
             }
             const attributes = element.attributes;
-            const locale = attributes.getNamedItem("locale").value;
+            const locale = attributes.getNamedItem("locale")?.value ?? "local";
             if (locale === "local") {
                 if (class_name) {
                     const model_class = new model_module[class_name]();
@@ -256,7 +248,8 @@ async function setupModelInterfaceFromText(xmlText) {
     const imported_modules = [];
     for (const import_tag of import_tags) {
         const path = import_tag.attributes.getNamedItem("path").value;
-        imported_modules.push(import(path));
+        const canonical_path = new URL(path, document.baseURI).pathname;
+        imported_modules.push(import(canonical_path));
     }
     Object.assign(model_module, ...await Promise.all(imported_modules));
 

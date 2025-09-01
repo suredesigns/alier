@@ -1193,7 +1193,7 @@ class DBConnector {
     }
 }
 
-await Alier.export({
+export {
     DBConnector,
     DBError,
     DBInternalError,
@@ -1201,4 +1201,4 @@ await Alier.export({
     asSqlIdentifier,
     asSqlString,
     asSqlValue
-});
+};

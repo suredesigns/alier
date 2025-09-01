@@ -56,4 +56,4 @@ async function Result(o) {
     }
 }
 
-await Alier.export({ Result });
+export { Result };

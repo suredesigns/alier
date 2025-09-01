@@ -220,4 +220,4 @@ class WaitObject {
     static #keys = new Map();
 }
 
-await Alier.export({ WaitObject });
+export { WaitObject };

@@ -14,9 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const { Singleton } = await Alier.import("/alier_sys/Singleton.js");
+import { Singleton } from "./Singleton.js";
 
 class AlierModel extends Singleton {
 }
 
-await Alier.export({ AlierModel });
+export { AlierModel };

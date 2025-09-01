@@ -52,4 +52,4 @@ class PromisePool {
     }
 }
 
-await Alier.export({ PromisePool });
+export { PromisePool };

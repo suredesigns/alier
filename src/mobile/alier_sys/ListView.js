@@ -14,20 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const {
-    ViewElement,
-    ObservableArray,
-    ViewLogic,
-} = Object.assign(
-    Object.create(null),
-    ...await Promise.all(
-        [
-            "/alier_sys/ViewLogic.js",
-            "/alier_sys/ObservableArray.js",
-            "/alier_sys/ViewElement.js",
-        ].map(path => Alier.import(path))
-    )
-);
+import { AlierView } from "./AlierView.js";
+import { ViewLogic } from "./ViewLogic.js";
+import { ObservableArray } from "./ObservableArray.js";
 
 /**
  * @class
@@ -258,14 +247,14 @@ class ListViewContainer extends ViewLogic {
 /**
  * @class
  * 
- * A `ViewElement` representing a list of monomorphic items.
+ * A `AlierView` representing a list of monomorphic items.
  * 
- * Due to duality of ViewElement and ViewLogic,
+ * Due to duality of AlierView and ViewLogic,
  * ListView also has ViewLogic as its counter-part.
- * However unlike plain ViewElements, ListView's dual is provided by itself but not the user.
+ * However unlike plain AlierViews, ListView's dual is provided by itself but not the user.
  * The user can provide ListItemView's ViewLogic instead.
  */
-class ListView extends ViewElement {
+class ListView extends AlierView {
     /**
      * number of contents
      */
@@ -760,4 +749,4 @@ class ListView extends ViewElement {
     }
 }
 
-await Alier.export({ ListView });
+export { ListView };

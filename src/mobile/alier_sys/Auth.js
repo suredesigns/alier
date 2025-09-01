@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 /// Platform Specific -->
-const { Envelope } = await Alier.import("/alier_sys/Envelope.js");
+import { Envelope } from "./Envelope.js";
 /// <-- Platform Specific
 
 /**
@@ -2228,7 +2228,7 @@ function abortReasonToAuthError(reason) {
 }
 
 /// Platform Specific -->
-await Alier.export({
+export {
     AuthError,
     IAuthKey,
     AuthEntity,
@@ -2239,5 +2239,4 @@ await Alier.export({
     AuthAgent,
     DigestAuthKey,
     DigestProtocol,
-});
-/// <-- Platform Specific
+};

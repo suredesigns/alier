@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const { Singleton } = await Alier.import("/alier_sys/Singleton.js");
+import { Singleton } from "./Singleton.js";
 
 /**
  * A generic class of data objects that persist on disk.
@@ -104,4 +104,4 @@ class PersistentObject extends Singleton {
     
 }
 
-await Alier.export({ PersistentObject });
+export { PersistentObject };

@@ -206,5 +206,5 @@ const LazyNew = (ctor, initializer) => {
 }
 
 /// Platform Specific -->
-await Alier.export({ LazyNew, LazyNew$initialized });
+export { LazyNew, LazyNew$initialized };
 /// <-- Platform Specific

@@ -25,10 +25,15 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.webkit.WebViewAssetLoader
+import androidx.webkit.WebViewAssetLoader.AssetsPathHandler
+import androidx.webkit.WebViewAssetLoader.InternalStoragePathHandler
+import androidx.webkit.WebViewAssetLoader.ResourcesPathHandler
 import com.suredesigns.alier.net.http.data.Binary
 import com.suredesigns.alier.net.http.data.Headers
 import com.suredesigns.alier.net.http.data.NoContent
@@ -39,6 +44,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.io.File
 import java.io.InputStream
 import java.net.URL
 import java.util.Properties
@@ -89,11 +95,14 @@ open class BaseMainActivity (
     data class Config(
         val debugModeEnabled: Boolean = false,
         val scrollAllowed: Boolean = true,
+        val appScheme: String = "alier",
+        val clearTextAllowed: Boolean = false,
         val urlSyncListAccess: String = ""
     )
 
     private val _scope = CoroutineScope(Dispatchers.Default)
     private var _internal_coordinator: _Coordinator? = null
+    private val _app_domain = "app.local"
 
     lateinit private var simpleDefaultNotification: SimpleNotificationManager
 
@@ -174,7 +183,9 @@ open class BaseMainActivity (
         syncViaNetwork()
 
         initWebView()
-        _webview!!.loadUrl(_path_registry.getBaseHtmlPath().path)
+        val base_html = _path_registry.getBaseHtmlPath().readText()
+        val base_url = "${config.appScheme}:///app_res/"
+        _webview!!.loadDataWithBaseURL(base_url, base_html, "text/html", null, base_url)
 
         _scope.launch {
             async {
@@ -283,6 +294,28 @@ open class BaseMainActivity (
 
     }
 
+    private fun _buildAssetLoader(): WebViewAssetLoader {
+        val assets_handler = AssetsPathHandler(applicationContext)
+        return WebViewAssetLoader.Builder()
+            .setDomain(_app_domain)
+            .setHttpAllowed(config.clearTextAllowed)
+            .addPathHandler("/app_res/") { path ->
+                if (path.isBlank()) {
+                    WebResourceResponse("text/plain", null, "".byteInputStream())
+                } else {
+                    assets_handler.handle("app_res/$path") ?: WebResourceResponse(null, null, null)
+                }
+            }
+            .addPathHandler("/alier_sys/") { path ->
+                if (path.isBlank()) {
+                    WebResourceResponse(null, null, null)
+                } else {
+                    assets_handler.handle("alier_sys/$path") ?: WebResourceResponse(null, null, null)
+                }
+            }
+            .build()
+    }
+
     /**
      * Initialize [WebView].
      */
@@ -298,13 +331,20 @@ open class BaseMainActivity (
         settings.loadWithOverviewMode = true
         settings.useWideViewPort = true
         settings.builtInZoomControls = false
-        settings.allowFileAccess = true
-        settings.allowContentAccess = true
+        settings.allowFileAccess = false
+        settings.allowContentAccess = false
         settings.javaScriptCanOpenWindowsAutomatically = true
         settings.javaScriptEnabled = true
-        settings.domStorageEnabled = true
+        settings.domStorageEnabled = false
 
-        val client: _Coordinator = makeCoordinator(this)
+        val asset_loader = _buildAssetLoader()
+
+        val client: _Coordinator = makeCoordinator(
+            this,
+            asset_loader,
+            config.appScheme,
+            _app_domain
+        )
 
         webview.webViewClient = client
 

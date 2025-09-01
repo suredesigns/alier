@@ -14,65 +14,56 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const importAll = async (...paths) => {
-    return Object.assign(
-        Object.create(null),
-        ... await Promise.all(paths.map(path => Alier.import(path)))
-    );
-};
 const defineIfNotDefined = (tag, ctor, options = undefined) => {
     if (customElements.get(tag) === undefined) {
         customElements.define(tag, ctor, options);
     }
 };
 
-const {
-    AlierModel,
-    setupModelInterfaceFromText,
-    setupModelInterface,
-    ProtoViewLogic,
-} = await importAll(
-    "/alier_sys/AlierModel.js",
-    "/alier_sys/SetupInterface.js",
-    "/alier_sys/ProtoViewLogic.js",
-);
-const { ViewLogic } = await Alier.import("/alier_sys/ViewLogic.js");
-const { ViewElement } = await Alier.import("/alier_sys/ViewElement.js");
-const {
-    ListView,
-} = await importAll(
-    "/alier_sys/ListView.js",
-);
-
-if (!("View" in Alier)) {
-    defineIfNotDefined("alier-view", ViewElement);
-    defineIfNotDefined("alier-list-view", ListView);
-    defineIfNotDefined("alier-app-view", class AppView extends ViewElement {});
-    defineIfNotDefined("alier-container", class ContainerView extends HTMLElement {});
-    Object.defineProperty(Alier, "View", {
-        value     : document.createElement("alier-app-view"),
-        writable  : true,
-        enumerable: true
-    });
-    document.body.appendChild(Alier.View);
-}
+import { AlierModel } from "./AlierModel.js";
+import { setupModelInterface, setupModelInterfaceFromText } from "./SetupInterface.js";
+import { ProtoViewLogic } from "./ProtoViewLogic.js";
+import { ViewLogic } from "./ViewLogic.js";
+import { AlierView } from "./AlierView.js";
+import { ListView } from "./ListView.js";
 
 /**
  * Setup Alier environment.
  *
- * NOTE:
- * We plan to port the side effects that occur when importing AlierFramework.js
- * to this function.
+ * Define custome elements:
+ *
+ * - alier-view
+ * - alier-list-view
+ * - alier-app-view
+ * - alier-container
+ *
+ * Add Alier.View to the body of the document to deploy the Alier application.
  */
-async function setupAlier() {}
+function setupAlier() {
+    if (!("View" in Alier)) {
+        // <========= mobile only ==========
+        defineIfNotDefined("alier-view", AlierView);
+        defineIfNotDefined("alier-container", class ContainerView extends HTMLElement {});
+        defineIfNotDefined("alier-list-view", ListView);
+        // ========== mobile only =========>
 
-await Alier.export({
+        defineIfNotDefined("alier-app-view", class AppView extends AlierView {});
+        Object.defineProperty(Alier, "View", {
+            value     : document.createElement("alier-app-view"),
+            writable  : true,
+            enumerable: true
+        });
+        document.body.appendChild(Alier.View);
+    }
+}
+
+export {
     setupAlier,
     AlierModel,
     ViewLogic,
     ListView,
     setupModelInterfaceFromText,
     setupModelInterface,
-    ViewElement,
+    AlierView,
     ProtoViewLogic,
-});
+};

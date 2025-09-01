@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const { sql, DBConnector, DBError, asSqlIdentifier, asSqlValue, asSqlString } = await Alier.import("/alier_sys/_DBConnector.js");
+import { sql, DBConnector, DBError, asSqlIdentifier, asSqlValue, asSqlString } from "./_DBConnector.js";
 
 /**
  * @typedef {(
@@ -1232,6 +1232,6 @@ class SQLiteConnector extends DBConnector {
     }
 }
 
-await Alier.export({
+export {
     SQLiteConnector
-});
+};

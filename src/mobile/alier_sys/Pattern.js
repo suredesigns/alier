@@ -677,4 +677,4 @@ class Pattern {
 }
 
 /** @exports "./Pattern.js" */
-await Alier.export({ Pattern });
+export { Pattern };

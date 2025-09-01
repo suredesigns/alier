@@ -40,8 +40,8 @@
 		2D5F7FA92DA8EC4D00DB20A1 /* _LocalPushNotificationTrigger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5F7FA82DA8EC4D00DB20A1 /* _LocalPushNotificationTrigger.swift */; };
 		2D5F7FAB2DA8EC5500DB20A1 /* _LocalPushNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5F7FAA2DA8EC5500DB20A1 /* _LocalPushNotification.swift */; };
 		2D84F6672B6A2AF3009DA9ED /* _EventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D84F6662B6A2AF3009DA9ED /* _EventHandler.swift */; };
-		2DF24D562B85C2C900F867EB /* test_app in Resources */ = {isa = PBXBuildFile; fileRef = 2DF24D552B85C2C900F867EB /* test_app */; };
-		2DF24D582B85C2E200F867EB /* mobile in Resources */ = {isa = PBXBuildFile; fileRef = 2DF24D572B85C2E200F867EB /* mobile */; };
+		2F5CD3212E28A32D006FFF73 /* app_res in Resources */ = {isa = PBXBuildFile; fileRef = 2F5CD3202E28A32D006FFF73 /* app_res */; };
+		2F5CD3472E28C1F3006FFF73 /* alier_sys in Resources */ = {isa = PBXBuildFile; fileRef = 2F5CD3462E28C1F3006FFF73 /* alier_sys */; };
 		2F72F4B22BE0FB5E0028B901 /* _AlierLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F72F4B12BE0FB5E0028B901 /* _AlierLog.swift */; };
 		892DC3C22C4656A300CB3E5B /* _FetchApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892DC3C12C4656A200CB3E5B /* _FetchApi.swift */; };
 		892DC3C72C48FE3B00CB3E5B /* Headers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892DC3C62C48FE3B00CB3E5B /* Headers.swift */; };
@@ -107,8 +107,8 @@
 		2D5F7FA82DA8EC4D00DB20A1 /* _LocalPushNotificationTrigger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _LocalPushNotificationTrigger.swift; sourceTree = "<group>"; };
 		2D5F7FAA2DA8EC5500DB20A1 /* _LocalPushNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _LocalPushNotification.swift; sourceTree = "<group>"; };
 		2D84F6662B6A2AF3009DA9ED /* _EventHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _EventHandler.swift; sourceTree = "<group>"; };
-		2DF24D552B85C2C900F867EB /* test_app */ = {isa = PBXFileReference; lastKnownFileType = folder; name = test_app; path = ../../../test_app; sourceTree = "<group>"; };
-		2DF24D572B85C2E200F867EB /* mobile */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mobile; path = ../../../src/mobile; sourceTree = "<group>"; };
+		2F5CD3202E28A32D006FFF73 /* app_res */ = {isa = PBXFileReference; lastKnownFileType = folder; name = app_res; path = ../../../test_app/app_res; sourceTree = "<group>"; };
+		2F5CD3462E28C1F3006FFF73 /* alier_sys */ = {isa = PBXFileReference; lastKnownFileType = folder; name = alier_sys; path = ../../../src/mobile/alier_sys; sourceTree = "<group>"; };
 		2F72F4B12BE0FB5E0028B901 /* _AlierLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _AlierLog.swift; sourceTree = "<group>"; };
 		892DC3C12C4656A200CB3E5B /* _FetchApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _FetchApi.swift; sourceTree = "<group>"; };
 		892DC3C62C48FE3B00CB3E5B /* Headers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Headers.swift; sourceTree = "<group>"; };
@@ -169,7 +169,7 @@
 				2D306C1C2A934754003B4B1E /* AlierDevApp.swift */,
 				2D306C1E2A934754003B4B1E /* ContentView.swift */,
 				2D306C202A934756003B4B1E /* Assets.xcassets */,
-				2DF24D552B85C2C900F867EB /* test_app */,
+				2F5CD3202E28A32D006FFF73 /* app_res */,
 				2D306C222A934756003B4B1E /* Preview Content */,
 			);
 			path = alier_dev;
@@ -202,7 +202,7 @@
 				23E937842D93AC1B00D2C748 /* _ExtensionURL.swift */,
 				2D5F7FAA2DA8EC5500DB20A1 /* _LocalPushNotification.swift */,
 				2D5F7FA82DA8EC4D00DB20A1 /* _LocalPushNotificationTrigger.swift */,
-				2DF24D572B85C2E200F867EB /* mobile */,
+				2F5CD3462E28C1F3006FFF73 /* alier_sys */,
 			);
 			path = alier;
 			sourceTree = "<group>";
@@ -338,7 +338,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2DF24D562B85C2C900F867EB /* test_app in Resources */,
+				2F5CD3212E28A32D006FFF73 /* app_res in Resources */,
 				2D306C242A934756003B4B1E /* Preview Assets.xcassets in Resources */,
 				2D306C212A934756003B4B1E /* Assets.xcassets in Resources */,
 			);
@@ -348,7 +348,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2DF24D582B85C2E200F867EB /* mobile in Resources */,
+				2F5CD3472E28C1F3006FFF73 /* alier_sys in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -371,7 +371,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n# 出力先ディレクトリ（プロジェクトの直下）\nOUTPUT_DIR=${PROJECT_DIR}/Output\n\n# 中間ファイルの出力先ディレクトリ\nDERIVED_DIR=${OUTPUT_DIR}/${CONFIGURATION}-derived\n\n# archiveの出力先ディレクトリ\nARCHIVE_DIR=${OUTPUT_DIR}/${CONFIGURATION}-archive\n\n# xcframeworkの出力先ディレクトリ\nXCFRAMEWORK_DIR=${OUTPUT_DIR}/${CONFIGURATION}-xcframework\n\n# 出力先ディレクトリ削除\nrm -rf ${OUTPUT_DIR}\n\n# 中間ファイルの出力先ディレクトリ作成\nmkdir -p ${DERIVED_DIR}\n\n# アーカイブファイルの出力先ディレクトリ作成\nmkdir -p ${ARCHIVE_DIR}\n\n# xcframeworkの出力先ディレクトリ作成\nmkdir -p ${XCFRAMEWORK_DIR}\n\n# iOS実機用のarchiveファイル\nARCHIVE_FILE_IOS=${ARCHIVE_DIR}/ios.xcarchive\necho \"ARCHIVE_FILE_IOS:${ARCHIVE_FILE_IOS}\"\n\n# iOSシミュレータ用のarchiveファイル\nARCHIVE_FILE_IOS_SIMULATOR=${ARCHIVE_DIR}/iossimulator.xcarchive\necho \"ARCHIVE_FILE_IOS_SIMULATOR:${ARCHIVE_FILE_IOS_SIMULATOR}\"\n\n# iOS実機用のarchiveファイル作成\nxcodebuild archive -scheme ${PROJECT_NAME} -destination=\"iOS\" -archivePath $ARCHIVE_FILE_IOS -derivedDataPath $DERIVED_DIR -sdk iphoneos SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES\n\n# iOSシミュレータ用のarchiveファイル作成\nxcodebuild archive -scheme ${PROJECT_NAME} -destination=\"iOS Simulator\" -archivePath $ARCHIVE_FILE_IOS_SIMULATOR -derivedDataPath $DERIVED_DIR -sdk iphonesimulator SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES\n\n# xcframework作成\nxcodebuild -create-xcframework -framework $ARCHIVE_FILE_IOS/Products/Library/Frameworks/alier.framework -framework $ARCHIVE_FILE_IOS_SIMULATOR/Products/Library/Frameworks/alier.framework -output $XCFRAMEWORK_DIR/alier.xcframework\n\n# xcframeworkの出力ディレクトリをFinderで開く\nopen ${XCFRAMEWORK_DIR}\n";
+			shellScript = "set -e\n\n# Type a script or drag a script file from your workspace to insert its path.\n# Output directory (under project)\nOUTPUT_DIR=${PROJECT_DIR}/Output\n\n# Output directory for intermediate generated files\nDERIVED_DIR=${OUTPUT_DIR}/${CONFIGURATION}-derived\n\n# Output directory for archive files\nARCHIVE_DIR=${OUTPUT_DIR}/${CONFIGURATION}-archive\n\n# Output directory for xcframework\nXCFRAMEWORK_DIR=${OUTPUT_DIR}/${CONFIGURATION}-xcframework\n\n# Remove output directory\nrm -rf ${OUTPUT_DIR}\n\n# Make directory for intermediate generated files\nmkdir -p ${DERIVED_DIR}\n\n# Make directory for archive files\nmkdir -p ${ARCHIVE_DIR}\n\n# Make directory for xcframework\nmkdir -p ${XCFRAMEWORK_DIR}\n\n# Archive files for iOS deveces\nARCHIVE_FILE_IOS=${ARCHIVE_DIR}/ios.xcarchive\necho \"ARCHIVE_FILE_IOS:${ARCHIVE_FILE_IOS}\"\n\n# Archive files for iOS simulators\nARCHIVE_FILE_IOS_SIMULATOR=${ARCHIVE_DIR}/iossimulator.xcarchive\necho \"ARCHIVE_FILE_IOS_SIMULATOR:${ARCHIVE_FILE_IOS_SIMULATOR}\"\n\n# Generate archive files for iOS devices\nxcodebuild archive -scheme ${PROJECT_NAME} -destination=\"iOS\" -archivePath $ARCHIVE_FILE_IOS -derivedDataPath $DERIVED_DIR -sdk iphoneos SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES\n\n# Generate archive files for iOS simulators\nxcodebuild archive -scheme ${PROJECT_NAME} -destination=\"iOS Simulator\" -archivePath $ARCHIVE_FILE_IOS_SIMULATOR -derivedDataPath $DERIVED_DIR -sdk iphonesimulator SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES\n\n# Generate xcframework\nxcodebuild -create-xcframework -framework $ARCHIVE_FILE_IOS/Products/Library/Frameworks/alier.framework -framework $ARCHIVE_FILE_IOS_SIMULATOR/Products/Library/Frameworks/alier.framework -output $XCFRAMEWORK_DIR/alier.xcframework\n\n# Open xcframework with Finder\nopen ${XCFRAMEWORK_DIR}\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -616,6 +616,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -652,6 +653,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;

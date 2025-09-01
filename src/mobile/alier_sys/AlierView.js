@@ -14,13 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const { AlierCustomElement } = await Alier.import("/alier_sys/AlierCustomElement.js");
-const { ViewLogic } = await Alier.import("/alier_sys/ViewLogic.js");
+import { AlierCustomElement } from "./AlierCustomElement.js";
+import { ViewLogic } from "./ViewLogic.js";
 
-class ViewElement extends AlierCustomElement {
+class AlierView extends AlierCustomElement {
 
     /**
-     * Attaches the target {@link ViewLogic} to this ViewElement.
+     * Attaches the target {@link ViewLogic} to this AlierView.
      *
      * @param {ViewLogic} containerToBeAttached
      * A ViewLogic to be attached
@@ -31,8 +31,8 @@ class ViewElement extends AlierCustomElement {
      * @throws {TypeError} 
      * -  when the given object is not a ViewLogic
      * @see 
-     * - {@link ViewElement.prototype.detach}
-     * - {@link ViewElement.prototype.show}
+     * - {@link AlierView.prototype.detach}
+     * - {@link AlierView.prototype.show}
      * - {@link ViewLogic.attachTo}
      */
     attach(containerToBeAttached) {
@@ -58,14 +58,14 @@ class ViewElement extends AlierCustomElement {
     }
     
     /**
-     * Detaches the attached {@link ViewLogic} from this ViewElement.
+     * Detaches the attached {@link ViewLogic} from this AlierView.
      *
      * @returns
      * detached ViewLogic if it was attached, `null` otherwise.
      * 
      * @see
-     * - {@link ViewElement.prototype.attach}
-     * - {@link ViewElement.prototype.hide}
+     * - {@link AlierView.prototype.attach}
+     * - {@link AlierView.prototype.hide}
      * - {@link ViewLogic.detachFrom}
      */
     detach() {
@@ -87,8 +87,8 @@ class ViewElement extends AlierCustomElement {
      * This function do nothing if there is no contents attached or the contents is already visible.
      *
      * @see
-     * - {@link ViewElement.prototype.attach}
-     * - {@link ViewElement.prototype.show}
+     * - {@link AlierView.prototype.attach}
+     * - {@link AlierView.prototype.show}
      */
     show() {
         const contents = this.#container?.container;
@@ -105,8 +105,8 @@ class ViewElement extends AlierCustomElement {
      * This function do nothing if there is no contents attached or the contents is already hidden.
      *
      * @see
-     * - {@link ViewElement.prototype.attach}
-     * - {@link ViewElement.prototype.show}
+     * - {@link AlierView.prototype.attach}
+     * - {@link AlierView.prototype.show}
      */
     hide() {
         const contents = this.#container?.container;
@@ -118,7 +118,7 @@ class ViewElement extends AlierCustomElement {
     }
 
     /**
-     * Post a message to the ViewLogic attached to this ViewElement.
+     * Post a message to the ViewLogic attached to this AlierView.
      *
      * @param {Object} msg
      * @param {string?} msg.id
@@ -146,11 +146,11 @@ class ViewElement extends AlierCustomElement {
     }
     
     /**
-     * `ViewLogic` attached to this `ViewElement`.
+     * `ViewLogic` attached to this `AlierView`.
      * 
      * @type {ViewLogic | null}
      * @see
-     * - {@link ViewElement.prototype.attach}
+     * - {@link AlierView.prototype.attach}
      */
     get container() {
         return this.#container;
@@ -179,4 +179,4 @@ class ViewElement extends AlierCustomElement {
     #container = null;
 }
 
-await Alier.export({ ViewElement });
+export { AlierView };

@@ -23,14 +23,15 @@ import java.util.Locale
  * Android-specific processing
  * */
 class _FileOperation (
-    private val _application_context: Context,
-    update_needed: Boolean = false
+    applicationContext: Context,
+    updateNeeded: Boolean = false
 ) {
+    private val _application_context = applicationContext
     private val _path_registry = _PathRegistry(_application_context)
 
     init {
-        _copyAssetsIntoAppSpecificDir(update_needed)
-        _createBaseHTML()
+        _copyAssetsIntoAppSpecificDir(updateNeeded)
+        _createBaseHtml()
     }
 
     /**
@@ -175,29 +176,20 @@ class _FileOperation (
         }
     }
 
-    private fun _systemScriptTag(src: String, type: String = "text/javascript"): String {
-        val src_path = _path_registry.getSystemDir().resolve(src).path
-        return """<script type="$type" src="$src_path"></script>"""
-    }
-
-    private fun _createBaseHTML() {
-        AlierLog.d(0, "_createBaseHTML()")
+    private fun _createBaseHtml() {
+        AlierLog.d(0, "_createBaseHtml()")
         val default_locale = Locale.getDefault()
-        //  File class may or may not remove the trailing separator at construction time,
-        //  and this behaviour depends on filesystem. Hence, to keep the trailing separator,
-        //  remove the trailing separator if exists and then append a separator.
-        val base_dir   = _path_registry.getAppResDir().path.removeSuffix(File.separator) + File.separator
-        val base_html  = _path_registry.getBaseHtmlPath()
+        val base_html = _path_registry.getBaseHtmlPath()
         base_html.writeText("""
             |<!DOCTYPE html>
             |<html lang="${default_locale.language}">
             |<head>
-            |    <base href="$base_dir" />
             |    <meta charset="UTF-8" />
+            |    <link rel="icon" href="data:,">
             |    <meta name="viewport" content="width=device-width, maximum-scale=1.0,user-scalable=yes" />
-            |    ${_systemScriptTag("_dependency_Android.js")}
-            |    ${_systemScriptTag("_MessagePorter.js")}
-            |    ${_systemScriptTag("_AlierCore.js")}
+            |    <script type="text/javascript" src="/alier_sys/_dependency_Android.js"></script>
+            |    <script type="text/javascript" src="/alier_sys/_MessagePorter.js"></script>
+            |    <script type="text/javascript" src="/alier_sys/_AlierCore.js"></script>
             |</head>
             |<body></body>
             |</html>

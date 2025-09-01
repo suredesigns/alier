@@ -345,4 +345,4 @@ class ObservableObject {
     }
 }
 
-await Alier.export({ ObservableObject });
+export { ObservableObject };

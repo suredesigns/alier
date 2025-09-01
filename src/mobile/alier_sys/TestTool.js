@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const { Overload } = await Alier.import("/alier_sys/Overload.js");
+import { Overload } from "./Overload.js";
 
 function countChars(s) {
     if (typeof s !== "string") {
@@ -1441,5 +1441,5 @@ const test = (task) => {
 };
 
 /// Platform Specific -->
-await Alier.export({ doTest, TestCase, TestStatus, test });
+export { doTest, TestCase, TestStatus, test };
 /// <-- Platform Specific

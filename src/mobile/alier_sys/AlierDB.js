@@ -15,8 +15,8 @@ limitations under the License.
 */
 
 /// PLATFORM-SPECIFIC SECTION: BEGIN
-const { sql, DBConnector, DBError, DBInternalError } = await Alier.import("/alier_sys/_DBConnector.js");
-const { getDefaultConnector } = await Alier.import("/alier_sys/DefaultDBConnector.js");
+import { sql, DBConnector, DBError, DBInternalError } from "./_DBConnector.js";
+import { getDefaultConnector } from "./DefaultDBConnector.js";
 /// PLATFORM-SPECIFIC SECTION: END
 
 /**
@@ -2785,7 +2785,7 @@ function $min(o) {
 }
 
 /// PLATFORM-SPECIFIC SECTION: BEGIN
-await Alier.export({
+export {
     AlierDB,
     AlierTable,
     DBJoinType,
@@ -2794,5 +2794,5 @@ await Alier.export({
     $avg,
     $max,
     $min
-});
+};
 /// PLATFORM-SPECIFIC SECTION: END

@@ -51,6 +51,6 @@ const Use = (closable) => {
     };
 }
 
-await Alier.export({
+export {
     Use
-});
+};

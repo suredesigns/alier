@@ -70,7 +70,7 @@ const WeakRef = __globalThis__.WeakRef !== undefined ?
     }
 ;
 
-await Alier.export({
+export {
     WeakRef,
     _uses_polyfill,
-});
+};

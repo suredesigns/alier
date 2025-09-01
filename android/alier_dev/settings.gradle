@@ -8,17 +8,18 @@ pluginManagement {
 
 //  version catalog (gradle/libs.versions.toml) cannot be used here.
 plugins {
-    id "org.gradle.toolchains.foojay-resolver-convention" version "0.9.0"
+    id 'org.gradle.toolchains.foojay-resolver-convention' version "1.0.0"
 }
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        mavenLocal()
         google()
         mavenCentral()
     }
 }
-rootProject.name = "alier_dev"
+rootProject.name = 'alier_dev'
 include ':app'
 include ':alier'
-project(":app").projectDir.mkdirs()
+project(':app').projectDir.mkdirs()

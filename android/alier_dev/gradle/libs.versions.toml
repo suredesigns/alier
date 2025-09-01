@@ -15,10 +15,10 @@
 #       Hence, type casting such like `libs.versions.minSdk.get().toInteger()` is required whenever using values as numbers.
 #       see <https://docs.gradle.org/current/userguide/version_catalogs.html#sec:common-version-numbers>
 
-framework-versionCode = "1"
-framework-versionName = "0.2.0"
+alier-versionCode = "1"
+alier-versionName = "0.4.0"
 
-project-compileSdk = "35"
+project-compileSdk = "36"
 project-targetSdk  = "35"
 project-minSdk     = "21"
 
@@ -69,19 +69,20 @@ java-toolchain-languageVersion = "17"
 #           -   SDK build tools version
 #           -   NDK version
 #           -   JDK version
-android-gradle = "8.8.0"
-kotlin = "1.9.20"
+android-gradle = "8.12.1"
+kotlin = "2.2.0"
 
-activity-ktx = "1.10.0"
-appcompat = "1.7.0"
-core-ktx = "1.15.0"
+activity-ktx = "1.10.1"
+appcompat = "1.7.1"
+webkit = "1.14.0"
+core-ktx = "1.16.0"
 material = "1.12.0"
-gms-playServicesBasement = "18.5.0"
+gms-playServicesBasement = "18.7.1"
 
 junit = "4.13.2"
 ext-junit = "1.2.1"
 espresso-core = "3.6.1"
-datastoreCoreAndroid = "1.1.4"
+datastore-core = "1.1.7"
 
 [libraries]
 #   to define:
@@ -89,8 +90,11 @@ datastoreCoreAndroid = "1.1.4"
 #   to refer from build.gradle:
 #       libs.dependency.name
 
+alier = { group = "com.suredesigns", name = "alier", version.ref = "alier-versionName" }
+
 activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity-ktx" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit"}
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx"}
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 gms-playServicesBasement = { group = "com.google.android.gms", name = "play-services-basement", version.ref = "gms-playServicesBasement" }
@@ -98,9 +102,9 @@ gms-playServicesBasement = { group = "com.google.android.gms", name = "play-serv
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "ext-junit" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
-androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastoreCoreAndroid" }
-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
+datastore-core = { group = "androidx.datastore", name = "datastore-core", version.ref = "datastore-core" }
+datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore-core" }
+kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
 
 
 [plugins]

@@ -61,4 +61,4 @@ class Singleton {
     }
 }
 
-await Alier.export({ Singleton });
+export { Singleton };

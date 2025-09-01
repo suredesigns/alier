@@ -18,8 +18,8 @@ limitations under the License.
  * Makes an iterable view of the given object's own properties.
  * Unlike `Object.entries`, this function returns a generator
  * rather than an array of entries.
- * 
- * @param {{[k: string]: any}} o 
+ *
+ * @param {{[k: string]: any}} o
  * @returns an iterable of the given object's own properties.
  */
 const _objectEntries = function* (o) {
@@ -35,13 +35,13 @@ const _objectEntries = function* (o) {
 
 /**
  * Tests whether or not the given two arrays are the same.
- * 
+ *
  * @param {any[]} lhs
- * An array to be compared with the right-hand-side term. 
- * 
- * @param {any[]} rhs 
- * An array to be compared with the left-hand-side term. 
- * 
+ * An array to be compared with the right-hand-side term.
+ *
+ * @param {any[]} rhs
+ * An array to be compared with the left-hand-side term.
+ *
  * @returns {boolean}
  * `true` if the `lhs` and `rhs` are the same array. `false` otherwise.
  */
@@ -71,22 +71,22 @@ const _isSameArray = (lhs, rhs) => {
 
 /**
  * Creates an `AggregateError` with flattened errors.
- * 
+ *
  * If the given errors contains `AggregateError`s, this function
  * replaces each of them with its `errors` property entries.
- * 
- * @param {Error[]} errors 
+ *
+ * @param {Error[]} errors
  * An array of errors to be flattened.
- * 
+ *
  * This function modifies the given array in-place if it contains
  * one or more `AggregateError`s.
  * Hence, the array should be writable and extensible.
  * In addition, to avoid causing unexpected behavior, you should not
  * reuse the array for any other purpose.
- * 
+ *
  * @param {string} message
  * A string representing a message for an `AggregateError` to be created.
- * 
+ *
  * @returns {AggregateError}
  * an `AggregateError`.
  */
@@ -120,10 +120,10 @@ const _makeFlatAggregateError = (errors, message) => {
 
 /**
  * Matches invalid characters in the given identifier.
- * 
+ *
  * @param {string} s
  * a string representing an identifier
- * 
+ *
  * @returns {({
  *      prefix: string | undefined,
  *      body: ({
@@ -133,10 +133,10 @@ const _makeFlatAggregateError = (errors, message) => {
  * })}
  * an object representing the match result
  * if the given argument is a string, `undefined` otherwise.
- * 
+ *
  * The returned match result has either or both of the `prefix` property
  * and the `body` property.
- * 
+ *
  * -    The `prefix` property has the invalid prefix character of
  *      the given identifier if matched, `undefined` otherwise.
  * -    The `body` property has an array of `{ index, value }`s
@@ -180,19 +180,19 @@ const _matchInvalidIdentifier = (() => {
 
 /**
  * Tests whether or not the given value is a valid identifier.
- * 
+ *
  * Where an identifier being valid means that it is a string which is
  * allowed to be used as a variable name.
  * Since almost every Unicode characters not collected in ASCII is
  * valid as part of a variable name,
  * the set of valid identifiers is much vaster than you might think.
- * 
+ *
  * @see
  * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#identifiers| developer.mozilla.org - MDN Docs - Lexical grammar # identifiers}
- * 
+ *
  * @param {string} s
  * an identifier to be tested.
- * 
+ *
  * @returns {boolean}
  * `true` if the given identifier `s` is valid, `false` otherwise.
  */
@@ -204,28 +204,28 @@ const _isValidIdentifier = (s) => {
 
 /**
  * A helper function for implementing data-binding functionality.
- * 
+ *
  * Gets the primary property of the given `Element`.
- * 
+ *
  * "the primary property" is defined as a property indicated
  * by the `data-primary` attribute of the element.
- * 
+ *
  * The value of a `data-primary` attribute is expected to be a string
  * representing a sequence of property names separated by dots
  * such as `"foo.bar.baz"`.
  * If the `data-primary` attribute is empty or undefined,
  * the property `value` is treated as the primary property.
- * 
+ *
  * e.g. let `el` is an element with a `data-primary` attribute
  * whose value is set to `"foo.bar"`,
  * then `el.foo.bar` (or `el["foo"]["bar"]`) is assumed to be
  * the primary property of `el`.
  * In this case, if `el.foo` is either undefined or not an object,
  * the primary property is treated as undefined.
- * 
- * @param {Element} element 
+ *
+ * @param {Element} element
  * An element to be examined whether or not it has the primary property.
- * 
+ *
  * @returns {({
  *      node: object | undefined,
  *      key: string
@@ -233,7 +233,7 @@ const _isValidIdentifier = (s) => {
  * a pair of a node having the primary property and its key.
  * the property `node` of the returned object is `undefined`
  * when there is no such a node.
- * 
+ *
  */
 const _getPrimaryProperty = (element) => {
     if (!(element instanceof HTMLElement)) {
@@ -270,17 +270,17 @@ const _getPrimaryProperty = (element) => {
 
 /**
  * Gets a certain property of the given object specified by name.
- * 
+ *
  * Unlike {@link Object.getOwnPropertyDescriptor},
  * this function retrieves the property defined in the given object's
  * prototype chain.
- * 
- * @param {object} o 
+ *
+ * @param {object} o
  * an object.
- * 
+ *
  * @param {string} key
  * a string representing a property name.
- * 
+ *
  * @returns {PropertyDescriptor | undefined}
  * A property descriptor of `o[key]`.
  */
@@ -296,14 +296,14 @@ const _getPropertyDescriptor = (o, key) => {
 
 /**
  * Gets a set of property names of the given object.
- * 
+ *
  * Unlike {@link Object.getOwnPropertyNames},
  * this function retrieves all properties defined in the given object's
  * prototype chain.
- * 
- * @param {object} o 
+ *
+ * @param {object} o
  * an object.
- * 
+ *
  * @returns {Set<string>}
  * a set of property names of the given object `o`.
  */
@@ -330,32 +330,32 @@ class ProtoViewLogic {
      * Class name included in the result of `Object.prototype.toString()`
      */
     get [Symbol.toStringTag]() { return this.constructor.name; }
-    
+
     /**
      * ProtoViewLogic's name.
-     * 
+     *
      * @type {string?}
      */
     get name() { return this.#name; }
-    
+
     /**
      * ProtoViewLogic's parent.
-     * 
+     *
      * @returns {ProtoViewLogic?}
      */
     get parent() { return this.#parent; }
-    
+
     /**
      * A callback function invoked whenever a message is posted to
      * the target ProtoViewLogic.
-     * 
-     * @param {Messenger} msg 
+     *
+     * @param {Messenger} msg
      * A message object.
-     * 
+     *
      * @returns {Promise<boolean>}
      * whether or not the given message is consumed.
      * `true` if the message is consumed, `false` otherwise.
-     * 
+     *
      * @see
      * - {@link ProtoViewLogic.prototype.message}
      * - {@link ProtoViewLogic.prototype.post}
@@ -363,19 +363,19 @@ class ProtoViewLogic {
      */
     // eslint-disable-next-line no-unused-vars
     async messageHandler(msg) { return false; }
-     
+
     /**
      * creates a message
-     * 
+     *
      * @param {string?} id
      * primary identifier of the message to be made.
-     * 
+     *
      * @param {string?} code
      * secondary identifier of the message to be made.
-     * 
-     * @param {any?} param 
+     *
+     * @param {any?} param
      * Extra parameters of the message to be made.
-     * 
+     *
      * @returns {({
      *      id: string?,
      *      code: string?,
@@ -383,7 +383,7 @@ class ProtoViewLogic {
      *      origin: this
      * })}
      * a message.
-     * 
+     *
      * @see
      * - {@link ProtoViewLogic.prototype.post}
      * - {@link ProtoViewLogic.prototype.messageHandler}
@@ -391,42 +391,42 @@ class ProtoViewLogic {
     message(id, code, param) {
         return Alier.message(id, code, param, this);
     }
-    
+
     /**
      * @async
      * Posts a message to the target {@link ProtoViewLogic}.
-     * 
+     *
      * The posted message is passed as an argument of
      * the target `ProtoViewLogic`'s {@link messageHandler}.
-     * 
+     *
      * If the message is not delivered to a handler or not consumed
      * by a handler, it is reposted to the target `ProtoViewLogic`'s
      * {@link parent}.
      * If the target `ProtoViewLogic` does not have a parent,
      * this function returns `false`.
-     * 
+     *
      * @param {Object} msg
      * @param {string?} msg.id
      * The primary identifier of the message.
-     * 
+     *
      * @param {string?} msg.code
      * The secondary identifier of the message.
-     * 
-     * @param {any?} msg.param 
+     *
+     * @param {any?} msg.param
      * An optional parameter object of the message.
-     * 
+     *
      * @param {ProtoViewLogic} msg.origin
      * The original sender of the message.
-     * 
+     *
      * @returns {Promise<boolean>}
      * A Promise that resolves to a boolean which indicates
      * whether or not the posted message has been consumed.
      * `true` if the message has been consumed,
      * `false` otherwise.
-     * 
+     *
      * @throws {TypeError}
      * -  when the given argument `msg` is not a non-null object.
-     * 
+     *
      * @see
      * - {@link post}
      * - {@link messageHandler}
@@ -459,22 +459,22 @@ class ProtoViewLogic {
             this.#parent.post(msg_)
         ;
     }
-    
+
     /**
      * @async
-     * 
+     *
      * Broadcasts a message to the target {@link ProtoViewLogic}'s
      * descendants.
-     * 
+     *
      * The broadcasted message is passed as an argument of the target
      * `ProtoViewLogic`'s {@link messageHandler}.
-     * 
+     *
      * If the message is not delivered to a handler or
      * not consumed by a handler, it is reposted to the target
      * `ProtoViewLogic`'s {@link parent}.
      * If the target `ProtoViewLogic` does not have a parent,
      * this function returns `false`.
-     * 
+     *
      * The message is processed by each of the target `ProtoViewLogic`'s
      * children,
      * and then it is processed by each of the grandchildren
@@ -482,25 +482,25 @@ class ProtoViewLogic {
      * and then it is processed by each of the great-grandchildren
      * if their parent has not processed the message,
      * and so on.
-     * 
+     *
      * @param {object} msg
      * @param {string?} msg.id
      * The primary identifier of the message.
-     * 
+     *
      * @param {string?} msg.code
      * The secondary identifier of the message.
-     * 
-     * @param {any?} msg.param 
+     *
+     * @param {any?} msg.param
      * An optional parameter object of the message.
-     * 
+     *
      * @param {ProtoViewLogic} msg.origin
      * The original sender of the message.
-     * 
+     *
      * @returns {Promise<boolean>}
      * A Promise that resolves to a boolean which indicates
      * whether or not the posted message has been consumed.
      * `true` if the message has been consumed, `false` otherwise.
-     * 
+     *
      * @throws {TypeError}
      * -  when the given argument `msg` is not a non-null object.
      * @throws {AggregateError}
@@ -588,7 +588,7 @@ class ProtoViewLogic {
             }
 
             const results = await Promise.all(consumed.map(([, result]) => result));
-            
+
             for (const i of results.keys()) {
                 if (!results[i]) {
                     queue.push(...expand(consumed[i][0]));
@@ -604,22 +604,22 @@ class ProtoViewLogic {
 
         return accumulated_result;
     }
-    
+
     /**
      * Collects values of a specified property or attribute from
      * the elements related to the target `ProtoViewLogic`.
-     * 
+     *
      * @param {string?} key
      * An optional string representing the name of a property or
      * an attribute to collect.
-     * 
+     *
      * @returns {({
      *      [element_name: string]: any?
      * })}
-     * An object mapping each element's name to the value of 
+     * An object mapping each element's name to the value of
      * the corresponding property, if available; otherwise, the attribute.
      * If neither exists, the value will be null.
-     * 
+     *
      * If the property name is not specified, this function
      * returns an object mapping each element's name to
      * the corresponding element itself instead.
@@ -652,7 +652,7 @@ class ProtoViewLogic {
 
         return o;
     }
-    
+
     /**
      * Gets a set of the primary values of the elements related with
      * the target ProtoViewLogic.
@@ -788,7 +788,7 @@ class ProtoViewLogic {
         }
         return value_map;
     }
-    
+
     /**
      * Updates the primary properties of the target ProtoViewLogic's own
      * elements related by using {@link relateElements}.
@@ -798,7 +798,7 @@ class ProtoViewLogic {
      * the primary property of that element.
      * Otherwise, the value of the `data-primary` attribute is
      * treated as the primary property name.
-     * 
+     *
      * Note that, the primary properties are not restricted on
      * the elements own properties.
      * If the `data-primary` attribute has the value containing
@@ -817,20 +817,18 @@ class ProtoViewLogic {
      * In this case, this function invokes the binding source's
      * `reflectValues()` and the latter's return value is used as
      * the former's return value.
-     * 
+     *
      * @param {{ [element_name: string]: any } | Map<string, any>} nameValuePairs
      * An `Object` or a `Map` representing a set of pairs of
      * element names and new values for their primary properties.
-     * 
-     * @returns {({
-     *      [element_name: string]: any
-     * })}
-     * An object mapping each updated element's name to the value of
-     * its primary property.
-     * 
+     *
+     * @returns {{ [element_name: string]: any } | Map<string, any>}
+     * Pairs of element names and values that are the same as those given in the
+     * argument.
+     *
      * @throws {TypeError}
      * when the argument `elementValuePairs` is not a non-null object.
-     * 
+     *
      * @see
      * -  {@link ObservableObject}
      * -  {@link ObservableObject.prototype.bindData}
@@ -871,7 +869,7 @@ class ProtoViewLogic {
                                 option_map.set(option.value, option);
                             }
                             const values  = Object.create(null);
-                            
+
                             //  requires non null-object.
                             for (const k in new_value) {
                                 const option  = option_map.get(k);
@@ -928,7 +926,6 @@ class ProtoViewLogic {
                         no_match = true;
                     }
                     if (no_match) {
-                        node.value = new_value;
                         const old_value     = node.value;
                         node.value          = new_value;
                         const current_value = node.value;
@@ -937,7 +934,6 @@ class ProtoViewLogic {
                         }
                     }
                 } else if (node != null) {
-                    node[key] = new_value;
                     const old_value     = node[key];
                     node[key]           = new_value;
                     const current_value = node[key];
@@ -982,7 +978,7 @@ class ProtoViewLogic {
                                     option_map.set(option.value, option);
                                 }
                                 const values  = Object.create(null);
-                                
+
                                 //  requires non null-object.
                                 for (const k in new_value) {
                                     const option  = option_map.get(k);
@@ -1075,26 +1071,26 @@ class ProtoViewLogic {
             typeof this.source === "object" &&
             typeof this.source.reflectValues === "function"
         ) {
-            return this.source.reflectValues(updated_values);
-        } else {
-            return updated_values;
+            this.source.reflectValues(updated_values);
         }
+
+        return pairs;
     }
 
     /**
      * A callback function invoked when the target `ProtoViewLogic` is bound
      * with an `ObservableObject`.
-     * 
-     * This function and {@link reflectValues} are used for 
+     *
+     * This function and {@link reflectValues} are used for
      * data synchronization cooperating with {@link ObservableObject}s.
-     * 
+     *
      * @throws {TypeError} When:
-     * 
+     *
      * -   a related element does not implement `onDataBinding()`
      *     function.
      * -   some of components of a related element array does not
      *     implement `onDataBinding()` function.
-     * 
+     *
      * @see
      * - {@link ObservableObject}
      * - {@link ObservableObject.prototype.bindData}
@@ -1153,43 +1149,43 @@ class ProtoViewLogic {
             throw e;
         }
     }
-    
+
     /**
      * Collects elements to be used as UI components from
      * the given element and its descendants.
-     * 
+     *
      * This function behaves differently depending on whether a set of
      * ids is provided or not.
-     * 
+     *
      * By default, i.e. if the ids are not provided, this function
      * collects elements from the given root element satisfying
      * the following conditions:
-     * 
+     *
      * -  the "id" attribute is defined, and
      * -  the "data-ui-component" attribute is defined
-     * 
+     *
      * Here the custom data attribute "data-ui-component" works
      * as markers for UI components.
-     * 
+     *
      * Otherwise, if the ids are provided, this function collects
      * elements having one of the provided ids.
-     * 
-     * @param {Element | Promise<Element>} rootElement 
+     *
+     * @param {Element | Promise<Element>} rootElement
      * An element treated as root while collection
      * or a `Promise` that resolves to a root element.
-     * 
+     *
      * @param {...string} idsForElementsToBeCollected
      * A set of strings representing ids for elements to be collected.
-     * 
+     *
      * If the ids are not provided for this function,
      * this function tries to collect elements having both
      * "id" and "data-ui-component" attributes instead.
-     * 
+     *
      * @returns
      * an object having references to the collected elements.
      * Each of keys of this object is determined
      * by the given elements' id attributes.
-     * 
+     *
      * If the collected element has the id attribute containing
      * a pair of brackets, that element is stored as a component of
      * the corresponding array property of the return value with
@@ -1197,11 +1193,11 @@ class ProtoViewLogic {
      * In this case, the substring preceding the open bracket is
      * used for the property name and the substring surrounded with
      * the pair of the brackets is used for the index.
-     * 
+     *
      * For instance, if an element with `id="foo[0]"` is collected,
      * this element can be referenced as `return_value.foo[0]`,
      * where `return_value` is an object returned from this function.
-     * 
+     *
      * @throws {TypeError}
      * When:
      * -   the given object is not an Element
@@ -1209,7 +1205,7 @@ class ProtoViewLogic {
      * When a one of collected elements has the malformed `id` value.
      * The `id` attribute satisfying any of the following conditions is
      * regarded as malformed:
-     * 
+     *
      * -   `id` attribute contains a character not allowed to be used
      *     for identifiers in JavaScript Syntax.
      * -   `id` attribute contains a dot ".".
@@ -1217,7 +1213,7 @@ class ProtoViewLogic {
      * -   `id` attribute is empty
      * -   `id` attribute has the same name as a property defined
      *     in the `ProtoViewLogic`'s prototype
-     * 
+     *
      * @see
      * - {@link ProtoViewLogic.prototype.relateElements}
      */
@@ -1278,9 +1274,9 @@ class ProtoViewLogic {
                 key = path.shift();
             }
             //  It is guaranteed that type of 'key' is string here.
-            //  reduce() just returns the given initial value 'e', 
+            //  reduce() just returns the given initial value 'e',
             //  so the following expression is equivalent to `cwd[key] = e` if the 'path' is empty.
-            // 
+            //
             //  If `cwd[key]` already has a value, it will be overwritten.
             cwd[key] = path.reverse().reduce((i, k) => {
                 const ret = Number.isSafeInteger(Number(k)) ? [] : {};
@@ -1293,14 +1289,14 @@ class ProtoViewLogic {
 
     /**
      * Gets a set of proper ancestors.
-     * 
+     *
      * @returns {Set<ProtoViewLogic>}
      * a set of proper ancestors of the target `ProtoViewLogic`.
      */
     getAncestors() {
         /** @type {Set<ProtoViewLogic>} */
         const ancestors = new Set();
-        
+
         for (let p = this.#parent; p != null; p = p.#parent) {
             ancestors.add(p);
         }
@@ -1312,10 +1308,10 @@ class ProtoViewLogic {
      * Tests whether or not the given object is either a `ProtoViewLogic`
      * or an array of `ProtoViewLogic`s which is owned by
      * the target `ProtoViewLogic`.
-     * 
-     * @param {*} o 
+     *
+     * @param {*} o
      * An object to be tested.
-     * 
+     *
      * @returns {boolean}
      * `true` if the given object is related with the target `ProtoViewLogic`,
      * `false` otherwise.
@@ -1347,7 +1343,7 @@ class ProtoViewLogic {
                 if (v.#parent !== this) { return false; }
 
                 const k = v.#name;
-                if (typeof k !== "string") { return false; } 
+                if (typeof k !== "string") { return false; }
 
                 if (array_key.length === 0) {
                     array_key = k;
@@ -1364,10 +1360,10 @@ class ProtoViewLogic {
      * Tests whether or not the given object is either an `Element`
      * or an array of `Element`s which is owned by
      * the target `ProtoViewLogic`.
-     * 
-     * @param {*} o 
+     *
+     * @param {*} o
      * An object to be tested.
-     * 
+     *
      * @returns {boolean}
      * `true` if the given object is related with the target `ProtoViewLogic`,
      * `false` otherwise.
@@ -1452,13 +1448,13 @@ class ProtoViewLogic {
 
     /**
      * Gets a set of `ProtoViewLogic`s related to the target `ProtoViewLogic`.
-     * 
+     *
      * @returns {({
      *      [viewlogic_name: string]: ProtoViewLogic | ProtoViewLogic[]
      * })}
      * An object mapping each related `ProtoViewLogic` name to
      * the corresponding `ProtoViewLogic` or the array of `ProtoViewLogic`s.
-     * 
+     *
      * @see
      * -  {@link relateViewLogics}
      * -  {@link disrelateViewLogics}
@@ -1491,18 +1487,18 @@ class ProtoViewLogic {
      * i.e., adds properties having a reference to a `ProtoViewLogic` or
      * an array of `ProtoViewLogic`s to the target `ProtoViewLogic`
      * with specified names.
-     * 
+     *
      * The related `ProtoViewLogic`s become capable of bubbling messages
      * they received to the target `ProtoViewLogic`.
-     * 
+     *
      * This function triggers that each of the `ProtoViewLogic`s added to
      * the target `ProtoViewLogic`s properties
      * sends a message with the id `"vl$connectionChanged"` to itself.
      * Details of the change of the target's state is described
      * in the `param` property of the message.
-     * 
+     *
      * The `param` property is an object having the following properties:
-     * 
+     *
      * -   `state`    : `"connected" | "moved" | "disconnected"`
      *     -   a string representing how is the target changed.
      *         Each of values represents the following cases:
@@ -1517,27 +1513,27 @@ class ProtoViewLogic {
      *     -   the `ProtoViewLogic` newly connected as the target's parent.
      * -   `newName`  : `string?`
      *     -   a string representing the target's name newly assigned to.
-     * 
+     *
      * This function also triggers that the target `ProtoViewLogic` sends
      * a message with the message id `"vl$propertiesModified"`
      * to itself.
      * The `param` property of the message is an object having
      * the following properties:
-     * 
+     *
      * -    `addedProperties`: `({ [property_name]: ProtoViewLogic | ProtoViewLogic[] })?`
      *     -    an object having properties added to the target `ProtoViewLogic`
      * -    `removedProperties`: `({ [property_name]: ProtoViewLogic | ProtoViewLogic[] })?`
      *     -    an object having properties removed from the target `ProtoViewLogic`
-     * 
+     *
      * @param {({
      *      [viewlogic_name: string]: ProtoViewLogic | ProtoViewLogic[]
      * }) | Promise<({
      *      [viewlogic_name: string]: ProtoViewLogic | ProtoViewLogic[]
-     * })>} viewLogicMap 
+     * })>} viewLogicMap
      * an Object representing a set of pairs of names and `ProtoViewLogic` or
      * names and arrays of `ProtoViewLogic`s.
      * Or a Promise that resolves to one of the aforementioned values.
-     * 
+     *
      * @returns {({
      *      [viewlogic_name: string]: ProtoViewLogic | ProtoViewLogic[]
      * }) | Promise<({
@@ -1545,14 +1541,14 @@ class ProtoViewLogic {
      * })>}
      * an object containing `ProtoViewLogic`s or arrays of `ProtoViewLogic`s
      * which are not related to the target `ProtoViewLogic`.
-     * 
+     *
      * @throws {TypeError}
      * when the argument `viewLogicMap` is a non-null object
      * but `ProtoViewLogic`
-     * 
+     *
      * @throws {AggregateError}
      * when the following errors occur:
-     * 
+     *
      * -    `TypeError`     : when the argument `viewLogicMap` has
      *      a property whose value is neither an `ProtoViewLogic` nor an array.
      * -    `TypeError`     : when the argument `viewLogicMap` has
@@ -1573,7 +1569,7 @@ class ProtoViewLogic {
      *      the same ProtoViewLogic with two or more different keys
      * -    `ReferenceError`: when the argument `viewLogicMap` contains
      *      an ancestor of the target ProtoViewLogic
-     * 
+     *
      * @see
      * -  {@link messageHandler}
      * -  {@link post}
@@ -1647,7 +1643,7 @@ class ProtoViewLogic {
                     continue;
                 }
             }
-            
+
             if (errors.length === 0) {
                 if (this[k] instanceof ProtoViewLogic) {
                     Object.assign(disrelated_viewlogics, this.disrelateViewLogics(this[k]));
@@ -1672,7 +1668,7 @@ class ProtoViewLogic {
                         errors.push(new ReferenceError(`For property "${k}": Given ProtoViewLogic is an ancestor of the target ProtoViewLogic`));
                         continue;
                     } else if (refs.has(viewlogic)) {
-                        const prev_key = refs.get(viewlogic); 
+                        const prev_key = refs.get(viewlogic);
                         errors.push(new ReferenceError(`For property "${k}": Given ProtoViewLogic is already referred as "${prev_key}"`));
                         continue;
                     }
@@ -1724,7 +1720,7 @@ class ProtoViewLogic {
                 this[k] = viewlogics
                     .reduce(
                         //  assign non-empty slot to the clone and then return the latter
-                        (c, v, i) => (c[i] = v, c), 
+                        (c, v, i) => (c[i] = v, c),
                         new Array(viewlogics.length)
                     )
                 ;
@@ -1740,7 +1736,7 @@ class ProtoViewLogic {
                     errors.push(new ReferenceError(`For property "${k}": Given ProtoViewLogic is an ancestor of the target ProtoViewLogic`));
                     continue;
                 } else if (refs.has(viewlogic)) {
-                    const prev_key = refs.get(viewlogic); 
+                    const prev_key = refs.get(viewlogic);
                     errors.push(new ReferenceError(`For property "${k}": Given ProtoViewLogic is already referred as "${prev_key}"`));
                     continue;
                 }
@@ -1812,15 +1808,15 @@ class ProtoViewLogic {
 
     /**
      * Disrelates the given {@link ProtoViewLogic}s from the target `ProtoViewLogic`.
-     * 
+     *
      * This function triggers that each of the `ProtoViewLogic`s removed from
      * the target `ProtoViewLogic`s properties sends a message
      * with the message id `"vl$connectionChanged"` to itself.
      * Details of the change of the target's state is described in
      * the `param` property of the message.
-     * 
+     *
      * The `param` property is an object having the following properties:
-     * 
+     *
      * -   `state`    : `"connected" | "moved" | "disconnected"`
      *     -   a string representing how is the target changed.
      *         Each of values represents the following cases:
@@ -1835,19 +1831,19 @@ class ProtoViewLogic {
      *     -   the `ProtoViewLogic` newly connected as the target's parent.
      * -   `newName`  : `string?`
      *     -   a string representing the target's name newly assigned to.
-     * 
+     *
      * This function also triggers that the target `ProtoViewLogic` sends
      * a message with the message id `"vl$propertiesModified"`
      * to itself.
      * The `param` property of the message is an object having
      * the following properties:
-     * 
+     *
      * -    `addedProperties`: `({ [property_name]: ProtoViewLogic | ProtoViewLogic[] })?`
      *     -    an object having properties added to the target `ProtoViewLogic`.
      *          In this case, this property is always `null`.
      * -    `removedProperties`: `({ [property_name]: ProtoViewLogic | ProtoViewLogic[] })?`
      *     -    an object having properties removed from the target `ProtoViewLogic`
-     * 
+     *
      * @param {null | string | ProtoViewLogic | ProtoViewLogic[]} relatedViewLogicOrItsName
      * @returns {({ [viewlogic_name: string]: ProtoViewLogic | ProtoViewLogic[]})}
      * @see
@@ -1888,7 +1884,7 @@ class ProtoViewLogic {
                         `Array must only contain ProtoViewLogics having the same name but different names ${vl.#name} and ${array_name} are found.`
                     );
                 }
-                
+
                 if (array_name == null) {
                     array_name = vl.#name;
                 }
@@ -1903,7 +1899,7 @@ class ProtoViewLogic {
          * @type {{[viewlogic_name: string]: ProtoViewLogic | ProtoViewLogic[] }}
          */
         const disrelated_viewlogics = Object.create(null);
-        
+
         if (Array.isArray(relatedViewLogicOrItsName)) {
             const related_viewlogics = relatedViewLogicOrItsName;
 
@@ -1986,7 +1982,7 @@ class ProtoViewLogic {
             delete this[old_name];
 
             related_viewlogic.#onConnectionChanged(this, old_name, null, null);
-        }         
+        }
 
         this.#onPropertiesModified(null, disrelated_viewlogics);
 
@@ -1995,13 +1991,13 @@ class ProtoViewLogic {
 
     /**
      * Gets a set of elements related to the target `ProtoViewLogic`.
-     * 
+     *
      * @returns {({
      *      [element_name: string]: Element | Element[]
      * })}
      * An object mapping each related `Element` name to
      * the corresponding `Element` or the array of `Element`s.
-     * 
+     *
      * @see
      * -  {@link relateElements}
      * -  {@link disrelateElements}
@@ -2029,17 +2025,17 @@ class ProtoViewLogic {
      * Relates the given elements to the target `ProtoViewLogic`.
      * The related elements become capable of notifying occasion of
      * events to the target `ProtoViewLogic`.
-     * 
+     *
      * This function assigns the given elements to
      * the target `ProtoViewLogic` as an object,
      * i.e.  this function adds the properties having the same names and
      * the same values as the passed object to the target `ProtoViewLogic`.
      * Each of that properties is enumerable and writable and configurable.
-     * 
+     *
      * Each of the related elements posts a message to
      * its owner `ProtoViewLogic` by using {@link post}
      * whenever an event corresponding to it occurs.
-     * 
+     *
      * Which kind of events are notified is determined by
      * the `data-active-events` attribute of the related element.
      * The `data-active-events` attribute has a comma-separated list of
@@ -2050,7 +2046,7 @@ class ProtoViewLogic {
      * typed is added to the related element
      * by invoking {@link addActiveEvents} function from
      * the target `ProtoViewLogic`.
-     * 
+     *
      * The related elements are modified by invoking {@link reflectValues}.
      * Which properties are to be modified is determined by
      * the `data-primary` attribute of the related elements.
@@ -2066,7 +2062,7 @@ class ProtoViewLogic {
      * `&lt;span data-primary="foo.bar"&gt;&lt;/span&gt;`
      * where it is expected that `e` has the property named `"foo"` and
      * `e.foo` is another object having the property named `"bar"`.
-     * 
+     *
      * The values of the primary properties of the related elements
      * can be gathered by invoking {@link curateValues}.
      * {@link reflectValues} and {@link curateValues} are used for
@@ -2078,16 +2074,16 @@ class ProtoViewLogic {
      * the modification result is reflected to the elements related to
      * the target `ProtoViewLogic` by invoking the `ProtoViewLogic`'s
      * `reflectValues()`.
-     *  
+     *
      * @param {({
      *      [element_name: string]: Element | Element[]
      * }) | Promise<({
      *      [element_name: string]: Element | Element[]
-     * })>} elementMap 
+     * })>} elementMap
      * an Object representing a set of pairs of names and Elements or
      * names and arrays of Elements.
      * Or a Promise that resolves to one of the aforementioned values.
-     * 
+     *
      * @returns {({
      *      [element_name: string]: Element | Element[]
      * }) | Promise<({
@@ -2095,11 +2091,11 @@ class ProtoViewLogic {
      * })>}
      * an object containing Elements or arrays of Elements which are not
      * related to the target `ProtoViewLogic`.
-     * 
+     *
      * @throws {TypeError}
      * when the argument `elementMap` is a non-null object
      * but `ProtoViewLogic`
-     * 
+     *
      * @throws {AggregateError}
      * when some of the following errors occur:
      * -    `TypeError`     : when the given argument `elementMap`
@@ -2131,8 +2127,8 @@ class ProtoViewLogic {
      * -    `ReferenceError`: when the given `Element` refers
      *      a `ProtoViewLogic` as its owner but the `ProtoViewLogic` does not
      *      own the `Element`
-     * 
-     * @see 
+     *
+     * @see
      * - {@link ViewLogic.prototype.collectElements}
      * - {@link ProtoViewLogic.prototype.disrelateElements}
      * - {@link ProtoViewLogic.prototype.getRelatedElements}
@@ -2210,7 +2206,7 @@ class ProtoViewLogic {
                     continue;
                 }
             }
-            
+
             if (errors.length === 0) {
                 if (this[k] instanceof Element) {
                     Object.assign(disrelated_elements, this.disrelateElements(this[k]));
@@ -2238,7 +2234,7 @@ class ProtoViewLogic {
                         errors.push(new TypeError(`For property "${k}": array entry is not an Element`));
                         continue;
                     } else if (refs.has(element)) {
-                        const prev_key = refs.get(element); 
+                        const prev_key = refs.get(element);
                         errors.push(new ReferenceError(`For property "${k}": Given element is already referred as "${prev_key}"`));
                         continue;
                     }
@@ -2329,7 +2325,7 @@ class ProtoViewLogic {
                 const element = element_or_array;
 
                 if (refs.has(element)) {
-                    const prev_key = refs.get(element); 
+                    const prev_key = refs.get(element);
                     errors.push(new ReferenceError(`For property "${k}": Given Element is already referred as "${prev_key}"`));
                     continue;
                 }
@@ -2450,47 +2446,47 @@ class ProtoViewLogic {
             this.relateElements(disrelated_elements);
 
             throw _makeFlatAggregateError(errors, "One or more Errors occur");
-        } 
+        }
 
         this.#onPropertiesModified(related_elements, disrelated_elements);
 
         return Object.assign(element_map, disrelated_elements);
     }
-    
+
     /**
      * Disrelates the elements related to the target `ProtoViewLogic`
      * by using {@link relateElements},
      * i.e., deletes the properties having references to those elements
      * from the target `ProtoViewLogic`.
-     * 
-     * 
+     *
+     *
      * @param {Element | Element[] | string | null} relatedElementOrItsName
      * An `Element` or an array of `Element`s,
      * or a string representing a name of the target `ProtoViewLogic`'s
      * property which has an element or an array of elements,
      * or `null`.
-     * 
+     *
      * If `null` is given as this argument,
      * all the target `ProtoViewLogic`s properties referring elements
      * or arrays of elements are to be deleted.
-     * 
+     *
      * If the specific `Element` or an array of `Element`s is given
      * as this argument,
      * the property having a reference to the given `Element` or
      * array of `Element`s is to be deleted from the target `ProtoViewLogic`.
-     * 
+     *
      * If the property name is given as this argument,
      * the property having the same name as the given string which
      * refers to an `Element` or an array of `Element`s
      * is deleted from the target `ProtoViewLogic`.
-     * 
+     *
      * @returns {({ [element_name: string]: Element | Element[] })}
      * A plain object having properties which have the same name and
      * value as the properties deleted from the target `ProtoViewLogic`.
-     * 
+     *
      * @throws {ReferenceError}
-     * When 
-     * 
+     * When
+     *
      * -   the target `ProtoViewLogic` did not have the property with
      *     the specified name
      * -   the target `ProtoViewLogic` did not have the given `Element` or
@@ -2500,8 +2496,8 @@ class ProtoViewLogic {
      * -   the given argument {@link relatedElementOrItsName} is
      *     neither one of `null` or a `string` or an array of `Element`
      *     or an `Element`.
-     * 
-     * @see 
+     *
+     * @see
      * - {@link ProtoViewLogic.prototype.relateElements}
      * - {@link ProtoViewLogic.prototype.removeActiveEvents}
      */
@@ -2665,44 +2661,44 @@ class ProtoViewLogic {
 
         return disrelated_elements;
     }
-    
+
     /**
      * Add event listeners for the provided event types to an element
      * which is related with the target `ProtoViewLogic`.
-     * 
+     *
      * Each of the listeners posts a message to the owner of the element.
      * The message object has the following properties:
-     * 
+     *
      * -  `id`  : the property name used for referring the element
      *     from its owner.
      * -  `code`: event type of the listener
      * -  `param.event`: event object
      * -  `param.value`: value of event target
-     * 
+     *
      * Also each of listeners prevents to propagate the raised event.
-     * 
+     *
      * If already a listener is set for the given event type,
      * then this function do nothing for that type.
      *
      * @param {string} targetElementName
      * A string representing the target element's name
-     * 
+     *
      * @param  {...string} eventsToBeActivated
      * A list of event types to be activated.
-     * 
+     *
      * @returns {string[]}
      * A list of activated event types.
-     * 
+     *
      * @throws {ReferenceError}
      * When the target element `this[targetElement]` does not exist.
-     * 
+     *
      * @throws {TypeError}
      * When
-     * 
+     *
      * -   the target element is not related with the target ProtoViewLogic.
      * -   the given event type list contains a value not being a string.
-     * 
-     * @see 
+     *
+     * @see
      * - {@link ProtoViewLogic.prototype.removeActiveEvents}
      * - {@link ProtoViewLogic.prototype.relateElements}
      */
@@ -2784,7 +2780,7 @@ class ProtoViewLogic {
                 if (event_type in listeners) { continue; }
 
                 //  set listener.name as [event_type].
-                const listener = { 
+                const listener = {
                     [event_type]: async (ev) => {
                         if (!(element[CustomKeys$ELEMENT_OWNER] instanceof ProtoViewLogic)) {
                             return;
@@ -2820,32 +2816,32 @@ class ProtoViewLogic {
         //  return a list of activated event types.
         return [...activated_events];
     }
-    
+
     /**
      * Disable event notifications from the target element related to
      * the target ProtoViewLogic.
-     * 
+     *
      * Each of the event listeners matching one of the given event types
      * is removed from the target element.
      * In addition, the given event types are removed from values of
      * the `data-active-events` custom attribute of the elements.
-     * 
+     *
      * @param {string} targetElementName
      * target element name.
-     * 
+     *
      * @param  {...string} eventsToBeDeactivated
      * a list of types of event listeners to be disabled.
-     * 
+     *
      * @returns {string[]}
      * a list of types of event listeners which are actually disabled.
-     * 
+     *
      * @throws {ReferenceError}
      * when the target element not defined.
      * @throws {TypeError}
      * when the target element is not related to the target ProtoViewLogic.
      * @throws {TypeError}
      * when the given event type list contains a non-string value.
-     * @see 
+     * @see
      * - {@link ProtoViewLogic.prototype.addActiveEvents}
      * - {@link ProtoViewLogic.prototype.relateElements}
      * - {@link ProtoViewLogic.prototype.disrelateElements}
@@ -2915,7 +2911,7 @@ class ProtoViewLogic {
                 }
             }
             for (const event_name of eventsToBeDeactivated) {
-                if (typeof listeners[event_name] !== "function") { 
+                if (typeof listeners[event_name] !== "function") {
                     continue;
                 }
                 element.removeEventListener(event_name, listeners[event_name]);
@@ -2934,10 +2930,10 @@ class ProtoViewLogic {
 
         return [...deactivatedEvents];
     }
-    
+
     /**
      * Defines a set of UI components.
-     * 
+     *
      * @param {({
      *      [component_name: string]: {
      *          tagName     : string,
@@ -2957,15 +2953,15 @@ class ProtoViewLogic {
      *          attributes  : ({ [attribute_name: string]: string | number | boolean | bigint })?
      *      }
      *  })
-     * } componentDescriptors 
-     * 
+     * } componentDescriptors
+     *
      * A set of descriptors of components.
-     * 
+     *
      * Each of keys represents an identifier of the associated component
      * or the associated group of components,
-     * 
+     *
      * A component descriptor is composed by the following properties:
-     * 
+     *
      * -    `tagName`     :
      *      a string representing a tag name
      * -    `value`       :
@@ -2988,31 +2984,31 @@ class ProtoViewLogic {
      *      event types
      * -    `attributes`  :
      *      an object representing a set of attributes
-     * 
+     *
      * The `value` property precedes the `attributes` property of
      * the same descriptor.
-     * 
+     *
      * The `activeEvents` property is converted into
      * a `data-active-events` attribute and it precedes the `attributes`
      * property of the same descriptor.
-     * 
+     *
      * Note that, the `id` property of the `attributes` is always
      * ignored.
-     * 
+     *
      * @returns {({
      *      [component_name: string]: Element
      * })}
      * A set of components which are not related with
      * the target `ProtoViewLogic`.
-     * 
+     *
      * @throws {TypeError}
      * when the given `componentDescriptors` is not a non-null object.
-     * 
+     *
      * @throws {AggregateError}
      * when an error or multiple of errors are detected.
-     * 
+     *
      * The following errors may be included in the thrown `AggregateError`:
-     * 
+     *
      * -   `TypeError`: when the given value for
      *     `componentDescriptors[component_name]` is not a
      *      non-null object
@@ -3036,7 +3032,7 @@ class ProtoViewLogic {
      *      neither null nor a string nor an iterable
      * -   `TypeError`: when the given value for
      *     `componentDescriptors[component_name].attributes` is neither
-     *      null nor a non-null object 
+     *      null nor a non-null object
      * -   `TypeError`: when the given `tagName` is not valid
      * -   `TypeError`: when the given `activeEvents` contains
      *      a non-string entry
@@ -3053,7 +3049,7 @@ class ProtoViewLogic {
      * -   `TypeError`: when the given `children` contains an entry
      *      which is neither an `Element` nor a string nor
      *      a descriptor object
-     * 
+     *
      * @see {@link relateElements}
      * @see {@link createUiComponents}
      */
@@ -3063,7 +3059,7 @@ class ProtoViewLogic {
 
     /**
      * Creates a set of UI components.
-     * 
+     *
      * @param {({
      *      [component_name: string]: {
      *          tagName     : string,
@@ -3083,15 +3079,15 @@ class ProtoViewLogic {
      *          attributes  : ({ [attribute_name: string]: string | number | boolean | bigint })?
      *      }
      *  })
-     * } componentDescriptors 
-     * 
+     * } componentDescriptors
+     *
      * A set of descriptors of components.
-     * 
+     *
      * Each of keys represents an identifier of the associated component
      * or the associated group of components,
-     * 
+     *
      * A component descriptor is composed by the following properties:
-     * 
+     *
      * -    `tagName`     :
      *      a string representing a tag name
      * -    `value`       :
@@ -3113,32 +3109,32 @@ class ProtoViewLogic {
      *      a set of event types
      * -    `attributes`  :
      *      an object representing a set of attributes
-     * 
+     *
      * The `value` property precedes the `attributes` property of
      * the same descriptor.
-     * 
+     *
      * The `activeEvents` property is converted into
      * a `data-active-events` attribute and it precedes the `attributes`
      * property of the same descriptor.
-     * 
+     *
      * Note that, the `id` property of the `attributes` is always
      * ignored.
-     * 
+     *
      * @returns {({
      *      [component_name: string]: Element | Element[]
      * })}
-     * 
+     *
      * an object having component names as its keys and components
      * as the corresponding values.
-     * 
+     *
      * @throws {TypeError}
      * when the given `componentDescriptors` is not a non-null object.
-     * 
+     *
      * @throws {AggregateError}
      * when an error or multiple of errors are detected.
-     * 
+     *
      *  The following errors may be included in the thrown `AggregateError`:
-     * 
+     *
      * -   `TypeError`: when the given value for
      *     `componentDescriptors[component_name]` is not a non-null
      *      object
@@ -3162,7 +3158,7 @@ class ProtoViewLogic {
      *      neither null nor a string nor an iterable
      * -   `TypeError`: when the given value for
      *     `componentDescriptors[component_name].attributes` is neither
-     *      null nor a non-null object 
+     *      null nor a non-null object
      * -   `TypeError`: when the given `tagName` is not valid
      * -   `TypeError`: when the given `activeEvents` contains
      *      a non-string entry
@@ -3179,7 +3175,7 @@ class ProtoViewLogic {
      * -   `TypeError`: when the given `children` contains an entry
      *      which is neither an `Element` nor a string nor a descriptor
      *      object
-     * 
+     *
      * @see {@link defineUiComponents}
      * @see {@link createElement}
      */
@@ -3200,7 +3196,7 @@ class ProtoViewLogic {
         const errors = [];
         for (const k in descs) {
             if (!Object.prototype.hasOwnProperty.call(descs, k)) { continue; }
-            
+
             const desc = descs[k];
             if (Array.isArray(desc)) {
                 /** @type {(Element|undefined)[] } */
@@ -3245,77 +3241,77 @@ class ProtoViewLogic {
 
     /**
      * Create an element.
-     * 
+     *
      * @param {string} id
      * A string representing an identifier of a component to be created.
-     * 
+     *
      * @param {object} componentDescriptor
      * A descriptor object for a component to be created.
-     * 
+     *
      * @param {string} componentDescriptor.tagName
      * A string representing a tag name of a component to be created.
-     * 
+     *
      * @param {string?} componentDescriptor.value
      * An optional string representing the `value` attribute's value of
      * a component to be created.
-     * 
+     *
      * @param {string?} componentDescriptor.text
      * An optional string representing the first node of a component
      * to be created.
-     * 
+     *
      * @param {(Element | string | object )[]?} componentDescriptor.children
      * An optional array of compound of `Element`s or strings
      * or descriptors.
      * It represents a list of child nodes of a component to be created.
-     * 
+     *
      * If the given list contains descriptors, associated elements are
      * created by applying the `ProtoViewLogic.createElement` to them
      * recursively.
-     * 
+     *
      * @param {string?} componentDescriptor.primary
      * An optional string representing the `data-primary` custom data
      * attribute's value of a component to be created.
-     * 
+     *
      * @param {(string[] | string)?} componentDescriptor.activeEvents
      * An optional array of strings or string representing
      * the `data-active-events` custom data attribute's value of
      * a component to be created.
-     * 
+     *
      * If this argument is an array of strings, each of strings is
      * joined with its neighbor by a comma.
-     * 
+     *
      * @param {({
      *      [attribute_name: string]: string | number | boolean | bigint
      * })?} componentDescriptor.attributes
      * An optional object representing a set of attributes of
      * a component to be created.
-     * 
+     *
      * @returns {HTMLElement}
      * An UI component.
-     * 
+     *
      * @throws {AggregateError}
      * when an error or multiple of errors are detected.
-     * 
+     *
      * The following errors may be included in the thrown `AggregateError`:
-     * 
+     *
      * -   `TypeError`: when the given argument for
      *     `componentDescriptor` is not a non-null object
-     * -   `TypeError`: when the given value for 
+     * -   `TypeError`: when the given value for
      *     `componentDescriptor.tagName` is not a string
-     * -   `TypeError`: when the given value for 
+     * -   `TypeError`: when the given value for
      *     `componentDescriptor.value` is neither null nor a string
-     * -   `TypeError`: when the given value for 
+     * -   `TypeError`: when the given value for
      *     `componentDescriptor.text` is neither null nor a string
-     * -   `TypeError`: when the given value for 
+     * -   `TypeError`: when the given value for
      *     `componentDescriptor.children` is neither null nor an iterable
-     * -   `TypeError`: when the given value for 
+     * -   `TypeError`: when the given value for
      *     `componentDescriptor.primary` is neither null nor a string
-     * -   `TypeError`: when the given value for 
+     * -   `TypeError`: when the given value for
      *     `componentDescriptor.activeEvents` is neither null nor
      *     a string nor an iterable
-     * -   `TypeError`: when the given value for 
+     * -   `TypeError`: when the given value for
      *     `componentDescriptor.attributes` is neither null nor
-     *     a non-null object 
+     *     a non-null object
      * -   `TypeError`: when the given `tagName` is not valid
      * -   `TypeError`: when the given `activeEvents` contains
      *     a non-string entry
@@ -3339,8 +3335,8 @@ class ProtoViewLogic {
         const text          = componentDescriptor?.text;
         const children      = componentDescriptor?.children;
         const primary       = componentDescriptor?.primary;
-        const active_events = componentDescriptor?.activeEvents; 
-        const attributes    = componentDescriptor?.attributes; 
+        const active_events = componentDescriptor?.activeEvents;
+        const attributes    = componentDescriptor?.attributes;
 
         {
             const validation_errors = [];
@@ -3411,7 +3407,7 @@ class ProtoViewLogic {
                 if (!Object.prototype.hasOwnProperty.call(attributes, attribute_name)) { continue; }
                 const attribute_value = attributes[attribute_name];
                 const attribute_name_ = attribute_name.trim();
-                
+
                 if (attribute_name_.length === 0) {
                     eval_errors.push(new TypeError(`Given attributes contains an attribute named with an empty or whitespace-only string: "${attribute_name}"`));
                 }
@@ -3422,7 +3418,7 @@ class ProtoViewLogic {
                 } else if (Number.isNaN(attribute_value)) {
                     eval_errors.push(new TypeError(`Given attributes contains not a number as "${attribute_name_}"'s value`));
                 }
-                
+
                 if (eval_errors.length > 0) {
                     continue;
                 }
@@ -3517,10 +3513,10 @@ class ProtoViewLogic {
     /**
      * Gets an object representing relationship with the owner of
      * the given element.
-     * 
-     * @param {Element} element 
+     *
+     * @param {Element} element
      * the source element
-     * 
+     *
      * @returns an object representing relationship with its owner.
      */
     static getRelationshipOf(element) {
@@ -3545,7 +3541,7 @@ class ProtoViewLogic {
                 value       : function reflectValues(value_map) {
                     const { node, key }  = _getPrimaryProperty(this);
                     const element_name   = this[CustomKeys$ELEMENT_NAME];
-                    const updated_values = Object.create();
+                    const updated_values = Object.create(null);
                     if (key === ""   ||
                         node == null ||
                         !Object.prototype.hasOwnProperty.call(value_map, element_name)
@@ -3662,7 +3658,7 @@ class ProtoViewLogic {
                                     //  ELEMENT_NAME and ELEMENT_OWNER should be taken on each calls
                                     //  because they may be changed after registering this listener
                                     //  function.
-                                    //  If they can be assumed as constants after registration, 
+                                    //  If they can be assumed as constants after registration,
                                     //  you can store them into external local variables, however,
                                     //  that assumption is untrue.
                                     const target       = event.currentTarget;
@@ -3861,18 +3857,18 @@ class ProtoViewLogic {
 
     /**
      * @async
-     * 
+     *
      * A callback function invoked when the target `ProtoViewLogic`'s `parent`
      * has been changed.
-     * 
+     *
      * This function sends a message to the target `ProtoViewLogic` from itself.
-     * 
+     *
      * The message id is set to `"vl$connectionChanged"`.
      * Details of the change of the target's state is described in
      * the `param` property of the message.
-     * 
+     *
      * The `param` property is an object having the following properties:
-     * 
+     *
      * -   `state`    : `"connected" | "moved" | "disconnected"`
      *     -   a string representing how is the target changed.
      *         Each of values represents the following cases:
@@ -3893,22 +3889,22 @@ class ProtoViewLogic {
      * -   `newName`  : `string?`
      *     -   a string representing the target's name newly assigned to.
      *         This is given as the parameter of the callback.
-     * 
+     *
      * @param {ProtoViewLogic | null} oldParent
      * the `ProtoViewLogic` previously connected as the target's parent.
-     * 
+     *
      * @param {string | null} oldName
      * a string representing the target's name previously assigned to.
-     * 
+     *
      * @param {ProtoViewLogic | null} newParent
      * the `ProtoViewLogic` newly connected as the target's parent.
-     * 
+     *
      * @param {string | null} newName
      * a string representing the target's name newly assigned to.
-     * 
+     *
      * @returns
      * result of `post` function.
-     * 
+     *
      * @see
      * - {@link parent}
      * - {@link relateViewLogics}
@@ -3933,22 +3929,22 @@ class ProtoViewLogic {
             })
         );
     }
-    
+
     /**
      * @async
-     * 
+     *
      * A callback function invoked when `Element`s added to or removed
      * from the target `ProtoViewLogic`'s properties.
-     * 
+     *
      * This function sends a message to the target `ProtoViewLogic` from
      * itself.
-     * 
+     *
      * The message id is set to `"vl$propertiesModified"`.
      * Details of the change of the target's state is described in the
      * `param` property of the message.
-     * 
+     *
      * The `param` property is an object having the following properties:
-     * 
+     *
      * -   {@link addedProperties}  :
      *    `({ [property_name: string]: Element | Element[] | ProtoViewLogic | ProtoViewLogic[] })?`
      *     -   An object having `Element`s or `ProtoViewLogic`s newly added
@@ -3959,7 +3955,7 @@ class ProtoViewLogic {
      *     -   An object having `Element`s or `ProtoViewLogic`s removed
      *         from the target's properties.
      *         This is given as the parameter of the callback.
-     * 
+     *
      * @param {({
      *      [property_name: string]: (
      *          Element     |
@@ -3970,7 +3966,7 @@ class ProtoViewLogic {
      * })?} addedProperties
      * An object having `Element`s or `ProtoViewLogic`s newly added as
      * the target's properties.
-     * 
+     *
      * @param {({
      *      [property_name: string]: (
      *          Element     |
@@ -3978,13 +3974,13 @@ class ProtoViewLogic {
      *          ProtoViewLogic   |
      *          ProtoViewLogic[]
      *      )
-     * })?} removedProperties 
+     * })?} removedProperties
      * An object having `Element`s or `ProtoViewLogic`s removed from
      * the target's properties.
-     * 
+     *
      * @returns {Promise<boolean>}
      * result of {@link post} function.
-     * 
+     *
      * @see
      * - {@link relateElements}
      * - {@link disrelateElements}
@@ -4036,24 +4032,24 @@ class ProtoViewLogic {
 
     /**
      * ProtoViewLogic's name
-     * 
+     *
      * @type {string | null}
      * @see {@link ProtoViewLogic.prototype.name}
      */
     #name = null;
-    
+
     /**
      * ProtoViewLogic's parent.
-     * 
+     *
      * @type {ProtoViewLogic?}
      * @see {@link ProtoViewLogic.prototype.parent}
      */
     #parent = null;
-    
+
     /**
      * Tests whether or not the given element is related to
      * the target ProtoViewLogic.
-     * 
+     *
      * @param {*} o object to be tested
      * @returns {boolean} `true` if the given element is related to
      * the target ProtoViewLogic, `false` otherwise.
@@ -4063,12 +4059,12 @@ class ProtoViewLogic {
             o[CustomKeys$ELEMENT_OWNER] === this
         ;
     }
-    
+
     /**
      * Tests whether or not the given element array is related to
      * the target ProtoViewLogic.
      * @param {*} o object to be tested
-     * @returns {boolean} `true` if the given array is related to 
+     * @returns {boolean} `true` if the given array is related to
      * the target ProtoViewLogic, `false` otherwise.
      */
     #isRelatedElementArray(o) {
@@ -4077,11 +4073,11 @@ class ProtoViewLogic {
             o.every(x => this.#isRelatedElement(x))
         ;
     }
-    
+
     /**
      * Tests whether or not the given element is a component of
      * the array related to the target element.
-     * 
+     *
      * @param {*} o object to be tested
      * @returns {boolean} `true` if the given element is a component of
      * the array related to the target ProtoViewLogic, `false` otherwise.
@@ -4092,14 +4088,14 @@ class ProtoViewLogic {
             this[o[CustomKeys$ELEMENT_NAME]].includes(o)
         ;
     }
-    
+
     /**
      * Parses the given 'id' attribute and returns a sequence of
      * property names.
-     * 
+     *
      * @param {string} id
      * Value of the 'id' attribute of an HTML element.
-     * 
+     *
      * @returns {string[]}
      * a sequence of property names.
      */
@@ -4125,7 +4121,7 @@ class ProtoViewLogic {
 
         /**
          * Split the given string into an array of property keys by the following steps:
-         * 
+         *
          * 1.  Move the last pointer to the next separator
          * 2.  Slice the string from the first pointer to the last pointer
          * 3.  Move the first pointer to the next to the last pointer
@@ -4175,11 +4171,11 @@ class Messenger {
     get target() {
         return this.#target;
     }
-    
+
     /**
      * The primary key used for invoking handler functions.
-     * 
-     * @type {string} 
+     *
+     * @type {string}
      * @see
      * -  {@link code}
      * -  {@link deliver()}
@@ -4187,11 +4183,11 @@ class Messenger {
     get id() {
         return this.#id;
     }
-    
+
     /**
      * The secondary key used for invoking handler functions.
-     * 
-     * @type {string} 
+     *
+     * @type {string}
      * @see
      * -  {@link id}
      * -  {@link deliver()}
@@ -4199,18 +4195,18 @@ class Messenger {
     get code() {
         return this.#code;
     }
-    
+
     /**
      * An optional parameters being able to be used in handler functions.
-     * @type {any} 
+     * @type {any}
      */
     get param() {
         return this.#param;
     }
-    
+
     /**
      * An key to be used in the next invocation of {@link deliver()} function.
-     * 
+     *
      * @type {string}
      */
     get nextKey() {
@@ -4219,18 +4215,18 @@ class Messenger {
 
     /**
      * Gets a promise settled when the target message is delivered.
-     * 
+     *
      * @returns {Promise<boolean>}
      * a `Promise<boolean>` settled when the target message is delivered,
      * or a `Promise<undefined>` if the target message is not delivered.
-     *  
+     *
      * @see
      * -  {@link deliver()}
      */
     async waitUntilDelivered() {
         return this.#delivered;
     }
-    
+
     /**
      * @constructor
      * @param {object} o
@@ -4242,7 +4238,7 @@ class Messenger {
      * the secondary key used for invoking handler functions.
      * @param {any|null} o.param
      * Optional parameters used in handler functions.
-     * 
+     *
      * @throws {TypeError}
      * -  when the given `o.origin` is neither a `ProtoViewLogic` nor `null`
      * -  when the given `o.id` is not a string
@@ -4301,36 +4297,36 @@ class Messenger {
     /**
      * Delivers the target message to the one of the given handler
      * functions if any of keys match the {@link nextKey}.
-     * 
+     *
      * This function modifies the result of {@link waitUntilDelivered()}
      * against the target message.
      * After this function is called, `waitUntilDelivered()` returns
      * a `Promise` settled when the handler function is done.
-     * 
+     *
      * Note that this function has a side-effect which switches
      * the `nextKey` value from an {@link id} to a {@link code}
      * and vice versa,
      * if the message is consumed by the handler function.
      * Where "consumed" means that a handler function was invoked
      * and it returned `true` or a non-boolean value.
-     * 
+     *
      * @param {({
      *      [handler_name: string]: (msg: Messenger) => boolean
      * })} handlerMap
      * An object maps a string to a handler function.
-     * 
+     *
      * @returns {Promise<boolean>}
      * A `Promise` that resolves to a boolean which indicates
      * whether or not the target message has been consumed.
      * `true` if the message has been consumed, `false` otherwise.
-     * 
+     *
      * Whether or not the message has been consumed is determined by
      * what the invoked handler function returns.
      * If the handler has returned a non-boolean value, it is treated as
      * `true`, otherwise, the returned value is used as-is.
      * In addition, if the handler has returned a `Promise`,
      * this function awaits that the promise is settled.
-     * 
+     *
      * @see
      * -  {@link deliverById()}
      * -  {@link deliverByCode()}
@@ -4340,7 +4336,7 @@ class Messenger {
         const   prev        = this.#key_kind;
         const   [key, next] = prev === "id" ?
             [ this.id  , "code"]  :
-            [ this.code, "id"] 
+            [ this.code, "id"]
         ;
 
         this.#key_kind = next;
@@ -4357,32 +4353,32 @@ class Messenger {
     /**
      * Delivers the target message to the one of the given handler
      * functions if any of keys match the {@link id}.
-     * 
+     *
      * This function modifies the result of {@link waitUntilDelivered()}
      * against the target message.
      * After this function is called, `waitUntilDelivered()` returns
      * a `Promise` settled when the handler function is done.
-     * 
+     *
      * Unlike {@link deliver()} function, this function has
      * no side-effect.
-     * 
+     *
      * @param {({
      *      [handler_name: string]: (msg: Messenger) => boolean
      * })} handlerMap
      * An object maps a string to a handler function.
-     * 
+     *
      * @returns {Promise<boolean>}
      * A `Promise` that resolves to a boolean which indicates
      * whether or not the target message has been consumed.
      * `true` if the message has been consumed, `false` otherwise.
-     * 
+     *
      * Whether or not the message has been consumed is determined by
      * what the invoked handler function returns.
      * If the handler has returned a non-boolean value, it is treated as
      * `true`, otherwise, the returned value is used as-is.
      * In addition, if the handler has returned a `Promise`,
      * this function awaits that the promise is settled.
-     * 
+     *
      * @see
      * -  {@link deliver()}
      * -  {@link deliverByCode()}
@@ -4391,36 +4387,36 @@ class Messenger {
     deliverById(handlerMap) {
         return this.#deliverImpl(this.#id, handlerMap);
     }
-    
+
     /**
      * Delivers the target message to the one of the given handler
      * functions if any of keys match the {@link code}.
-     * 
+     *
      * This function modifies the result of {@link waitUntilDelivered()}
      * against the target message.
      * After this function is called, `waitUntilDelivered()` returns
      * a `Promise` settled when the handler function is done.
-     * 
+     *
      * Unlike {@link deliver()} function, this function has
      * no side-effect.
-     * 
+     *
      * @param {({
      *      [handler_name: string]: (msg: Messenger) => boolean
      * })} handlerMap
      * An object maps a string to a handler function.
-     * 
+     *
      * @returns {Promise<boolean>}
      * A `Promise` that resolves to a boolean which indicates
      * whether or not the target message has been consumed.
      * `true` if the message has been consumed, `false` otherwise.
-     * 
+     *
      * Whether or not the message has been consumed is determined by
      * what the invoked handler function returns.
      * If the handler has returned a non-boolean value, it is treated as
      * `true`, otherwise, the returned value is used as-is.
      * In addition, if the handler has returned a `Promise`,
      * this function awaits that the promise is settled.
-     * 
+     *
      * @see
      * -  {@link deliver()}
      * -  {@link deliverById()}
@@ -4429,7 +4425,7 @@ class Messenger {
     deliverByCode(handlerMap) {
         return this.#deliverImpl(this.#code, handlerMap);
     }
-    
+
     /**
      * @param {string} key
      * @param {({
@@ -4469,7 +4465,7 @@ class Messenger {
 
         const handler = (
             Object.prototype.hasOwnProperty.call(handler_map, key_) ?
-                handler_map[key_] : 
+                handler_map[key_] :
             Object.prototype.hasOwnProperty.call(handler_map, "default") ?
                 handler_map.default :
                 null

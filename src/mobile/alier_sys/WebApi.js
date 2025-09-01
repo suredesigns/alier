@@ -14,9 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const { Pattern } = await Alier.import("/alier_sys/Pattern.js");
-const { WebApiError } = await Alier.import("/alier_sys/WebApiError.js");
-const { IAuthAgent } = await Alier.import("/alier_sys/Auth.js");
+import { Pattern } from "./Pattern.js";
+import { WebApiError } from "./WebApiError.js";
+import { IAuthAgent } from "./Auth.js";
 
 /**
  * @param {string} s
@@ -1522,4 +1522,4 @@ class WebApi {
     #auth_agent;
 }
 
-await Alier.export({ WebApi, WebApiError, parseHeader, parseHeaderValue });
+export { WebApi, WebApiError, parseHeader, parseHeaderValue };

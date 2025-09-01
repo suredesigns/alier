@@ -91,20 +91,14 @@ await Alier.Sys._wait("FUNCTION_REGISTRATION_COMPLETE");
     });
     //  Import the main script. 
     //  Note that, to work import/export mechanism properly, globalThis.Alier is defined before the import.
-    const main_module = await Alier.import("main.js");
-    if (!("__main__" in main_module)) {
-        throw new SyntaxError("main() function is not exported from main.js.");
-    }
-    if (typeof main_module.__main__ !== "function") {
+    const { default: main, ...rest } = await import(new URL("./main.js", document.baseURI).pathname);
+    if (typeof main !== "function") {
         throw new SyntaxError("main() function is not defined as a function.");
     }
     //  Expanding the main module features on global scope except main() function.
     //  This will allow the users to use the features they defined without importing.
     //  Such behaviour is unnecessary in essentials but it is supposed to be convenient for the most cases. 
-    Object.assign(globalThis, Object.fromEntries(Object.entries(main_module).filter(([k,]) => k !== "__main__")));
-    /** @type {() => any} */
-    const main = main_module.__main__;
-
+    Object.assign(globalThis, rest);
 
     //Enables push notification events to be notified
     Alier.Native.setSystemEventListener("notified", (param) => {
@@ -182,181 +176,17 @@ await Alier.Sys._wait("FUNCTION_REGISTRATION_COMPLETE");
 async function _initAlier() {
     const Alier = new class __Alier__ {
         static #initialized = false;
-        
-        /** @type {Map<string, Object>} */
-        #imported_modules = new Map();
-
-        /** @type {Map<string, Promise<Object>>} */
-        #ongoing_imports = new Map();
 
         /** @type {Map<string, string>} */
         static #env_map = new Map();
-
-        #module_objects_key;
 
         constructor() {
             if (__Alier__.#initialized) {
                 throw new Error("Instantiation prohibited.");
             }
-            this.#module_objects_key = globalThis.crypto.getRandomValues(new Uint32Array(8)).reduce((s, v) => (s + v.toString(16)), "__module_objects__");
             __Alier__.#initialized = true;
         }
-        /**
-         * @param {string} filepath 
-         * A string representing a module file path relative to the root directory of the app specific data. 
-         * @returns {Object} module namespace object
-         */
-        async import(filepath) {
-            if (typeof filepath !== "string") {
-                throw new TypeError("`filepath` must be a string.");
-            } else if (this.#imported_modules.has(filepath)) {
-                return this.#imported_modules.get(filepath);
-            } else if (this.#ongoing_imports.has(filepath)) {
-                return await this.#ongoing_imports.get(filepath);
-            }
-
-            const { promise: import_result, resolve } = (() => {
-                let resolve, reject;
-                const promise = new Promise((resolve_, reject_) => {
-                    resolve = resolve_;
-                    reject  = reject_;
-                });
-                return { promise, resolve, reject };
-            })();
-
-            this.#ongoing_imports.set(filepath, import_result);
-
-            const event_type = `scriptLoaded_${filepath}`;
-            const text_content = await Alier.Native.loadText(filepath);
-            if (text_content == null) {
-                this.#imported_modules.delete(filepath);
-                throw new SyntaxError(`Module "${filepath}" does not exist.`);
-            }
-            
-            if (!(this.#module_objects_key in this)) {
-                Object.defineProperty(this, this.#module_objects_key, { value: [], configurable: true });
-            }
-
-            const script = document.createElement("script");
-            // NOTE:  Unlike the classic scripts, 
-            //        evaluation against a module script element's text content
-            //        (i.e., a script element having a type attribute whose value is "module")
-            //        will be queued as a micro-task.
-            //        So module scripts will be evaluated after the call-stack is getting empty.
-            script.setAttribute("type", "module");
-            script.async = true;
-            script.textContent = `
-Alier["${this.#module_objects_key}"].push(Object.create(null));
-${text_content}
-;
-if (typeof globalThis.__main__ !== "function" && typeof main === "function") {
-    await Alier.export({ __main__: main });
-}
-{
-    const __module_object__ = Alier["${this.#module_objects_key}"].pop();
-    if (Alier["${this.#module_objects_key}"].length === 0) {
-        delete Alier["${this.#module_objects_key}"];
-    }
-    document.dispatchEvent(
-        new CustomEvent("${event_type}", { detail: { __module_object__ } })
-    );
-}
-`
-            ;
-            
-            document.head.appendChild(script);
-
-            document.addEventListener(event_type, (ev) => {
-                // Sort module object properties in dictionary-order to guarantee that 
-                // the module object behaves as the same as the standard ones.
-                const m = Object.fromEntries(
-                    Object.entries(ev.detail.__module_object__)
-                    .sort( ([kx, ], [ky, ]) => ((kx > ky) - (kx < ky)) )
-                );
-                // Add toStringTag returning "Module" because of the same reason.
-                Object.defineProperty(m, Symbol.toStringTag, { get() { return "Module"; } });
-                // Seal the module object to prevent any modification because of the same reason.
-                Object.seal(m);
-
-                resolve(m);
-            }, { once: true });
-
-            return import_result.then(m => {
-                this.#imported_modules.set(filepath, m);
-                this.#ongoing_imports.delete(filepath);
-                return m;
-            }, e => {
-                this.#imported_modules.delete(filepath);
-                this.#ongoing_imports.delete(filepath);
-                throw e;
-            });
-        }
         
-        /**
-         * @param {Map<string, string | any> | ({ alias: string | any }) | [string, string | any][]} exportMap
-         * An object mapping aliases to the corresponding features,
-         * or an object mapping aliases to the corresponding feature name imported from given module.
-         * The latter is the case that `from_module` was given.
-         * @param {string|null} fromModule 
-         * A module name.
-         * If some module name is given as `from_module` argument, this function may import it before exporting.
-         * @throws {SyntaxError} When invoking from the outside of module scripts.
-         * @throws {SyntaxError} When duplication of alias is detected.
-         * @throws {SyntaxError} When a feature is not exported from given module `from_module`.
-         * @throws {TypeError} When `from_module` argument is given but it is neither null nor string.
-         */
-        async export(exportMap, fromModule = null) {
-            if (typeof this[this.#module_objects_key] !== "object") {
-                throw new SyntaxError("Export not allowed here. Confirm whether the current script is classic or module.");
-            }
-            if (!(fromModule == null || typeof fromModule !== "string")) {
-                throw new TypeError("Module name not specified.");
-            }
-            if (typeof exportMap !== "object" || exportMap === null) {
-                throw new TypeError("`exportMap` should be an object.");
-            }
-            const export_map = typeof exportMap[Symbol.iterator] !== "function" ?
-                Object.entries(exportMap) :
-                exportMap
-            ;
-            const from_module = fromModule;
-            const __module_objects__ = this[this.#module_objects_key];
-            const __module_object__ = __module_objects__[__module_objects__.length - 1];
-            // To prevent polluting the  __module_object__ with a malformed export query which will cause an exception,
-            // make another plain object and when the export is successfully validated,
-            // copy it to the __module_object__.
-            const exported_features = {};
-            if (from_module !== null) {
-                const external_module = await this.import(from_module);
-                for (const [alias, exported_name] of export_map) {
-                    if (!(exported_name in external_module)) {
-                        throw new SyntaxError(`\`${exported_name}\` not exported from "${from_module}".`);
-                    }
-                    const exported_feature = external_module[exported_name];
-                    if (alias in __module_object__) {
-                        if (__module_object__[alias] !== exported_feature) {
-                            throw new SyntaxError(`\`${alias}\` duplicated.`);
-                        } else {
-                            Alier.Sys.logw(0, `\`${alias}\` is already exported.`);
-                        }
-                    }
-                    exported_features[alias] = exported_feature;
-                }
-            } else {
-                for (const [alias, exported_feature] of export_map) {
-                    if (alias in __module_object__) {
-                        if (__module_object__[alias] !== exported_feature) {
-                            throw new SyntaxError(`\`${alias}\` duplicated.`);
-                        } else {
-                            Alier.Sys.logw(0, `\`${alias}\` is already exported.`);
-                        }
-                    }
-                    exported_features[alias] = exported_feature;
-                }
-            }
-            Object.assign(__module_object__, exported_features);
-        }
-
         async fetch(requestOrUrl, options) {
             const request = { method: "GET", url: "", headers: null, body: null };
 

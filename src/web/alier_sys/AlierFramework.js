@@ -14,14 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import "./_AlierCore.js";
-
 import { AlierModel } from "./AlierModel.js";
 import { setupModelInterfaceFromText, setupModelInterface } from "./SetupInterface.js";
 import { ProtoViewLogic } from "./ProtoViewLogic.js";
 
 import { ViewLogic } from "./ViewLogic.js";
-import { ViewElement } from "./ViewElement.js";
+import { AlierView } from "./AlierView.js";
 import { ListView } from "./ListView.js";
 
 const defineIfNotDefined = (tag, ctor, options = undefined) => {
@@ -30,28 +28,29 @@ const defineIfNotDefined = (tag, ctor, options = undefined) => {
     }
 };
 
-
-if (!("View" in Alier)) {
-    defineIfNotDefined("alier-view", ViewElement);
-    defineIfNotDefined("alier-list-view", ListView);
-    defineIfNotDefined("alier-app-view", class AppView extends ViewElement {});
-    defineIfNotDefined("alier-container", class ContainerView extends HTMLElement {});
-    Object.defineProperty(Alier, "View", {
-        value     : document.createElement("alier-app-view"),
-        writable  : true,
-        enumerable: true
-    });
-    document.body.appendChild(Alier.View);
-}
-
 /**
  * Setup Alier environment.
  *
- * NOTE:
- * We plan to port the side effects that occur when importing AlierFramework.js
- * to this function.
+ * Define custome elements:
+ *
+ * - alier-view
+ * - alier-list-view
+ * - alier-app-view
+ * - alier-container
+ *
+ * Add Alier.View to the body of the document to deploy the Alier application.
  */
-async function setupAlier() {}
+function setupAlier() {
+    if (!("View" in Alier)) {
+        defineIfNotDefined("alier-app-view", class AppView extends AlierView {});
+        Object.defineProperty(Alier, "View", {
+            value     : document.createElement("alier-app-view"),
+            writable  : true,
+            enumerable: true
+        });
+        document.body.appendChild(Alier.View);
+    }
+}
 
 export {
     setupAlier,
@@ -60,6 +59,6 @@ export {
     ListView,
     setupModelInterfaceFromText,
     setupModelInterface,
-    ViewElement,
+    AlierView,
     ProtoViewLogic,
 };

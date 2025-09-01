@@ -14,8 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import "./_dependency_Web.js";
-
 // For Web
 if (!("Alier" in globalThis)) {
 (() => {
@@ -670,84 +668,7 @@ function _initAlier() {
             },
         });
 
-        let running_task = null;
-        /**
-         * @async
-         * Runs the given function after the DOM content is loaded.
-         * 
-         * @param {(...any) => void | Promise<void>} mainFn 
-         * A function behave as the main function.
-         * 
-         * @param  {...any} args arguments for the given `main` function.
-         */
-        const main = async (mainFn, ...args) => {
-            if (typeof mainFn !== "function") {
-                throw new TypeError(`${mainFn} is not a function`);
-            }
-
-            const { MessagePorter } = await import("./MessagePorter.js");
-            globalThis.MessagePorter = MessagePorter;
-
-            if (document.readyState === "loading") {
-                await new Promise((resolve) => {
-                    document.addEventListener("DOMContentLoaded", resolve, { once: true });
-                });
-            }
-
-            if (running_task instanceof Promise) {
-                await running_task;
-            }
-
-            let resolve,
-                reject
-            ;
-            const result = new Promise((resolve_, reject_) => {
-                resolve = resolve_;
-                reject  = reject_;
-            });
-
-            running_task = result;
-
-            queueMicrotask(async () => {
-                const AsyncFunction          = (async function(){}).constructor;
-                const GeneratorFunction      = (function*(){}).constructor;
-                const AsyncGeneratorFunction = (async function*(){}).constructor;
-
-                let last_state = null;
-                switch (mainFn.constructor) {
-                    case AsyncFunction: {
-                        last_state = await mainFn(...args);
-                    }
-                    break;
-                    case AsyncGeneratorFunction: {
-                        for await (const curr_state of mainFn(...args)) {
-                            last_state = curr_state;
-                        }
-                    }
-                    break;
-                    case GeneratorFunction: {
-                        for (const curr_state of mainFn(...args)) {
-                            last_state = curr_state;
-                        }
-                    }
-                    break;
-                    default:
-                        last_state = mainFn(...args);
-                }
-                running_task = null;
-                resolve(last_state);
-            });
-
-            return result;
-        };
-
         Object.defineProperties(Alier, {
-            main: {
-                writable    : false,
-                configurable: false,
-                enumerable  : false,
-                value       : main
-            },
             message: {
                 writable    : false,
                 configurable: false,

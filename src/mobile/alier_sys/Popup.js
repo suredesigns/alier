@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const { Envelope } = await Alier.import("/alier_sys/Envelope.js");
+import { Envelope } from "./Envelope.js";
 
 class PopupContainer extends ViewLogic {}
 class PopupFrame extends ViewLogic {
@@ -632,4 +632,4 @@ class Popup{
 
 }
 
-await Alier.export({ Popup, PopupFrame, PopupContainer, ModalFrame, ModelessFrame, MessageboxFrame, ToastFrame });
+export { Popup, PopupFrame, PopupContainer, ModalFrame, ModelessFrame, MessageboxFrame, ToastFrame };

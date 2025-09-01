@@ -37,4 +37,4 @@ class AlierCustomElement extends HTMLElement {
     get [Symbol.toStringTag]() { return this.constructor.name; }
 }
 
-await Alier.export({ AlierCustomElement });
+export { AlierCustomElement };

@@ -138,8 +138,8 @@ public class _FileOperation: NSObject {
     ///
     /// - Parameter allow_overwrite: a boolean indicating whether or not to allow to overwrite existing files in the destination paths
     private func _copyAssetsIntoAppSpecificDir(allow_overwrite: Bool) {
-        _copyBundle(bundle: _path_registry.getSystemBundle(), forResource: "mobile", allowOverwrite: allow_overwrite)
-        _copyBundle(bundle: Bundle.main, forResource: "test_app", allowOverwrite: allow_overwrite)
+        _copyBundle(bundle: _path_registry.getSystemBundle(), forResource: "alier_sys", allowOverwrite: allow_overwrite)
+        _copyBundle(bundle: Bundle.main, forResource: "app_res", allowOverwrite: allow_overwrite)
     }
     
     private func _copyBundle(bundle: Bundle, forResource: String, allowOverwrite allow_overwrite: Bool) {
@@ -150,15 +150,12 @@ public class _FileOperation: NSObject {
         //  A URL returned from a Bundle might be a symbolic link and hence
         //  resolve symlinks here.
         let src_prefix_url = bundle.url(forResource: forResource, withExtension: nil)!.resolvingSymlinksInPath()
+        let src_prefix_count = src_prefix_url.pathComponents.dropLast().count
         //  It is guaranteed by getBundleFiles() that an asset_url is not a symlink and so
         //  there is no need for calling resolvingSymlinksInPath() with asset_url.
         for asset_url in urls {
-            var common_components =  Array(asset_url.pathComponents.dropFirst(src_prefix_url.pathComponents.count))
-            //If a file exists directly under the 'app_res' directory, handle it.
-            if (!common_components.contains("alier_sys") && !common_components.starts(with: ["app_res"])) {
-                common_components.insert("app_res", at: 0)
-            }
-            
+            let common_components = Array(asset_url.pathComponents.dropFirst(src_prefix_count))
+
             let common_suffix = common_components.joined(separator: "/")
             let parent_dir = common_components.dropLast().joined(separator: "/")
 
@@ -186,10 +183,10 @@ public class _FileOperation: NSObject {
                 //  if allow_overwrite flag is on and there is an existing file,
                 //  delete the existing file for FileManager.copyItem works properly
                 try! fm.removeItem(atPath: dst_path)
-                AlierLog.i(id: 0, message: "File already exist. Overwrite it: \(dst_path)")
+                // AlierLog.i(id: 0, message: "File already exist. Overwrite it: \(dst_path)")
             } else if dst_exists {
                 //  if overwriting is not allowed, do nothing for the current file.
-                AlierLog.i(id: 0, message: "File already exist. skipped: \(dst_path)")
+                // AlierLog.i(id: 0, message: "File already exist. skipped: \(dst_path)")
                 continue
             }
 
@@ -219,7 +216,7 @@ public class _FileOperation: NSObject {
     }
     
     private func _systemScriptTag(src: String, type: String = "text/javascript") -> String {
-        let src_path = _path_registry.getSystemDir()._appending(path: src).absoluteURL._path(percentEncoded: true)
+        let src_path = "alier:///alier_sys/\(src)"
         return  """
                 <script type="\(type)" src="\(src_path)"></script>
                 """
@@ -237,7 +234,7 @@ public class _FileOperation: NSObject {
             }
         }
         
-        var base_url = _path_registry.getAppResDir().absoluteURL._path(percentEncoded: true)
+        var base_url = "alier:///app_res/"
         if !base_url.hasSuffix("/") {
             base_url += "/"
         }
@@ -259,10 +256,19 @@ public class _FileOperation: NSObject {
         let base_html_path: String = _path_registry.getBaseHtmlPath()._path(percentEncoded: false)
 
         //Create the _base.html file
-        FileManager.default.createFile(atPath: base_html_path, contents: contents, attributes: nil) 
+        FileManager.default.createFile(atPath: base_html_path, contents: contents, attributes: nil)
+    }
+    
+    internal func getBundleURL(fileName:String)->URL?{
+        // Disassembled with “/”
+        var components = fileName.components(separatedBy: "/")
+        let _fileName = components.removeLast()
+        let _fileNameComponents = _fileName.components(separatedBy: ".")
+        let name = _fileNameComponents[0]
+        let extention = _fileNameComponents[1]
+        let subDir = components.joined(separator: "/")
+
+        let bundleURL = Bundle.main.url(forResource: name, withExtension: extention, subdirectory: subDir)
+        return bundleURL
     }
 }
-
-
-
-

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const { SQLiteConnector } = await Alier.import("/alier_sys/_SQLiteConnector.js");
+import { SQLiteConnector } from "./_SQLiteConnector.js";
 
 /**
  * Gets a default database connector.
@@ -32,6 +32,6 @@ function getDefaultConnector(o) {
     return new SQLiteConnector(o);
 }
 
-await Alier.export({
+export {
     getDefaultConnector
-});
+};

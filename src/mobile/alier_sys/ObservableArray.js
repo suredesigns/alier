@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const { ObservableObject } = await Alier.import("/alier_sys/ObservableObject.js");
+import { ObservableObject } from "./ObservableObject.js";
 
 const validateIndex = (index, len, fallback) => {
     index = Number(index);
@@ -1256,7 +1256,7 @@ Object.defineProperty(
     { configurable: false, writable: false, enumerable: true }
 );
 
-await Alier.export({
+export {
     ObservableArray,
     ObservableObject
-});
+};

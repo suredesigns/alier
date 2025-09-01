@@ -64,4 +64,4 @@ class Envelope {
     }
 }
 
-await Alier.export({ Envelope });
+export { Envelope };

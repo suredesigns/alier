@@ -958,7 +958,7 @@ class _NativeFunctionInterface
         }
         callJavaScriptFunction(
             functionName = "_registerNativeFunction",
-            args = arrayOf(functionName, isSync),
+            args = arrayOf<Any?>(functionName, isSync),
             completionHandler = completionHandler
         )
     }
@@ -1063,6 +1063,7 @@ class _NativeFunctionInterface
      *    a set of arguments which will be passed to the target function.
      * @throws IllegalArgumentException when the target function is not registered.
      */
+    @Suppress("unused")
     @JavascriptInterface
     fun functionCallReceiver(json: String) {
         val (function_name, callback_handle_json, args) = getFunctionCallSpec(json)
@@ -1100,6 +1101,7 @@ class _NativeFunctionInterface
         }
     }
 
+    @Suppress("unused")
     @JavascriptInterface
     fun functionCallReceiverSync(json: String): String {
         try {
@@ -1159,7 +1161,7 @@ class _NativeFunctionInterface
         val m = if (message == "") { "default" } else { message }
         synchronized(_action_queue) {
             val actions = _action_queue[m] ?: return
-            while (actions.size > 0) {
+            while (actions.isNotEmpty()) {
                 val action = actions.removeAt(0)
                 action()
             }

@@ -56,6 +56,6 @@ class WebApiError extends Error {
     #status_code;
 }
 
-await Alier.export({
-    WebApiError,
-});
+export {
+    WebApiError
+};

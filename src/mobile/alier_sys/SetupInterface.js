@@ -16,11 +16,11 @@ limitations under the License.
 
 const model_module = {};
 const xml_parser = new DOMParser();
-const { LazyNew } = await Alier.import("/alier_sys/LazyNew.js");
-const { ObservableObject } = await Alier.import("/alier_sys/ObservableObject.js");
-const { ObservableArray } = await Alier.import("/alier_sys/ObservableArray.js");
-const { WebApi } = await Alier.import("/alier_sys/WebApi.js");
-const { AgentRepository } = await Alier.import("/alier_sys/Auth.js");
+import { LazyNew } from "./LazyNew.js";
+import { ObservableObject } from "./ObservableObject.js";
+import { ObservableArray } from "./ObservableArray.js";
+import { WebApi } from "./WebApi.js";
+import { AgentRepository } from "./Auth.js";
 
 /**
  * Builds a model interface from the given XML document.
@@ -93,7 +93,7 @@ function _setInterface(element, position, class_name) {
                 }
             }
             const attributes = element.attributes;
-            const locale = attributes.getNamedItem("locale").value;
+            const locale = attributes.getNamedItem("locale")?.value ?? "local";
             if (locale === "local") {
                 if (class_name) {
                     const model_class = new model_module[class_name]();
@@ -123,7 +123,7 @@ function _setInterface(element, position, class_name) {
             if (class_name) {
                 const model_class = new model_module[class_name]();
                 const attributes = element.attributes;
-                const locale = attributes.getNamedItem("locale").value;
+                const locale = attributes.getNamedItem("locale")?.value ?? "local";
                 if (locale === "local") {
                     const path = attributes.getNamedItem("path").value;
                     const name = attributes.getNamedItem("name").value;
@@ -154,7 +154,7 @@ function _setInterface(element, position, class_name) {
             if (class_name) {
                 const model_class = new model_module[class_name]();
                 const attributes = element.attributes;
-                const locale = attributes.getNamedItem("locale").value;
+                const locale = attributes.getNamedItem("locale")?.value ?? "local";
                 if (locale === "local") {
                     const path = attributes.getNamedItem("path").value;
                     const name = attributes.getNamedItem("name").value;
@@ -178,7 +178,7 @@ function _setInterface(element, position, class_name) {
             if (class_name) {
                 const model_class = new model_module[class_name]();
                 const attributes = element.attributes;
-                const locale = attributes.getNamedItem("locale").value;
+                const locale = attributes.getNamedItem("locale")?.value ?? "local";
                 if (locale === "local") {
                     const path = attributes.getNamedItem("path").value;
                     const name = attributes.getNamedItem("name").value;
@@ -200,7 +200,7 @@ function _setInterface(element, position, class_name) {
                 }
             }
             const attributes = element.attributes;
-            const locale = attributes.getNamedItem("locale").value;
+            const locale = attributes.getNamedItem("locale")?.value ?? "local";
             if (locale === "local") {
                 if (class_name) {
                     const model_class = new model_module[class_name]();
@@ -256,7 +256,8 @@ async function setupModelInterfaceFromText(xmlText) {
     const imported_modules = [];
     for (const import_tag of import_tags) {
         const path = import_tag.attributes.getNamedItem("path").value;
-        imported_modules.push(Alier.import(path));
+        const canonical_path = new URL(path, document.baseURI).pathname;
+        imported_modules.push(import(canonical_path));
     }
     Object.assign(model_module, ...await Promise.all(imported_modules));
 
@@ -307,4 +308,4 @@ class RestfulObject {
     }
 }
 
-await Alier.export({ setupModelInterfaceFromText, setupModelInterface });
+export { setupModelInterfaceFromText, setupModelInterface };

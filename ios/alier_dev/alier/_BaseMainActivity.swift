@@ -88,7 +88,7 @@ public final class BaseMainActivity {
 }
 
 /* Notes on lifecycle of SwiftUI:
- * 
+ *
  * Any UIViewRepresentable will have the following functions:
  *
  * -  makeCoordinator
@@ -98,7 +98,7 @@ public final class BaseMainActivity {
  * -  updateUIView
  *    is called when app state changes after makeUIView is called.
  * -  dismantleUIView
- *    is called when discarding UIView. 
+ *    is called when discarding UIView.
  *
  * Implementations of makeCoordinator and dismantleUIView are provided by UIViewRepresentable,
  * so you are not needed to implement them just for adopting the protocol requirement.
@@ -147,16 +147,16 @@ public extension MainActivityDelegate {
         initJavaScriptInterface(webView: webView)
         let ni = activity._native_function_interface!
         loadContent(webView: webView)
-        AlierLog.d(id: 0, message: "makeUIView(): wait for FUNCTION_REGISTRATION_AVAILABLE")
+        //AlierLog.d(id: 0, message: "makeUIView(): wait for FUNCTION_REGISTRATION_AVAILABLE")
         ni._wait("FUNCTION_REGISTRATION_AVAILABLE") {
             onInitNativeInterfaceInternal(context: context)
             
-            AlierLog.d(id: 0, message: "makeUIView(): notify FUNCTION_REGISTRATION_COMPLETE")
+            //AlierLog.d(id: 0, message: "makeUIView(): notify FUNCTION_REGISTRATION_COMPLETE")
             activity._native_function_interface!._sendstat("FUNCTION_REGISTRATION_COMPLETE")
             
-            AlierLog.d(id: 0, message: "makeUIView(): wait for MAIN_FUNCTION_COMPLETE")
+            //AlierLog.d(id: 0, message: "makeUIView(): wait for MAIN_FUNCTION_COMPLETE")
             activity._native_function_interface!._wait("MAIN_FUNCTION_COMPLETE") {
-                AlierLog.d(id: 0, message: "makeUIView(): MAIN_FUNCTION_COMPLETE notified")
+                //AlierLog.d(id: 0, message: "makeUIView(): MAIN_FUNCTION_COMPLETE notified")
                 onReturningFromMainFunctionInternal(context: context)
                 //at ColdStart: The launch route when the app is started from the notification banner.
                 if(BaseMainActivity.instance.coldStartFromNotification){
@@ -192,6 +192,10 @@ public extension MainActivityDelegate {
             name: _NativeFunctionInterface.ScriptMessageName._recvstat.rawValue
         )
         config.web_config.userContentController = user_content_controller
+        //Required to intercept requests
+        activity._internal_coordinator.fileOp = activity._fileop!
+        //Set scheme
+        config.web_config.setURLSchemeHandler(activity._internal_coordinator, forURLScheme: "alier")
         
         //Create an instance of WebView
         let webView = WKWebView(frame: .zero, configuration: config.web_config)
@@ -245,10 +249,15 @@ public extension MainActivityDelegate {
         let _path_registry = activity._path_registry!
         let base_html_url = _path_registry.getBaseHtmlPath()
         
-        webView.loadFileURL(
-            base_html_url,
-            allowingReadAccessTo: _path_registry._alier_dir
-        )
+        //Get _base.html
+        var contents = ""
+        do {
+                contents = try String(contentsOf: base_html_url, encoding: .utf8)
+        } catch {
+                print("Failure to load file: \(error)")
+        }
+        let dummyURL = URL(string:"alier:///")
+        webView.loadHTMLString(contents, baseURL: dummyURL)
     }
     
     func onInitNativeInterface(context: Context) {}
@@ -311,7 +320,7 @@ public extension MainActivityDelegate {
         try! ni.registerFunction(isSync: true, functionName: "saveTextSync", function: { args in
             let jsonString = args[1] as! String
             return try activity._fileop!.saveText(dst: args[0] as! String, text: jsonString, allow_overwrite: args[2] as! Bool)
-        }, completionHandler: nil)        
+        }, completionHandler: nil)
         try! ni.registerFunction(functionName: "fetch", function: { args in
             if (args[0] == nil) { return }
             let request  = args[0] as! Dictionary<String, Any>

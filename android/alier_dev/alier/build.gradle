@@ -2,7 +2,10 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin)
     id 'maven-publish'
+    id 'signing'
 }
+
+version = libs.versions.alier.versionName.get().toString()
 
 java {
     toolchain {
@@ -21,8 +24,7 @@ android {
         minSdk    = libs.versions.project.minSdk.get().toInteger()
         targetSdk = libs.versions.project.targetSdk.get().toInteger()
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles "consumer-rules.pro"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     testFixtures {
@@ -32,7 +34,7 @@ android {
     buildTypes {
         release {
             minifyEnabled = false
-            proguardFiles(getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro')
+            consumerProguardFiles 'consumer-rules.pro'
         }
     }
 
@@ -41,7 +43,7 @@ android {
     sourceSets {
         main {
             resources.srcDirs += layout.buildDirectory.dir("generated-resources")
-            assets.srcDirs = ["$repositoryRootDir/src/mobile"]
+            assets.srcDirs += layout.buildDirectory.dir("extra-assets")
         }
     }
     packaging {
@@ -53,6 +55,7 @@ android {
     publishing {
         singleVariant('release') {
             withSourcesJar()
+            withJavadocJar()
         }
     }
 
@@ -60,14 +63,15 @@ android {
 }
 
 dependencies {
-    implementation libs.activity.ktx
-    implementation libs.core.ktx
-    implementation libs.appcompat
-    implementation libs.material
-    implementation libs.gms.playServicesBasement
-    implementation libs.datastore.core.android
-    implementation(libs.androidx.datastore.preferences)
-    api libs.kotlin.reflect
+    implementation(libs.activity.ktx)
+    implementation(libs.webkit)
+    implementation(libs.core.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.gms.playServicesBasement)
+    implementation(libs.datastore.core)
+    implementation(libs.datastore.preferences)
+    implementation(libs.kotlin.reflect)
 
     testImplementation libs.junit
 
@@ -80,19 +84,77 @@ publishing {
         release(MavenPublication) {
             groupId = 'com.suredesigns'
             artifactId = 'alier'
-            version = libs.versions.framework.versionName.get().toString()
+            version = project.version
 
             afterEvaluate {
                 from components.release
             }
+
+            pom {
+                name = 'Alier'
+                description = 'A JavaScript framework that comprehensively supports the development of mobile apps and web apps.'
+                url = 'https://alier.dev/'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution = 'repo'
+                    }
+                }
+                developers {
+                    developer {
+                        name = 'Suredesigns Alier Team'
+                        email = 'alier@suredesigns.com'
+                        organization = 'Suredesigns Corp.'
+                        organizationUrl = 'https://www.suredesigns.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/suredesigns/alier.git'
+                    developerConnection = 'scm:git:ssh://github.com:suredesigns/alier.git'
+                    url = 'https://github.com/suredesigns/alier/tree/main'
+                }
+            }
         }
     }
+
     repositories {
+        mavenLocal()
+
+        // publish to build directory because MavenLocal doesn't sign
         maven {
-            name = 'local'
-            url = layout.buildDirectory.dir('.repo')
+            name = 'buildDir'
+            url = layout.buildDirectory.dir('repo')
         }
     }
+}
+
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
+// sign to upload alier as a library
+signing {
+    def publishTask = tasks.named('publishReleasePublicationToBuildDirRepository').get()
+    required = { isReleaseVersion && gradle.taskGraph.hasTask(publishTask) }
+    def signingKey = findProperty('signingKey')
+    def signingPassword = findProperty('signingPassword')
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign publishing.publications.release
+}
+
+// archive to upload, output to build/distributions/alier-*.*.*.zip
+tasks.register('generateRepo', Zip) {
+    def publishTask = tasks.named('publishReleasePublicationToBuildDirRepository')
+    from publishTask.map { it.getRepository().getUrl() }
+}
+
+CopySpec alierSysSpec = copySpec {
+    from layout.projectDirectory.dir('../../../src/mobile/alier_sys')
+    exclude '*_iOS*'
+}
+
+tasks.register('syncAlierSys', Sync) {
+    into layout.buildDirectory.dir('extra-assets/alier_sys')
+    with alierSysSpec
 }
 
 tasks.register('makeGeneratedResourcesDir') {
@@ -129,8 +191,8 @@ tasks.register('generateMetaInf') {
     dependsOn('makeGeneratedResourcesDir')
 
     def text = [
-            versionCode: libs.versions.framework.versionCode.get().toString(),
-            versionName: libs.versions.framework.versionName.get().toString()
+            versionCode: libs.versions.alier.versionCode.get().toString(),
+            versionName: project.version
     ].collect {
         "${it.key}=${it.value}"
     }.join('\n')
@@ -192,6 +254,7 @@ tasks.register('copyMetaResources', Copy) {
 tasks.named('preBuild') {
     dependsOn(
             'generateMetaInf',
-            'copyMetaResources'
+            'copyMetaResources',
+            'syncAlierSys'
     )
 }
