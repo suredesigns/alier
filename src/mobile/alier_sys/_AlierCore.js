@@ -318,6 +318,7 @@ async function _initAlier() {
     });
     
     {
+        const { MessagePorter } = await import("./MessagePorter.js");
         /**
          * Delegates an asynchronous function invocation to the JavaScript interface on the native land.
          * 

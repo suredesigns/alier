@@ -17,7 +17,14 @@ limitations under the License.
 import { AlierCustomElement } from "./AlierCustomElement.js";
 import { ViewLogic } from "./ViewLogic.js";
 
+const _shadowRootKey = Symbol("AlierView#shadowRoot");
+
 class AlierView extends AlierCustomElement {
+    static tagName = "alier-view";
+
+    static attachShadowOptions = {
+        mode: "closed"
+    };
 
     /**
      * Attaches the target {@link ViewLogic} to this AlierView.
@@ -50,7 +57,7 @@ class AlierView extends AlierCustomElement {
         ViewLogic.attachTo(vl, this);
 
         const attached_container = this.#container;
-        this.#shadowRoot.append(attached_container.styles, attached_container.container);
+        this[_shadowRootKey].append(attached_container.styles, attached_container.container);
 
         this.show();
 
@@ -157,26 +164,112 @@ class AlierView extends AlierCustomElement {
     }
 
     /**
-     * @constructor
+     * @override
      */
-    constructor() {
-        super();
-        this.#shadowRoot = this.attachShadow({ mode: "closed" });
+    onInitialize(shadowRoot) {
+        this[_shadowRootKey] = shadowRoot;
+        this[_shadowRootKey].adoptedStyleSheets = [ AlierView.#styleSheet ];
     }
 
-    connectedCallback(){
+    constructor() {
+        super();
+        this.initialize();
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+
+        if (!this.#connected) {
+            this.onFirstConnection();
+            this.#connected = true;
+        }
+    }
+
+    onFirstConnection() {
         this.style.display = "block";
     }
+
+    #connected = false;
+
+    /**
+     * @param {boolean} global
+     * If true, the stylesheet will also be applied to the entire document by updating `document.adoptedStyleSheets`. 
+     * 
+     * @param {string[]} cssfiles 
+     * An array of css file paths to be set as the stylesheet of this AlierView. 
+     * 
+     * @returns {Promise<CSSRule[]>}
+     * A Promise enveloping an array of `CSSRule` objects representing the rules in the newly set stylesheet.
+     * 
+     * @throws {TypeError}
+     * when any element in given `cssfiles` is not a string.
+     */
+    static async setStyleSheets(global, ...cssfiles)  {
+
+        const sheets = await Promise.all(
+            cssfiles.map(async link => {
+                if (typeof link !== "string") {
+                    throw new TypeError(`Invalid path: ${link}`);
+                }
+                const rule = await Alier.Sys.loadText(link);
+                return new CSSStyleSheet().replace(rule);
+            })
+        );
+
+        this.adoptedStyleSheets = sheets;
+        this.#recentGlobal = this.adoptedStyleSheets;
+
+        const cleaned = document.adoptedStyleSheets.filter(
+            s => !this.#recentGlobal.includes(s)
+        );
+        const updated = [...cleaned, this.#styleSheet];
+        document.adoptedStyleSheets = global ? updated : cleaned;
+        
+        return Array.from(AlierView.#styleSheet.cssRules);
+    }
+
+    static #StyleSheetsToString(sheets) {
+        const merged = sheets.map(sheet => {
+            return Array.from(sheet.cssRules).map(rule => rule.cssText).join("\n");
+        });
+        return merged.join("\n");
+    }
+
+    /**
+     * @type {CSSStyleSheet[]}
+     */
+    static #adoptedStyleSheets = [];
+
+    static get adoptedStyleSheets() {
+        return this.#adoptedStyleSheets;
+    }
+    static set adoptedStyleSheets(sheets) {
+        this.#adoptedStyleSheets.length = 0;
+        this.#adoptedStyleSheets.push(...sheets);
+        this.#styleSheet.replaceSync(this.#StyleSheetsToString(sheets));
+    }
+    
+    /**
+     * @type {CSSStyleSheet[]}
+     */
+    static #recentGlobal = [];
+
+    /** 
+     * @type {CSSStyleSheet}
+     */
+    static #styleSheet = new CSSStyleSheet();
 
     /**
      * @type {ShadowRoot}
      */
-    #shadowRoot;
+    [_shadowRootKey];
     
     /**
      * @type {ViewLogic | null}
      */
     #container = null;
 }
+
+AlierView.use();
 
 export { AlierView };

@@ -14,13 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const model_module = {};
-const xml_parser = new DOMParser();
 import { LazyNew } from "./LazyNew.js";
 import { ObservableObject } from "./ObservableObject.js";
 import { ObservableArray } from "./ObservableArray.js";
 import { WebApi } from "./WebApi.js";
 import { AgentRepository } from "./Auth.js";
+import { MessagePorter } from "./MessagePorter.js";
+import { AlierModel } from "./AlierModel.js";
+
+const model_module = {};
+const xml_parser = new DOMParser();
 
 /**
  * Builds a model interface from the given XML document.
@@ -308,4 +311,7 @@ class RestfulObject {
     }
 }
 
-export { setupModelInterfaceFromText, setupModelInterface };
+export {
+    setupModelInterfaceFromText,
+    setupModelInterface
+};

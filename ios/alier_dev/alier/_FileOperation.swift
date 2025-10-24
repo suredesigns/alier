@@ -246,7 +246,6 @@ public class _FileOperation: NSObject {
                 <meta charset="UTF-8" />
                 <meta name="viewport" content="width=device-width, maximum-scale=1.0,user-scalable=yes" />
                 \(self._systemScriptTag(src: "_dependency_iOS.js"))
-                \(self._systemScriptTag(src: "_MessagePorter.js"))
                 \(self._systemScriptTag(src: "_AlierCore.js"))
             </head>
             <body></body>

@@ -81,6 +81,4 @@ class MessagePorter {
     }
 }
 
-/// Platform Specific -->
 export { MessagePorter };
-/// <-- Platform Specific

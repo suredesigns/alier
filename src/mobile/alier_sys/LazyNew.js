@@ -205,6 +205,4 @@ const LazyNew = (ctor, initializer) => {
     return delegate;
 }
 
-/// Platform Specific -->
 export { LazyNew, LazyNew$initialized };
-/// <-- Platform Specific

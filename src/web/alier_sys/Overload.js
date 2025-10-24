@@ -130,6 +130,4 @@ class Overload {
     }
 }
 
-/// Platform Specific -->
 export { Overload };
-/// <-- Platform Specific

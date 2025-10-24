@@ -1,0 +1,33 @@
+/*
+Copyright 2024 Suredesigns Corp.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+/**
+ * Gets the property descriptor of the given object.
+ * 
+ * @param {object} o 
+ * The object contains the property to get.
+ * @param {PropertyKey} key
+ * The key of the property to get.
+ * @returns 
+ */
+export default function getPropertyDescriptor(o, key) {
+    for (let p = o; p != null; p = Object.getPrototypeOf(p)) {
+        const desc = Object.getOwnPropertyDescriptor(p, key);
+        if (desc != null) {
+            return desc;
+        }
+    }
+}

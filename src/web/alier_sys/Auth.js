@@ -14,9 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/// Platform Specific -->
 import { Envelope } from "./Envelope.js";
-/// <-- Platform Specific
 
 /**
  * @template {string} T Error code types.
@@ -2227,7 +2225,6 @@ function abortReasonToAuthError(reason) {
     return error;
 }
 
-/// Platform Specific -->
 export {
     AuthError,
     IAuthKey,
@@ -2240,4 +2237,3 @@ export {
     DigestAuthKey,
     DigestProtocol,
 };
-/// <-- Platform Specific

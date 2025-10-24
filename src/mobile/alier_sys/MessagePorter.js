@@ -14,10 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-//  This file is intended to be used as a classic script and so
-//  any variables and functions including classes defined at
-//  the top-level are referred via the globalThis object.
-// eslint-disable-next-line no-unused-vars
 class MessagePorter {
     /** @type {((message: any) => (undefined | boolean | Promise<void>))[]} */
     #event_listeners = [];
@@ -84,3 +80,5 @@ class MessagePorter {
         return index >= 0 ? listeners.splice(index, 1)[0] : undefined; 
     }
 }
+
+export { MessagePorter };

@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import { AlierCustomElement } from "./AlierCustomElement.js";
+
 /**
  * Makes an iterable view of the given object's own properties.
  * Unlike `Object.entries`, this function returns a generator
@@ -1154,33 +1156,18 @@ class ProtoViewLogic {
      * Collects elements to be used as UI components from
      * the given element and its descendants.
      *
-     * This function behaves differently depending on whether a set of
-     * ids is provided or not.
-     *
-     * By default, i.e. if the ids are not provided, this function
-     * collects elements from the given root element satisfying
-     * the following conditions:
-     *
-     * -  the "id" attribute is defined, and
-     * -  the "data-ui-component" attribute is defined
-     *
-     * Here the custom data attribute "data-ui-component" works
-     * as markers for UI components.
-     *
-     * Otherwise, if the ids are provided, this function collects
-     * elements having one of the provided ids.
-     *
      * @param {Element | Promise<Element>} rootElement
      * An element treated as root while collection
      * or a `Promise` that resolves to a root element.
      *
-     * @param {...string} idsForElementsToBeCollected
-     * A set of strings representing ids for elements to be collected.
-     *
-     * If the ids are not provided for this function,
-     * this function tries to collect elements having both
-     * "id" and "data-ui-component" attributes instead.
-     *
+     * @param {((element: Element) => boolean)?} filter
+     * An optional predicate function used for filtering elements
+     * selected with the selectors `":defined[id]"`.
+     * 
+     * By default, the predicate function returning `true` if
+     * either the given element has the `data-ui-component` attribute or
+     * the element is an instance of `AlierCustomElement`.
+     * 
      * @returns
      * an object having references to the collected elements.
      * Each of keys of this object is determined
@@ -1217,39 +1204,41 @@ class ProtoViewLogic {
      * @see
      * - {@link ProtoViewLogic.prototype.relateElements}
      */
-    collectElements(rootElement, ...idsForElementsToBeCollected) {
+    collectElements(rootElement, filter) {
         if (rootElement instanceof Promise) {
             return rootElement.then(root => {
-                return this.collectElements(root, ...idsForElementsToBeCollected);
+                return this.collectElements(root, filter);
             });
         } else if (!(rootElement instanceof Element)) {
-            throw new TypeError(`${rootElement} is not an ${Element.name}`);
+            throw new TypeError(`'rootElement' is not an ${Element.name}`);
+        } else if (filter != null && typeof filter !== "function") {
+            throw new TypeError(`'filter' is not a function`);
         }
 
         const RESERVED_NAMES = Object.getOwnPropertyNames(Object.getPrototypeOf(this));
 
-        /** @type {Set<string>} */
-        const element_ids = new Set();
-        for (const id of idsForElementsToBeCollected) {
-            const id_trimmed = id.trim();
-            if (id_trimmed.length > 0) {
-                element_ids.add(id);
+        const root    = rootElement;
+        const filter_ = filter ?? (
+            element => (
+                element.hasAttribute("data-ui-component") ||
+                (element instanceof AlierCustomElement)
+            )
+        );
+        const elements = [];
+        for (const element of root.querySelectorAll(":defined[id]")) {
+            let passed = false;
+            try {
+                passed = filter_(element);
+            } catch (cause) {
+                throw new Error(
+                    `${this.constructor.name}: collectElements: an error occurs in the given filter function (${cause.message})`,
+                    { cause }
+                );
+            }
+            if (passed) {
+                elements.push(element);
             }
         }
-        let query = "";
-        if (element_ids.size > 0) {
-            const iter = element_ids.values();
-            query = `:scope #${CSS.escape(iter.next().value)}`;
-            for (const id of iter) {
-                query += ",";
-                query += `:scope #${CSS.escape(id)}`;
-            }
-        } else {
-            //  Collect elements having both "id" and "data-ui-component"
-            //  attributes if the target ids are not provided.
-            query = ":scope [id][data-ui-component]";
-        }
-        const elements = [ ...rootElement.querySelectorAll(query) ];
 
         const element_map = Object.create(null);
         for (const e of elements) {

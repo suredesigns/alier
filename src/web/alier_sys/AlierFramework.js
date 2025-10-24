@@ -21,13 +21,7 @@ import { ProtoViewLogic } from "./ProtoViewLogic.js";
 import { ViewLogic } from "./ViewLogic.js";
 import { AlierView } from "./AlierView.js";
 import { ListView } from "./ListView.js";
-
-const defineIfNotDefined = (tag, ctor, options = undefined) => {
-    if (customElements.get(tag) === undefined) {
-        customElements.define(tag, ctor, options);
-    }
-};
-
+import { AlierText } from "./AlierText.js";
 /**
  * Setup Alier environment.
  *
@@ -42,9 +36,8 @@ const defineIfNotDefined = (tag, ctor, options = undefined) => {
  */
 function setupAlier() {
     if (!("View" in Alier)) {
-        defineIfNotDefined("alier-app-view", class AppView extends AlierView {});
         Object.defineProperty(Alier, "View", {
-            value     : document.createElement("alier-app-view"),
+            value     : new AlierView(),
             writable  : true,
             enumerable: true
         });
@@ -57,6 +50,7 @@ export {
     AlierModel,
     ViewLogic,
     ListView,
+    AlierText,
     setupModelInterfaceFromText,
     setupModelInterface,
     AlierView,

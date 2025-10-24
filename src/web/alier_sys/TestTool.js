@@ -1440,6 +1440,4 @@ const test = (task) => {
     }
 };
 
-/// Platform Specific -->
 export { doTest, TestCase, TestStatus, test };
-/// <-- Platform Specific

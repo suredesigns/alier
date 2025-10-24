@@ -14,7 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { Envelope } from "./Envelope.js";
+import { ViewLogic } from "./ViewLogic.js";
+import { Envelope }  from "./Envelope.js";
 
 class PopupContainer extends ViewLogic {}
 class PopupFrame extends ViewLogic {
@@ -632,4 +633,12 @@ class Popup{
 
 }
 
-export { Popup, PopupFrame, PopupContainer, ModalFrame, ModelessFrame, MessageboxFrame, ToastFrame };
+export {
+    Popup,
+    PopupFrame,
+    PopupContainer,
+    ModalFrame,
+    ModelessFrame,
+    MessageboxFrame,
+    ToastFrame
+};

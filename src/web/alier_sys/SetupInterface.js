@@ -14,11 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { LazyNew }     from "./LazyNew.js";
-import { ObservableObject }     from "./ObservableObject.js";
-import { ObservableArray }     from "./ObservableArray.js";
-import { WebApi }     from "./WebApi.js";
-import { AgentRepository }     from "./Auth.js";
+import { LazyNew } from "./LazyNew.js";
+import { ObservableObject } from "./ObservableObject.js";
+import { ObservableArray } from "./ObservableArray.js";
+import { WebApi } from "./WebApi.js";
+import { AgentRepository } from "./Auth.js";
+import { MessagePorter } from "./MessagePorter.js";
+import { AlierModel } from "./AlierModel.js";
+
 const model_module = {};
 const xml_parser = new DOMParser();
 
@@ -294,9 +297,13 @@ class RestfulObject {
             const method = restObj[method_name];
             this[method_name] = (typeof method === "function") ?
                 method.bind(restObj) :
-                () => {};
+                () => {}
+            ;
         }
     }
 }
 
-export { setupModelInterfaceFromText, setupModelInterface };
+export {
+    setupModelInterfaceFromText,
+    setupModelInterface
+};

@@ -1515,7 +1515,7 @@ final public class _NativeFunctionInterface :
         let return_value: [String: Any?]
         do {
             guard let result = try f.call(args) else {
-                completionHandler(try! asJson([ "result": "null" ]))
+                completionHandler(try! asJson([ "result": nil ]))
                 return
             }
             return_value = [ "result": result ]

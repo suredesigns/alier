@@ -26,6 +26,11 @@ import { ProtoViewLogic } from "./ProtoViewLogic.js";
 import { ViewLogic } from "./ViewLogic.js";
 import { AlierView } from "./AlierView.js";
 import { ListView } from "./ListView.js";
+import "./AlierText.js";
+import "./AlierButton.js";
+import "./TextField.js";
+import "./Checkbox.js";
+import "./AlierSlider.js";
 
 /**
  * Setup Alier environment.
@@ -42,14 +47,11 @@ import { ListView } from "./ListView.js";
 function setupAlier() {
     if (!("View" in Alier)) {
         // <========= mobile only ==========
-        defineIfNotDefined("alier-view", AlierView);
         defineIfNotDefined("alier-container", class ContainerView extends HTMLElement {});
-        defineIfNotDefined("alier-list-view", ListView);
         // ========== mobile only =========>
 
-        defineIfNotDefined("alier-app-view", class AppView extends AlierView {});
         Object.defineProperty(Alier, "View", {
-            value     : document.createElement("alier-app-view"),
+            value     : new AlierView(),
             writable  : true,
             enumerable: true
         });

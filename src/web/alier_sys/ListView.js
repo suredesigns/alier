@@ -14,9 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { AlierView }          from "./AlierView.js";
-import { ObservableArray }      from "./ObservableArray.js";
-import { ViewLogic }            from "./ViewLogic.js";
+import { AlierView } from "./AlierView.js";
+import { ViewLogic } from "./ViewLogic.js";
+import { ObservableArray } from "./ObservableArray.js";
 
 /**
  * @class
@@ -255,6 +255,9 @@ class ListViewContainer extends ViewLogic {
  * The user can provide ListItemView's ViewLogic instead.
  */
 class ListView extends AlierView {
+
+    static tagName = "alier-list-view";
+
     /**
      * number of contents
      */
@@ -748,5 +751,7 @@ class ListView extends AlierView {
         }
     }
 }
+
+ListView.use();
 
 export { ListView };

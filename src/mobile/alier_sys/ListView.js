@@ -255,6 +255,9 @@ class ListViewContainer extends ViewLogic {
  * The user can provide ListItemView's ViewLogic instead.
  */
 class ListView extends AlierView {
+
+    static tagName = "alier-list-view";
+
     /**
      * number of contents
      */
@@ -748,5 +751,7 @@ class ListView extends AlierView {
         }
     }
 }
+
+ListView.use();
 
 export { ListView };

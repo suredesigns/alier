@@ -31,6 +31,11 @@ import "./_AlierCore.js";
 
 import { AlierView } from "./AlierView.js";
 import { ListView } from "./ListView.js";
+import "./AlierText.js";
+import "./AlierButton.js";
+import "./TextField.js";
+import "./Checkbox.js";
+import "./AlierSlider.js";
 
 // ViewLogic.js:546
 // In `ViewLogic.attachTo`, check that new host is the instance of `AlierView`.
@@ -88,9 +93,6 @@ export default async function appStart(mainScriptPath, ...args) {
             type: ${typeof main}\
         `.replace(/\ {4}/g, ""));
     }
-
-    const { MessagePorter } = await import("./MessagePorter.js");
-    globalThis.MessagePorter = MessagePorter;
 
     if (document.readyState === "loading") {
         await new Promise((resolve) => {

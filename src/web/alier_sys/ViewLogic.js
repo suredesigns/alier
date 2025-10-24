@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 import { ProtoViewLogic } from "./ProtoViewLogic.js";
+import { AlierView } from "./AlierView.js";
 
 /**
  * @class

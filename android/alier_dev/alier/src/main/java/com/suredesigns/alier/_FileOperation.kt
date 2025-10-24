@@ -188,7 +188,6 @@ class _FileOperation (
             |    <link rel="icon" href="data:,">
             |    <meta name="viewport" content="width=device-width, maximum-scale=1.0,user-scalable=yes" />
             |    <script type="text/javascript" src="/alier_sys/_dependency_Android.js"></script>
-            |    <script type="text/javascript" src="/alier_sys/_MessagePorter.js"></script>
             |    <script type="text/javascript" src="/alier_sys/_AlierCore.js"></script>
             |</head>
             |<body></body>

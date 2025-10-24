@@ -506,6 +506,4 @@ class UtcDateTime {
     #value;
 }
 
-/// Platform Specific -->
 export { UtcDateTime };
-/// <-- Platform Specific

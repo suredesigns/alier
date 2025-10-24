@@ -16,6 +16,7 @@ limitations under the License.
 
 import { ViewLogic } from "./ViewLogic.js";
 import { Envelope }  from "./Envelope.js";
+
 class PopupContainer extends ViewLogic {}
 class PopupFrame extends ViewLogic {
     attachPopup() {}
@@ -633,4 +634,12 @@ class Popup{
 
 }
 
-export { Popup, PopupFrame, PopupContainer, ModalFrame, ModelessFrame, MessageboxFrame, ToastFrame };
+export {
+    Popup,
+    PopupFrame,
+    PopupContainer,
+    ModalFrame,
+    ModelessFrame,
+    MessageboxFrame,
+    ToastFrame
+};

@@ -16,7 +16,7 @@
 #       see <https://docs.gradle.org/current/userguide/version_catalogs.html#sec:common-version-numbers>
 
 alier-versionCode = "1"
-alier-versionName = "0.4.0"
+alier-versionName = "0.4.1"
 
 project-compileSdk = "36"
 project-targetSdk  = "35"
