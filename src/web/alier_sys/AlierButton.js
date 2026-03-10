@@ -14,11 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { AlierCustomElement } from "./AlierCustomElement.js";
-import { html, render } from "./Render.js";
+import { AlierUiElement, html } from "./AlierUiElement.js";
 import { LongPressTarget } from "./LongPressTarget.js";
 
-const AlierButton = LongPressTarget(class AlierButton extends AlierCustomElement {
+const AlierButton = LongPressTarget(class AlierButton extends AlierUiElement {
     static tagName = "alier-button";
     static formAssociated = true;
 
@@ -31,7 +30,7 @@ const AlierButton = LongPressTarget(class AlierButton extends AlierCustomElement
         const timer = this.slowRepeatEndMs > 0 ? this.slowRepeatDurationMs : this.repeatDurationMs;
         this.clickRepeat(timer);
     }
-    
+
     static attachShadowOptions = {
         mode: "closed",
         delegatesFocus:true,
@@ -61,8 +60,14 @@ const AlierButton = LongPressTarget(class AlierButton extends AlierCustomElement
             onChange: (target, oldValue, newValue) => {
                 if (!oldValue && newValue) {
                     target.addEventListener("longpress", target.#startRepeat);
+                    if (target.getAttribute("duplicate-filter") !== "none"){
+                        target.setAttribute("duplicate-filter", "discard");
+                    }
                 } else if (oldValue && !newValue) {
                     target.removeEventListener("longpress", target.#startRepeat);
+                    if (target.getAttribute("duplicate-filter") !== "none") {
+                        target.removeAttribute("duplicate-filter");
+                    }
                 }
             },
         },
@@ -104,7 +109,7 @@ const AlierButton = LongPressTarget(class AlierButton extends AlierCustomElement
     };
 
     static states = {};
-   
+
     static styles = `
         :host {
             height: fit-content;
@@ -153,11 +158,13 @@ const AlierButton = LongPressTarget(class AlierButton extends AlierCustomElement
         this.initialize();
     }
 
-    onInitialize(shadowRoot, elementInternals) { 
+    onInitialize(shadowRoot, elementInternals) {
         this.internals = elementInternals;
         this.#shadowRoot = shadowRoot;
         this.setAttribute("exportpart", "button");
-        this.setAttribute("data-active-events", "click");
+        if (!this.hasAttribute("data-active-events")) {
+            this.setAttribute("data-active-events", "click");
+        }
         if(this.repeat) {
             this.addEventListener("longpress", this.#startRepeat);
         }
@@ -193,7 +200,7 @@ const AlierButton = LongPressTarget(class AlierButton extends AlierCustomElement
                 this.clickRepeat(timer);
             }
         }, time);
-    }    
+    }
 });
 
 AlierButton.use();

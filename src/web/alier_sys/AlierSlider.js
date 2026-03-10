@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { AlierCustomElement, html, listener } from "./AlierCustomElement.js";
+import { AlierUiElement, html, listener } from "./AlierUiElement.js";
 
 const _updateThumbPosition = (() => {
     const ongoing_targets = new WeakSet;
@@ -33,7 +33,7 @@ const _updateThumbPosition = (() => {
     return update;
 })();
 
-class AlierSlider extends AlierCustomElement {
+class AlierSlider extends AlierUiElement {
     static tagName = "alier-slider";
 
     static formAssociated = true;

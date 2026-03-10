@@ -37,7 +37,7 @@ function _setDescParam(desc, key, value) {
         desc.params = {};
     }
 
-    if (Object.prototype.hasOwnProperty.call(desc.params, key)) {
+    if (Object.hasOwn(desc.params, key)) {
         throw new SyntaxError(`Duplicated parameter definition found. ${JSON.stringify(key)} is already defined.`);
     }
 
@@ -1203,7 +1203,7 @@ class WebApi {
         const payload        = no_payload(method) ? null : {};
 
         for (const param_name in params) {
-            if (!Object.prototype.hasOwnProperty.call(params, param_name)) { continue; }
+            if (!Object.hasOwn(params, param_name)) { continue; }
 
             const param = params[param_name];
 
@@ -1232,7 +1232,7 @@ class WebApi {
 
         if (payload != null) {
             // request has body
-            if (!Object.prototype.hasOwnProperty.call(headers_, "content-type")) {
+            if (!Object.hasOwn(headers_, "content-type")) {
                 headers_["content-type"] = "application/json";
             }
             const content_types = [...parseHeaderValue("content-type", headers_["content-type"].toLowerCase())];
@@ -1249,7 +1249,7 @@ class WebApi {
             case "multipart/form-data": {
                 body_ = new FormData();
                 for (const key in payload) {
-                    if (!Object.prototype.hasOwnProperty.call(payload, key)) { continue; }
+                    if (!Object.hasOwn(payload, key)) { continue; }
                     const value = payload[key];
                     body_.append(key, value);
                 }
@@ -1269,7 +1269,7 @@ class WebApi {
         };
 
         for (const k in fetch_options_) {
-            if (!Object.prototype.hasOwnProperty.call(fetch_options_, k)) { continue; }
+            if (!Object.hasOwn(fetch_options_, k)) { continue; }
             if (ReservedRequestPropertyNames.has(k)) {
                 Alier.Sys.logw(0, `You shan't overwrite the property "${k}" via a fetch options argument. It was ignored.`);
                 continue;
@@ -1482,7 +1482,7 @@ class WebApi {
         }
 
         for (const k in fetch_options_) {
-            if (!Object.prototype.hasOwnProperty.call(fetch_options_, k)) { continue; }
+            if (!Object.hasOwn(fetch_options_, k)) { continue; }
             if (ReservedRequestPropertyNames.has(k)) {
                 Alier.Sys.logw(0, `You shan't overwrite the property "${k}" via a fetch options argument. It was ignored.`);
                 continue;

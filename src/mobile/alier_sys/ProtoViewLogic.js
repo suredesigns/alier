@@ -15,25 +15,10 @@ limitations under the License.
 */
 
 import { AlierCustomElement } from "./AlierCustomElement.js";
-
-/**
- * Makes an iterable view of the given object's own properties.
- * Unlike `Object.entries`, this function returns a generator
- * rather than an array of entries.
- *
- * @param {{[k: string]: any}} o
- * @returns an iterable of the given object's own properties.
- */
-const _objectEntries = function* (o) {
-    for (const k in o) {
-        if (!Object.prototype.hasOwnProperty.call(o, k)) { continue; }
-        /**
-         * @type {[ string, any ]}
-         */
-        const entry = [k, o[k]];
-        yield entry;
-    }
-};
+import entriesOf from "./entriesOf.js";
+import getPropertyDescriptor from "./GetPropertyDescriptor.js";
+import isEmpty from "./isEmpty.js";
+import getPrimaryProperty from "./getPrimaryProperty.js";
 
 /**
  * Tests whether or not the given two arrays are the same.
@@ -54,13 +39,13 @@ const _isSameArray = (lhs, rhs) => {
 
     const keys = new Set();
     for (const i in lhs) {
-        if (!Object.prototype.hasOwnProperty.call(lhs, i)) { continue; }
-        if (!Object.prototype.hasOwnProperty.call(rhs, i)) { return false; }
+        if (!Object.hasOwn(lhs, i)) { continue; }
+        if (!Object.hasOwn(rhs, i)) { return false; }
         keys.add(i);
     }
 
     for (const i in rhs) {
-        if (!Object.prototype.hasOwnProperty.call(rhs, i)) { continue; }
+        if (!Object.hasOwn(rhs, i)) { continue; }
         if (!keys.has(i)) { return false; }
     }
 
@@ -205,98 +190,6 @@ const _isValidIdentifier = (s) => {
 };
 
 /**
- * A helper function for implementing data-binding functionality.
- *
- * Gets the primary property of the given `Element`.
- *
- * "the primary property" is defined as a property indicated
- * by the `data-primary` attribute of the element.
- *
- * The value of a `data-primary` attribute is expected to be a string
- * representing a sequence of property names separated by dots
- * such as `"foo.bar.baz"`.
- * If the `data-primary` attribute is empty or undefined,
- * the property `value` is treated as the primary property.
- *
- * e.g. let `el` is an element with a `data-primary` attribute
- * whose value is set to `"foo.bar"`,
- * then `el.foo.bar` (or `el["foo"]["bar"]`) is assumed to be
- * the primary property of `el`.
- * In this case, if `el.foo` is either undefined or not an object,
- * the primary property is treated as undefined.
- *
- * @param {Element} element
- * An element to be examined whether or not it has the primary property.
- *
- * @returns {({
- *      node: object | undefined,
- *      key: string
- * })}
- * a pair of a node having the primary property and its key.
- * the property `node` of the returned object is `undefined`
- * when there is no such a node.
- *
- */
-const _getPrimaryProperty = (element) => {
-    if (!(element instanceof HTMLElement)) {
-        throw new TypeError(`${element} is not an instance of ${HTMLElement.name}`);
-    }
-    const primary = element.dataset.primary;
-    if (primary == null || primary === "") {
-        const key = "value";
-        return key in element ?
-            ({ node: element  , key: key }) :
-            ({ node: undefined, key: key })
-        ;
-    } else {
-        const key_seq = primary.split(".");
-        /** @type {string} */
-        const last_key = key_seq.pop();
-        /** @type {object} */
-        let node = element;
-        for (const key of key_seq) {
-            if (node === null || typeof node !== "object" || !(key in node)) {
-                return ({ node: undefined, key: key });
-            }
-            node = node[key];
-        }
-        return (
-            (node !== null && typeof node === "object" && (last_key in node)) ?
-                ({ node: node,      key: last_key }) :
-            ("value" in element) ?
-                ({ node: element  , key: "value"  }) :
-                ({ node: undefined, key: last_key })
-        );
-    }
-};
-
-/**
- * Gets a certain property of the given object specified by name.
- *
- * Unlike {@link Object.getOwnPropertyDescriptor},
- * this function retrieves the property defined in the given object's
- * prototype chain.
- *
- * @param {object} o
- * an object.
- *
- * @param {string} key
- * a string representing a property name.
- *
- * @returns {PropertyDescriptor | undefined}
- * A property descriptor of `o[key]`.
- */
-const _getPropertyDescriptor = (o, key) => {
-    for (let proto = o; proto != null; proto = Object.getPrototypeOf(proto)) {
-        const desc = Object.getOwnPropertyDescriptor(proto, key);
-        if (desc != null) {
-            return desc;
-        }
-    }
-    return undefined;
-};
-
-/**
  * Gets a set of property names of the given object.
  *
  * Unlike {@link Object.getOwnPropertyNames},
@@ -321,10 +214,10 @@ const _getPropertyNames = (o) => {
 /**
  * special property names used for ProtoViewLogic's internal functionality.
  */
-const CustomKeys$ELEMENT_OWNER           = "alier-viewlogic-element_owner"
-    , CustomKeys$ELEMENT_NAME            = "alier-viewlogic-element_name"
-    , CustomKeys$ELEMENT_CACHED_INDEX    = "alier-viewlogic-element_cached_index"
-    , CustomKeys$ELEMENT_EVENT_LISTENERS = "alier-viewlogic-element_event_listeners"
+const CustomKeys$ELEMENT_OWNER           = Symbol("alier-viewlogic-element_owner")
+    , CustomKeys$ELEMENT_NAME            = Symbol("alier-viewlogic-element_name")
+    , CustomKeys$ELEMENT_CACHED_INDEX    = Symbol("alier-viewlogic-element_cached_index")
+    , CustomKeys$ELEMENT_EVENT_LISTENERS = Symbol("alier-viewlogic-element_event_listeners")
 ;
 
 class ProtoViewLogic {
@@ -351,7 +244,7 @@ class ProtoViewLogic {
      * A callback function invoked whenever a message is posted to
      * the target ProtoViewLogic.
      *
-     * @param {Messenger} msg
+     * @param {Messenger} message
      * A message object.
      *
      * @returns {Promise<boolean>}
@@ -364,7 +257,7 @@ class ProtoViewLogic {
      * - {@link ProtoViewLogic.prototype.broadcast}
      */
     // eslint-disable-next-line no-unused-vars
-    async messageHandler(msg) { return false; }
+    async messageHandler(message) { return false; }
 
     /**
      * creates a message
@@ -407,18 +300,29 @@ class ProtoViewLogic {
      * If the target `ProtoViewLogic` does not have a parent,
      * this function returns `false`.
      *
-     * @param {Object} msg
-     * @param {string?} msg.id
+     * @param {object} message
+     * A message to post.
+     *
+     * @param {string?} message.id
      * The primary identifier of the message.
      *
-     * @param {string?} msg.code
+     * @param {string?} message.code
      * The secondary identifier of the message.
      *
-     * @param {any?} msg.param
+     * @param {any?} message.param
      * An optional parameter object of the message.
      *
-     * @param {ProtoViewLogic} msg.origin
+     * @param {object} message.origin
      * The original sender of the message.
+     *
+     * @param {object} options
+     * A collection of optional arguments.
+     *
+     * @param {boolean} [options.discardDuplicates=false]
+     * A boolean indicating whether or not to discard a message if duplicated.
+     * Duplicates are discarded if the parameter is `true`.
+     *
+     * By default, this parameter is set to `false`.
      *
      * @returns {Promise<boolean>}
      * A Promise that resolves to a boolean which indicates
@@ -427,39 +331,39 @@ class ProtoViewLogic {
      * `false` otherwise.
      *
      * @throws {TypeError}
-     * -  when the given argument `msg` is not a non-null object.
+     * -  when the given argument `message` is not a non-null object.
      *
      * @see
      * - {@link post}
      * - {@link messageHandler}
      */
-    async post(msg) {
-        if (msg === null || typeof msg !== "object") {
-            throw new TypeError(`${msg} is not a non-null object`);
+    async post(message, options) {
+        if (message === null || typeof message !== "object") {
+            throw new TypeError(`${message} is not a non-null object`);
         }
 
-        const msg_ = (msg instanceof Messenger) ?
-            msg :
-            // set the target property.
-            new Messenger(Object.defineProperties(Object.create(null), Object.assign(
-                Object.getOwnPropertyDescriptors(msg), {
-                    target: {
-                        enumerable: true,
-                        value     : this
-                    }
-                })
-            ))
+        const discardDuplicates = options?.discardDuplicates ?? false;
+
+        if (discardDuplicates && this.isProcessing(message)) { return false; }
+
+        const message_ = (message instanceof Messenger) ?
+            message :
+            // set the target property to the message.
+            new Messenger({ ...message, target: this })
         ;
 
-        const handler_result = this.messageHandler(msg_);
+        this.#markAsInProgress(message);
 
-        const delivered      = await msg_.waitUntilDelivered() ?? (await handler_result);
+        const handler_result = this.messageHandler(message_);
+
+        handler_result.then(() => {
+            this.#clearAsInProgress(message);
+        });
+
+        const delivered      = (await message_.waitUntilDelivered()) ?? (await handler_result);
         const consumed       = typeof delivered !== "boolean" || delivered;
 
-        return (consumed || !(this.#parent instanceof ProtoViewLogic)) ?
-            consumed :
-            this.#parent.post(msg_)
-        ;
+        return consumed || (this.parent?.post(message_, options) ?? consumed);
     }
 
     /**
@@ -485,17 +389,19 @@ class ProtoViewLogic {
      * if their parent has not processed the message,
      * and so on.
      *
-     * @param {object} msg
-     * @param {string?} msg.id
+     * @param {object} message
+     * A message to broadcast.
+     *
+     * @param {string?} message.id
      * The primary identifier of the message.
      *
-     * @param {string?} msg.code
+     * @param {string?} message.code
      * The secondary identifier of the message.
      *
-     * @param {any?} msg.param
+     * @param {any?} message.param
      * An optional parameter object of the message.
      *
-     * @param {ProtoViewLogic} msg.origin
+     * @param {object} message.origin
      * The original sender of the message.
      *
      * @returns {Promise<boolean>}
@@ -504,25 +410,19 @@ class ProtoViewLogic {
      * `true` if the message has been consumed, `false` otherwise.
      *
      * @throws {TypeError}
-     * -  when the given argument `msg` is not a non-null object.
+     * -  when the given argument `message` is not a non-null object.
      * @throws {AggregateError}
      * -  when some of the descendants failed to handle the message.
      */
-    async broadcast(msg) {
-        if (msg === null || typeof msg !== "object") {
-            throw new TypeError(`${msg} is not a non-null object`);
+    async broadcast(message) {
+        if (message === null || typeof message !== "object") {
+            throw new TypeError(`${message} is not a non-null object`);
         }
 
-        const msg_ = (msg instanceof Messenger) ?
-            msg :
-            Object.defineProperties(Object.create(null), Object.assign(
-                Object.getOwnPropertyDescriptors(msg), {
-                    target: {
-                        enumerable: true,
-                        value     : this
-                    }
-                })
-            )
+        const message_ = (message instanceof Messenger) ?
+            message :
+            // set the target property to the message.
+            new Messenger({ ...message, target: this })
         ;
 
         /**
@@ -530,23 +430,15 @@ class ProtoViewLogic {
          * @returns {ProtoViewLogic[]}
          */
         const expand = (vl) => {
-            const flat_arr = [];
-            for (const k in vl) {
-                if (!Object.prototype.hasOwnProperty.call(vl, k)) { continue; }
-
-                const v = vl[k];
-
-                if (v instanceof ProtoViewLogic) {
-                    flat_arr.push(v);
-                } else if (Array.isArray(v) && v.length > 0 && v.every(x => (x == null || (x instanceof ProtoViewLogic)))) {
-                    for (const u of v) {
-                        if (u instanceof ProtoViewLogic) {
-                            flat_arr.push(u);
-                        }
-                    }
-                }
-            }
-            return flat_arr;
+            const children = Object.values(vl.getRelatedViewLogics())
+                .flat(1)
+            ;
+            const viewLogics = Object.values(vl.getRelatedElements())
+                .flat(1)
+                .map(element => element.logic)
+                .filter(logic => (logic instanceof ProtoViewLogic))
+            ;
+            return [...children, ...viewLogics];
         };
         const queue  = expand(this);
         /**
@@ -562,7 +454,7 @@ class ProtoViewLogic {
             const consumed = [];
 
             while (queue.length > 0) {
-                const m = new Messenger(msg_);
+                const m = new Messenger(message_);
                 /** @type {ProtoViewLogic} */
                 const child = queue.shift();
                 try {
@@ -605,6 +497,51 @@ class ProtoViewLogic {
         }
 
         return accumulated_result;
+    }
+
+    /**
+     * Determining if a message is in progress.
+     *
+     * @param {({ id?: string, code?: string })} message
+     * @returns {boolean} `true` if the message is in processing,
+     * `false` otherwise.
+     */
+    isProcessing(message) {
+        if (message === null || typeof message !== "object") { return false };
+        return this.#messages.get(message.id)?.get(message.code) != null;
+    }
+
+    /**
+     * Marking the message in progress.
+     *
+     * @param {({ id?: string, code?: string })} message
+     */
+    #markAsInProgress(message){
+        const { id, code } = message;
+        const messages_ = this.#messages;
+        let code_map = messages_.get(id);
+        if (code_map == null) {
+            code_map = new Map();
+            messages_.set(id, code_map);
+        }
+        code_map.set(code, message);
+    }
+
+    /**
+     * Clear the message when the process is complete.
+     *
+     * @param {({ id?: string, code?: string })} message
+     */
+    #clearAsInProgress(message){
+        const { id, code } = message;
+        const messages_ = this.#messages;
+        let code_map = messages_.get(id);
+        if (code_map != null) {
+            code_map.delete(code);
+            if (code_map.size === 0) {
+                messages_.delete(id);
+            }
+        }
     }
 
     /**
@@ -667,127 +604,48 @@ class ProtoViewLogic {
         const value_map = Object.create(null);
 
         const related_element_map = this.getRelatedElements();
+        /**
+         * @param {Element | Element[]} element_or_array
+         */
+        const get_element_value_of = element_or_array => {
+            if (Array.isArray(element_or_array)) {
+                const data = element_or_array.map(get_element_value_of);
+                return data.some(x => x != null) ? data : undefined;
+            }
+            const element = element_or_array;
+            const { node, key } = getPrimaryProperty(element);
+            if (node === element && key === "value") {
+                if (node instanceof HTMLSelectElement) {
+                    return node.multiple ?
+                        [...node.selectedOptions].map((option) => option.value) :
+                        (node.value ?? "")
+                    ;
+                } else if (node instanceof HTMLInputElement) {
+                    const node_type = node.type;
+                    return (node_type === "radio" || node_type === "checkbox") ?
+                        node.checked :
+                        node.value
+                    ;
+                } else {
+                    return node.value;
+                }
+            } else if (node != null) {
+                return node[key];
+            } else if (element.value != null) {
+                return element.value;
+            } else {
+                return;
+            }
+        };
+
         for (const element_name in related_element_map) {
             const element_or_array = related_element_map[element_name];
-
-            if (element_or_array instanceof Element) {
-                const element = element_or_array;
-
-                const { node, key } = _getPrimaryProperty(element);
-                if (node === element && key === "value") {
-                    const tag_name = node.tagName.toLowerCase();
-                    let no_match = false;
-
-                    switch (tag_name) {
-                    case "select": {
-                        const select = node;
-                        if (select.multiple) {
-                            const values = [...select.selectedOptions].map((option) => option.value);
-
-                            value_map[element_name] = values;
-                        } else {
-                            value_map[element_name] = select.value ?? "";
-                        }
-                        break;
-                    }
-                    case "input": {
-                        const node_type = node.type;
-
-                        if (node_type === "radio") {
-                            const radio = node;
-                            value_map[element_name] = radio.checked;
-                            break;  // no fall through
-                        } else if (node_type === "checkbox") {
-                            const checkbox = node;
-                            value_map[element_name] = checkbox.checked;
-                            break;  // no fall through
-                        }
-                        //  falls through
-                    }
-                    default:
-                        no_match = true;
-                    }
-                    if (no_match) {
-                        value_map[element_name] = node.value;
-                    }
-                } else if (node != null) {
-                    value_map[element_name] = node[key];
-                } else {
-                    Alier.Sys.logw(0,
-                        `Primary property "${element.dataset.primary}" not defined in the related element named "${element_name}".`
-                    );
-                }
-            } else {
-                const elements = element_or_array;
-
-                const data = new Array(elements.length);
-                for (const k in elements) {
-                    if (!Object.prototype.hasOwnProperty.call(elements, k)) { continue; }
-
-                    const i = Number(k);
-                    if (!Number.isInteger(i)) { continue; }
-
-                    const element = elements[i];
-
-                    const { node, key } = _getPrimaryProperty(element);
-                    if (node === element && key === "value") {
-                        const tag_name = node.tagName.toLowerCase();
-                        let no_match = false;
-
-                        switch (tag_name) {
-                        case "select": {
-                            const select = node;
-                            if (select.multiple) {
-                                const values = [...select.selectedOptions].map((option) => option.value);
-
-                                data[i] = values;
-                            } else {
-                                data[i] = select.value ?? "";
-                            }
-                            break;
-                        }
-                        case "input": {
-                            const node_type = node.type;
-
-                            if (node_type === "radio") {
-                                const radio = node;
-                                data[i] = radio.checked;
-                                break;  // no fall through
-                            } else if (node_type === "checkbox") {
-                                const checkbox = node;
-                                data[i] = checkbox.checked;
-                                break;  // no fall through
-                            }
-                            //  falls through
-                        }
-                        default:
-                            no_match = true;
-                            break;
-                        }
-                        if (no_match) {
-                            data[i] = node.value;
-                        }
-                    } else if (node != null) {
-                        data[i] = node[key];
-                    } else {
-                        Alier.Sys.logw(0,
-                            `Primary property "${element.dataset.primary}" not defined in the related element named "${element_name}".`
-                        );
-                    }
-                }
-
-                let contains_value = false;
-                for (const datum of data) {
-                    if (datum !== undefined) {
-                        contains_value = true;
-                        break;
-                    }
-                }
-                if (contains_value) {
-                    value_map[element_name] = data;
-                }
+            const value = get_element_value_of(element_or_array);
+            if (value != null) {
+                value_map[element_name] = value;
             }
         }
+
         return value_map;
     }
 
@@ -820,9 +678,11 @@ class ProtoViewLogic {
      * `reflectValues()` and the latter's return value is used as
      * the former's return value.
      *
-     * @param {{ [element_name: string]: any } | Map<string, any>} nameValuePairs
-     * An `Object` or a `Map` representing a set of pairs of
-     * element names and new values for their primary properties.
+     * @param {(
+     *  { [element_name: string]: any } |
+     *  Iterable<[string, any]>
+     * )} nameValuePairs
+     * A plain object or an iterable of name-value pairs.
      *
      * @returns {{ [element_name: string]: any } | Map<string, any>}
      * Pairs of element names and values that are the same as those given in the
@@ -843,236 +703,133 @@ class ProtoViewLogic {
 
         const pairs = nameValuePairs;
 
-        const updated_values = Object.create(null);
-        for (const [element_name, new_value] of (pairs instanceof Map) ? pairs.entries() : _objectEntries(pairs)) {
+        const is_binding = (
+            this.source !== null &&
+            typeof this.source === "object" &&
+            typeof this.source.reflectValues === "function"
+        );
+        /** @type { { [element_name: string]: any | any[] } | undefined }  */
+        const updated_values = is_binding ? Object.create(null) : undefined;
+
+        /**
+         * @param {object} node
+         * @param {string} source_key
+         * @param {any} new_value
+         * @returns {({ updated: true, current_value: any } | { updated: false })}
+         */
+        const default_reflect_value = (node, source_key, new_value) => {
+            const old_value = node[source_key];
+            if (old_value === new_value) {
+                return { updated: false };
+            }
+
+            node[source_key] = new_value;
+
+            const current_value = node[source_key];
+            const updated = old_value !== current_value;
+
+            return updated ?
+                { updated, current_value } :
+                { updated: false }
+            ;
+        };
+        /**
+         * @param {Element | Element[]} element_or_array
+         * @param {any} new_value
+         * @param {boolean} is_binding
+         * @returns {({ updated: true, current_value: any } | { updated: false })}
+         */
+        const reflect_value = (element_or_array, new_value, is_binding) => {
+            if (Array.isArray(element_or_array)) {
+                if (!Array.isArray(new_value)) {
+                    return { updated: false };
+                }
+                const elements    = element_or_array;
+                const new_values  = new_value;
+
+                const updated_arr = is_binding ? new Array(elements.length) : undefined;
+
+                const len = Math.min(elements.length, new_values.length);
+                for (let i = 0; i < len; i++) {
+                    if (!Object.hasOwn(elements, i) || !Object.hasOwn(new_values, i)) { continue; }
+                    const new_value_ = new_values[i];
+                    const element    = elements[i];
+                    const { updated, current_value } = reflect_value(element, new_value_, is_binding);
+                    if (updated_arr != null && updated) {
+                        updated_arr[i] = current_value;
+                    }
+                }
+
+                return updated_arr?.some(() => true) ?
+                    { updated: true, current_value: updated_arr } :
+                    { updated: false }
+                ;
+            }
+            const element = element_or_array;
+            const { node, key } = getPrimaryProperty(element);
+
+            if (node === element && key === "value") {
+                if (node instanceof HTMLSelectElement) {
+                    if (node.multiple) {
+                        // new value must be a non-null object here.
+                        if (new_value === null || typeof new_value !== "object") {
+                            return { updated: false };
+                        }
+
+                        /** @type {Map<string, HTMLOptionElement>} */
+                        const option_map = new Map();
+                        for (const option of node.options) {
+                            option_map.set(option.value, option);
+                        }
+                        const values = Object.create(null);
+
+                        //  requires non null-object.
+                        for (const k in new_value) {
+                            const option  = option_map.get(k);
+                            if (option != null) {
+                                const selected = !!new_value[k];
+                                option.selected = selected;
+                                values[k] = selected;
+                            }
+                        }
+
+                        const updated = !isEmpty(values);
+                        return updated ?
+                            { updated, current_value: values } :
+                            { updated: false }
+                        ;
+                    } else {
+                        return default_reflect_value(node, key, new_value);
+                    }
+                } else if (
+                    (node instanceof HTMLInputElement) &&
+                    (node.type === "radio" || node.type === "checkbox")
+                ) {
+                    return default_reflect_value(node, "checked", !!new_value);
+                } else {
+                    return default_reflect_value(node, key, new_value);
+                }
+            } else if (node != null) {
+                return default_reflect_value(node, key, new_value);
+            } else if (element.value != null) {
+                return default_reflect_value(element, "value", new_value);
+            }
+            return { updated: false };
+        };
+
+        for (const [element_name, new_value] of entriesOf(pairs)) {
             /** @type {Element|Element[]} */
             const element_or_array = this[element_name];
 
             if (!this.hasOwnElement(element_or_array)) { continue; }
 
-            if (element_or_array instanceof Element) {
-                const element = element_or_array;
-                const { node, key } = _getPrimaryProperty(element);
-
-                if (node === element && key === "value") {
-                    const tag_name = node.tagName.toLowerCase();
-                    let no_match = false;
-                    switch (tag_name) {
-                    case "select": {
-                        const select = node;
-
-                        if (select.multiple) {
-                            // new value must be a non-null object here.
-                            if (new_value === null || typeof new_value !== "object") { break; }
-
-                            /** @type {Map<string, HTMLOptionElement>} */
-                            const option_map = new Map();
-                            for (const option of select.options) {
-                                option_map.set(option.value, option);
-                            }
-                            const values  = Object.create(null);
-
-                            //  requires non null-object.
-                            for (const k in new_value) {
-                                const option  = option_map.get(k);
-                                if (option != null) {
-                                    const checked = !!new_value[k];
-                                    option.checked = checked;
-                                    values[k] = checked;
-                                }
-                            }
-
-                            let updated = false;
-                            for (const _ in values) {
-                                updated = true;
-                                break;
-                            }
-
-                            if (updated) {
-                                updated_values[element_name] = values;
-                            }
-                        } else {
-                            const old_value     = select.value;
-                            select.value        = new_value;
-                            //  it is not guaranteed that select.value === new_value here.
-                            const current_value = select.value;
-                            if (old_value !== current_value) {
-                                updated_values[element_name] = current_value;
-                            }
-                        }
-                        break;
-                    }
-                    case "input": {
-                        const node_type = node.type;
-
-                        if (node_type === "radio") {
-                            const checked = !!new_value;
-                            const radio   = node;
-                            if (radio.checked !== checked) {
-                                radio.checked = checked;
-                                updated_values[element_name] = radio.checked;
-                            }
-                            break; // no fall through
-                        } else if (node_type === "checkbox") {
-                            const checked  = !!new_value;
-                            const checkbox = node;
-                            if (checkbox.checked !== checked) {
-                                checkbox.checked = checked;
-                                updated_values[element_name] = checkbox.checked;
-                            }
-                            break; // no fall through
-                        }
-                        // falls through
-                    }
-                    default:
-                        no_match = true;
-                    }
-                    if (no_match) {
-                        const old_value     = node.value;
-                        node.value          = new_value;
-                        const current_value = node.value;
-                        if (old_value !== current_value) {
-                            updated_values[element_name] = current_value;
-                        }
-                    }
-                } else if (node != null) {
-                    const old_value     = node[key];
-                    node[key]           = new_value;
-                    const current_value = node[key];
-                    if (old_value !== current_value) {
-                        updated_values[element_name] = current_value;
-                    }
-                }
-            } else if (Array.isArray(new_value)) {
-                const elements    = element_or_array;
-                const new_values  = new_value;
-
-                const updated_arr = new Array(elements.length);
-
-                for (const k in elements) {
-                    if (!Object.prototype.hasOwnProperty.call(elements, k)) { continue; }
-
-                    const i = Number(k);
-                    if (!Number.isInteger(i)) { continue; }
-                    //  skip if i-th slot of new_values is empty
-                    if (!(k in new_values)) { continue; }
-                    //  break to prevent causing to overrun
-                    if (new_values.length <= i) { break; }
-
-                    const new_value     = new_values[i];
-                    const element       = elements[i];
-                    const { node, key } = _getPrimaryProperty(element);
-
-                    if (node === element && key === "value") {
-                        const tag_name = node.tagName.toLowerCase();
-                        let no_match = false;
-                        switch (tag_name) {
-                        case "select": {
-                            const select = node;
-
-                            if (select.multiple) {
-                                // new value must be a non-null object here.
-                                if (new_value === null || typeof new_value !== "object") { break; }
-
-                                /** @type {Map<string, HTMLOptionElement>} */
-                                const option_map = new Map();
-                                for (const option of select.options) {
-                                    option_map.set(option.value, option);
-                                }
-                                const values  = Object.create(null);
-
-                                //  requires non null-object.
-                                for (const k in new_value) {
-                                    const option  = option_map.get(k);
-                                    if (option != null) {
-                                        const checked = !!new_value[k];
-                                        option.checked = checked;
-                                        values[k] = checked;
-                                    }
-                                }
-
-                                let updated = false;
-                                for (const _ in values) {
-                                    updated = true;
-                                    break;
-                                }
-
-                                if (updated) {
-                                    updated_arr[i] = values;
-                                }
-                            } else {
-                                const old_value     = select.value;
-                                select.value        = new_value;
-                                //  it is not guaranteed that select.value === new_value here.
-                                const current_value = select.value;
-                                if (old_value !== current_value) {
-                                    updated_arr[i] = current_value;
-                                }
-                            }
-                            break;
-                        }
-                        case "input": {
-                            const node_type = node.type;
-
-                            if (node_type === "radio") {
-                                const checked = !!new_value;
-                                const radio   = node;
-                                if (radio.checked !== checked) {
-                                    radio.checked  = checked;
-                                    updated_arr[i] = radio.checked;
-                                }
-                                break;  // no fall through
-                            } else if (node_type === "checkbox") {
-                                const checked  = !!new_value;
-                                const checkbox = node;
-                                if (checkbox.checked !== checked) {
-                                    checkbox.checked = checked;
-                                    updated_arr[i]   = checkbox.checked;
-                                }
-                                break;  // no fall through
-                            }
-                            //  falls through
-                        }
-                        default:
-                            no_match = true;
-                        }
-                        if (no_match) {
-                            const old_value     = node.value;
-                            node.value          = new_value;
-                            const current_value = node.value;
-                            if (old_value !== current_value) {
-                                updated_arr[i] = current_value;
-                            }
-                        }
-                    } else if (node != null) {
-                        const old_value     = node[key];
-                        node[key]           = new_value;
-                        const current_value = node[key];
-                        if (old_value !== current_value) {
-                            updated_arr[i] = current_value;
-                        }
-                    }
-                }
-
-                let contains_update = false;
-                for (const i in updated_arr) {
-                    // Object.keys() won't work as expected here because it returns an array containing keys for empty slots.
-                    if (Object.prototype.hasOwnProperty.call(updated_arr, i)) {
-                        //  `i` may be a key for an enumerable property coming from prototypes,
-                        //  so to check it by calling hasOwnProperty is needed here.
-                        contains_update = true;
-                        break;
-                    }
-                }
-                if (contains_update) {
-                    updated_values[element_name] = updated_arr;
-                }
+            const { updated, current_value } = reflect_value(element_or_array, new_value, is_binding);
+            if (is_binding && updated) {
+                updated_values[element_name] = current_value;
             }
         }
-        if (this.source !== null &&
-            typeof this.source === "object" &&
-            typeof this.source.reflectValues === "function"
-        ) {
+
+        if (is_binding) {
             this.source.reflectValues(updated_values);
         }
 
@@ -1104,6 +861,340 @@ class ProtoViewLogic {
 
         this.source = source;
 
+        /**
+         * Watch event to reflect value.
+         * @param {Element} node Related element with "value" property as primary.
+         */
+        const watch_input_event = (node) => {
+            const tag_name = node.tagName.toLowerCase();
+            switch (tag_name) {
+            case "input":
+            {
+                const node_type = node.type;
+
+                if (node_type === "radio") {
+                    const radio = node;
+
+                    radio.addEventListener("input", (event) => {
+                        const target = event.currentTarget;
+                        const element_name = target[CustomKeys$ELEMENT_NAME];
+
+                        if (typeof element_name !== "string") {
+                            return;
+                        }
+
+                        const owner        = target[CustomKeys$ELEMENT_OWNER];
+                        const target_ref   = owner?.[element_name];
+
+                        if (typeof owner?.source?.reflectValues !== "function") {
+                            return;
+                        }
+
+                        const reflected_values = Object.create(null);
+
+                        const radio_group = [...target.getRootNode().querySelectorAll(
+                            `input[type="radio"][name=${CSS.escape(target.name)}]`
+                        )].filter((other) => {
+                            return (other !== target && other[CustomKeys$ELEMENT_OWNER] === owner);
+                        });
+
+                        for (const other of radio_group) {
+                            const other_name = other[CustomKeys$ELEMENT_NAME];
+                            if (typeof other_name !== "string") { continue; }
+
+                            const other_ref  = owner[other_name];
+                            if (other_ref === other) {
+                                reflected_values[other_name] = other.checked;
+                            } else if (Array.isArray(other_ref)) {
+                                const words = ProtoViewLogic.#parseId(other.id);
+                                const index = Number(words[words.length - 1]);
+                                if (Number.isSafeInteger(index) && other_ref[index] === other) {
+                                    const checked = reflected_values[other_name] ?? [];
+                                    checked[index] = other.checked;
+                                    reflected_values[other_name] = checked;
+                                }
+                            }
+                        }
+
+                        if (target_ref === target) {
+                            reflected_values[element_name] = target.checked;
+
+                            owner.source.reflectValues(reflected_values);
+                        } else if (Array.isArray(target_ref)) {
+                            const words = ProtoViewLogic.#parseId(target.id);
+                            const index = Number(words[words.length - 1]);
+                            if (Number.isSafeInteger(index) && target_ref[index] === target) {
+                                const checked  = reflected_values[element_name] ?? [];
+
+                                checked[index] = target.checked;
+                                reflected_values[element_name] = checked;
+
+                                owner.source.reflectValues(reflected_values);
+                            }
+                        }
+                    }, { passive: true });
+                } else if (node_type === "checkbox") {
+                    const checkbox = node;
+
+                    checkbox.addEventListener("input", (event) => {
+                        //  ELEMENT_NAME and ELEMENT_OWNER should be taken on each calls
+                        //  because they may be changed after registering this listener
+                        //  function.
+                        //  If they can be assumed as constants after registration,
+                        //  you can store them into external local variables, however,
+                        //  that assumption is untrue.
+                        const target       = event.currentTarget;
+                        const element_name = target[CustomKeys$ELEMENT_NAME];
+
+                        if (typeof element_name !== "string") {
+                            return;
+                        }
+
+                        const owner        = target[CustomKeys$ELEMENT_OWNER];
+                        const target_ref   = owner?.[element_name];
+
+                        if (typeof owner?.source?.reflectValues !== "function") {
+                            return;
+                        }
+
+                        const reflected_values = Object.create(null);
+
+                        if (target_ref === target) {
+                            reflected_values[element_name] = target.checked;
+
+                            owner.source.reflectValues(reflected_values);
+                        } else if (Array.isArray(target_ref)) {
+                            const words = ProtoViewLogic.#parseId(target.id);
+                            const index = Number(words[words.length - 1]);
+                            if (Number.isSafeInteger(index) && target_ref[index] === target) {
+                                const checked = [];
+                                checked[index] = target.checked;
+                                reflected_values[element_name] = checked;
+
+                                owner.source.reflectValues(reflected_values);
+                            }
+                        }
+                    }, { passive: true });
+                } else {
+                    const input = node;
+
+                    input.addEventListener("input", (event) => {
+                        const target = event.currentTarget;
+                        const element_name = target[CustomKeys$ELEMENT_NAME];
+
+                        if (typeof element_name !== "string") {
+                            return;
+                        }
+
+                        const owner        = target[CustomKeys$ELEMENT_OWNER];
+                        const target_ref   = owner?.[element_name];
+
+                        if (typeof owner?.source?.reflectValues !== "function") {
+                            return;
+                        }
+
+                        const reflected_values = Object.create(null);
+
+                        if (target_ref === target) {
+                            reflected_values[element_name] = target.value;
+
+                            owner.source.reflectValues(reflected_values);
+                        } else if (Array.isArray(target_ref)) {
+                            const words = ProtoViewLogic.#parseId(target.id);
+                            const index = Number(words[words.length - 1]);
+                            if (Number.isSafeInteger(index) && target_ref[index] === target) {
+                                const values = [];
+                                values[index] = target.value;
+                                reflected_values[element_name] = values;
+
+                                owner.source.reflectValues(reflected_values);
+                            }
+                        }
+                    }, { passive: true });
+                }
+
+                break;
+            }
+            case "textarea":
+            {
+                const textarea = node;
+
+                textarea.addEventListener("input", (event) => {
+                    const target = event.currentTarget;
+                    const element_name = target[CustomKeys$ELEMENT_NAME];
+
+                    if (typeof element_name !== "string") {
+                        return;
+                    }
+
+                    const owner        = target[CustomKeys$ELEMENT_OWNER];
+                    const target_ref   = owner?.[element_name];
+
+                    if (typeof owner?.source?.reflectValues !== "function") {
+                        return;
+                    }
+
+                    const reflected_values = Object.create(null);
+
+                    if (target_ref === target) {
+                        reflected_values[element_name] = target.value;
+
+                        owner.source.reflectValues(reflected_values);
+                    } else if (Array.isArray(target_ref)) {
+                        const words = ProtoViewLogic.#parseId(target.id);
+                        const index = Number(words[words.length - 1]);
+                        if (Number.isSafeInteger(index) && target_ref[index] === target) {
+                            const values = [];
+                            values[index] = target.value;
+                            reflected_values[element_name] = values;
+
+                            owner.source.reflectValues(reflected_values);
+                        }
+                    }
+                }, { passive: true });
+
+                break;
+            }
+            case "select":
+            {
+                const select = node;
+
+                select.addEventListener("input", (event) => {
+                    const target = event.currentTarget;
+                    const element_name = target[CustomKeys$ELEMENT_NAME];
+
+                    if (typeof element_name !== "string") {
+                        return;
+                    }
+
+                    const owner        = target[CustomKeys$ELEMENT_OWNER];
+                    const target_ref   = owner?.[element_name];
+
+                    if (typeof owner?.source?.reflectValues !== "function") {
+                        return;
+                    }
+
+                    const reflected_values = Object.create(null);
+
+                    if (target_ref === target) {
+                        if (target.multiple) {
+                            const values = [...target.selectedOptions].map((option) => option.value);
+                            reflected_values[element_name] = values;
+                        } else {
+                            reflected_values[element_name] = target.value;
+                        }
+                        owner.source.reflectValues(reflected_values);
+                    } else if (Array.isArray(target_ref)) {
+                        const words = ProtoViewLogic.#parseId(target.id);
+                        const index = Number(words[words.length - 1]);
+                        if (Number.isSafeInteger(index) && target_ref[index] === target) {
+                            const value_list  = [];
+                            if (target.multiple) {
+                                const values = [...target.selectedOptions].map((option) => option.value);
+                                value_list[index] = values;
+                            } else {
+                                value_list[index] = target.value;
+                            }
+                            reflected_values[element_name] = value_list;
+                            owner.source.reflectValues(reflected_values);
+                        }
+                    }
+                });
+
+                break;
+            }
+            default:
+                return;
+            }
+
+            const input_listener = node[CustomKeys$ELEMENT_EVENT_LISTENERS]?.input;
+            if (input_listener != null) {
+                //  move input_listener to last to keep consistency viewed from
+                //  owner's messageHandler. input_listener posts a message to
+                //  the owner and therefore synchronization must be done before
+                //  the owner handles that message.
+                node.removeEventListener("input", input_listener);
+                node.addEventListener("input", input_listener);
+            }
+        };
+
+        /**
+         * Re-define setter to reflect value.
+         * @param {Element} element Related element.
+         * @param {{[key: string]: any}} node
+         * The element itself or one of its descendants that has the property.
+         * @param {string} key Primary property name.
+         * @param {PropertyDescriptor} desc
+         */
+        const watch_setter = (element, node, key, desc) => {
+            let value = node[key];
+
+            const getter = desc.get ?? function () {
+                return this === node ? value : undefined;
+            };
+
+            const set = desc.set ?? ((new_value) => { value = new_value; });
+
+            const reflect = (element, new_value) => {
+                const {
+                    owner,
+                    name: element_name,
+                    index
+                } = ProtoViewLogic.getRelationshipOf(element);
+
+                if (owner?.source == null) { return; }
+
+                let new_value_;
+                if (index == null) {
+                    new_value_ = new_value;
+                } else {
+                    new_value_ = new Array(owner[element_name].length);
+                    new_value_[index] = new_value;
+                }
+
+                owner.source.reflectValues({ [element_name]: new_value_ });
+            };
+
+            const setter = function (new_value) {
+                if (this !== node) { return; }
+                set.call(this, new_value);
+                reflect(element, new_value);
+            };
+
+            Object.defineProperty(node, key, {
+                get: getter,
+                set: setter,
+            });
+        };
+
+        /**
+         * Monitor the primary property of the given element.
+         * Add event listener and redefine setter to reflect values to source.
+         * @param {Element} element Related element.
+         */
+        const watch_primary_property = (element) => {
+            let { node: node_, key: key_ } = getPrimaryProperty(element);
+            if (node_ == null) {
+                if (element.value != null) {
+                    node_ = element;
+                    key_ = "value";
+                } else {
+                    return;
+                }
+            }
+            const node = node_, key = key_;
+            const desc = getPropertyDescriptor(node, key);
+            if (!desc.configurable && Object.hasOwn(node, key)) {
+                return;
+            }
+
+            if (element === node && key === "value") {
+                watch_input_event(node);
+            }
+
+            watch_setter(element, node, key, desc);
+        };
+
         try {
             const related_elements = this.getRelatedElements();
             for (const k in related_elements) {
@@ -1112,33 +1203,14 @@ class ProtoViewLogic {
 
                 if (element_or_array instanceof Element) {
                     const related_element = element_or_array;
-
-                    if (typeof related_element.onDataBinding !== "function") {
-                        throw new TypeError(`Related element ${k} does not implement "onDataBinding" function`);
-                    }
-                    related_element.onDataBinding(source);
+                    watch_primary_property(related_element);
                 } else {
                     const related_element_array = element_or_array;
-                    const errors = [];
                     for (const i in related_element_array) {
-                        if (!Object.prototype.hasOwnProperty.call(related_element_array, i)) { continue; }
+                        if (!Object.hasOwn(related_element_array, i)) { continue; }
 
                         const component = related_element_array[i];
-
-                        if (typeof component.onDataBinding !== "function") {
-                            errors.push(new TypeError(`Related element ${k}[${i}] does not implement "onDataBinding" function`));
-                        } else if (errors.length === 0) {
-                            component.onDataBinding(source);
-                        }
-                    }
-                    if (errors.length > 0) {
-                        const aggregate_error = _makeFlatAggregateError(errors, "One or more TypeErrors occur");
-                        throw new TypeError(
-                            `Some of related elements does not implement "onDataBinding" function: ${aggregate_error.message}`,
-                            {
-                                cause: aggregate_error
-                            }
-                        );
+                        watch_primary_property(component);
                     }
                 }
             }
@@ -1163,11 +1235,11 @@ class ProtoViewLogic {
      * @param {((element: Element) => boolean)?} filter
      * An optional predicate function used for filtering elements
      * selected with the selectors `":defined[id]"`.
-     * 
+     *
      * By default, the predicate function returning `true` if
      * either the given element has the `data-ui-component` attribute or
      * the element is an instance of `AlierCustomElement`.
-     * 
+     *
      * @returns
      * an object having references to the collected elements.
      * Each of keys of this object is determined
@@ -1315,7 +1387,7 @@ class ProtoViewLogic {
             {
                 let first;
                 for (const i in o_) {
-                    if (!Object.prototype.hasOwnProperty.call(o_, i)) { continue; }
+                    if (!Object.hasOwn(o_, i)) { continue; }
                     first = o_[i];
                     break;
                 }
@@ -1367,7 +1439,7 @@ class ProtoViewLogic {
             {
                 let first = null;
                 for (const i in o_) {
-                    if (!Object.prototype.hasOwnProperty.call(o_, i)) { continue; }
+                    if (!Object.hasOwn(o_, i)) { continue; }
                     first = o_[i];
                     break;
                 }
@@ -1456,7 +1528,7 @@ class ProtoViewLogic {
         const viewlogics = Object.create(null);
 
         for (const k in this) {
-            if (!Object.prototype.hasOwnProperty.call(this, k)) { continue; }
+            if (!Object.hasOwn(this, k)) { continue; }
 
             const v = this[k];
             if (
@@ -1595,7 +1667,7 @@ class ProtoViewLogic {
         const related_viewlogics = Object.create(null);
 
         for (const k in viewlogic_map) {
-            if (!Object.prototype.hasOwnProperty.call(viewlogic_map, k)) { continue; }
+            if (!Object.hasOwn(viewlogic_map, k)) { continue; }
             if (!_isValidIdentifier(k)) {
                 const m      = _matchInvalidIdentifier(k);
                 const prefix = m?.prefix;
@@ -1845,7 +1917,7 @@ class ProtoViewLogic {
              */
             const disrelated_viewlogics = Object.create(null);
             for (const k in this) {
-                if (!Object.prototype.hasOwnProperty.call(this, k)) { continue; }
+                if (!Object.hasOwn(this, k)) { continue; }
 
                 const v = this[k];
                 if ((v instanceof ProtoViewLogic) || (Array.isArray(v) && v.some(x => (x instanceof ProtoViewLogic)))) {
@@ -1854,7 +1926,7 @@ class ProtoViewLogic {
             }
             return disrelated_viewlogics;
         } else if (typeof relatedViewLogicOrItsName === "string") {
-            if (Object.prototype.hasOwnProperty.call(this, relatedViewLogicOrItsName)) {
+            if (Object.hasOwn(this, relatedViewLogicOrItsName)) {
                 return this.disrelateViewLogics(this[relatedViewLogicOrItsName]);
             } else {
                 throw new ReferenceError(`property "${relatedViewLogicOrItsName}" is not defined on this object`);
@@ -1915,7 +1987,7 @@ class ProtoViewLogic {
 
             let is_empty = true;
             for (const i in this[old_name]) {
-                if (Object.prototype.hasOwnProperty.call(this[old_name], i)) {
+                if (Object.hasOwn(this[old_name], i)) {
                     is_empty = false;
                     break;
                 }
@@ -1949,7 +2021,7 @@ class ProtoViewLogic {
 
             let is_empty = true;
             for (const i in this[old_name]) {
-                if (Object.prototype.hasOwnProperty.call(this[old_name], i)) {
+                if (Object.hasOwn(this[old_name], i)) {
                     is_empty = false;
                     break;
                 }
@@ -1999,7 +2071,7 @@ class ProtoViewLogic {
         const elements = Object.create(null);
 
         for (const k in this) {
-            if (!Object.prototype.hasOwnProperty.call(this, k)) { continue; }
+            if (!Object.hasOwn(this, k)) { continue; }
 
             const v = this[k];
             if (this.#isRelatedElement(v) || this.#isRelatedElementArray(v)) {
@@ -2158,7 +2230,7 @@ class ProtoViewLogic {
         const events_activated = new Map();
 
         for (const k in element_map) {
-            if (!Object.prototype.hasOwnProperty.call(element_map, k)) { continue; }
+            if (!Object.hasOwn(element_map, k)) { continue; }
             if (!_isValidIdentifier(k)) {
                 const m      = _matchInvalidIdentifier(k);
                 const prefix = m?.prefix;
@@ -2214,7 +2286,7 @@ class ProtoViewLogic {
 
                 //  To skip empty slots, use for-in instead of for-of
                 for (const i in element_array) {
-                    if (!Object.prototype.hasOwnProperty.call(element_array, i)) { continue; }
+                    if (!Object.hasOwn(element_array, i)) { continue; }
                     if (!Number.isInteger(Number(i))) { continue; }
 
                     const element = element_array[i];
@@ -2296,13 +2368,9 @@ class ProtoViewLogic {
                     //  This is one of crucial functionalities of ProtoViewLogic and this framework.
                     //  NOTE:
                     //  property descriptor is treated as non-writable and non-enumerable by default.
-                    Object.defineProperties(element, {
-                        [CustomKeys$ELEMENT_OWNER       ]: { value: this,      configurable: true, enumerable: false },
-                        [CustomKeys$ELEMENT_NAME        ]: { value: k,         configurable: true, enumerable: false },
-                        [CustomKeys$ELEMENT_CACHED_INDEX]: { value: Number(i), configurable: true, enumerable: false, writable: true },
-                    });
-
-                    ProtoViewLogic.#readyForDataBinding(element);
+                    element[CustomKeys$ELEMENT_OWNER] = this;
+                    element[CustomKeys$ELEMENT_NAME]  = k;
+                    element[CustomKeys$ELEMENT_CACHED_INDEX] = Number(i);
                 }
 
                 if (errors.length > 0) {
@@ -2387,12 +2455,8 @@ class ProtoViewLogic {
                 //  This is one of crucial functionalities of ProtoViewLogic and this framework.
                 //  NOTE:
                 //  property descriptor is treated as non-writable and non-enumerable by default.
-                Object.defineProperties(element, {
-                    [CustomKeys$ELEMENT_OWNER]: { value: this, configurable: true, enumerable: false },
-                    [CustomKeys$ELEMENT_NAME ]: { value: k,    configurable: true, enumerable: false },
-                });
-
-                ProtoViewLogic.#readyForDataBinding(element);
+                element[CustomKeys$ELEMENT_OWNER] = this;
+                element[CustomKeys$ELEMENT_NAME]  = k;
 
                 this[k] = element;
             } else {
@@ -2499,7 +2563,7 @@ class ProtoViewLogic {
             const disrelated_elements = Object.create(null);
 
             for (const k in this) {
-                if (!Object.prototype.hasOwnProperty.call(this, k)) { continue; }
+                if (!Object.hasOwn(this, k)) { continue; }
 
                 const v = this[k];
                 if (this.#isRelatedElement(v) || this.#isRelatedElementArray(v)) {
@@ -2509,7 +2573,7 @@ class ProtoViewLogic {
 
             return disrelated_elements;
         } else if (typeof relatedElementOrItsName === "string") {
-            if (Object.prototype.hasOwnProperty.call(this, relatedElementOrItsName)) {
+            if (Object.hasOwn(this, relatedElementOrItsName)) {
                 return this.disrelateElements(this[relatedElementOrItsName]);
             } else {
                 throw new ReferenceError(`property "${relatedElementOrItsName}" is not defined on this object`);
@@ -2568,7 +2632,7 @@ class ProtoViewLogic {
 
             let is_empty = true;
             for (const i in target_array) {
-                if (Object.prototype.hasOwnProperty.call(target_array, i)) {
+                if (Object.hasOwn(target_array, i)) {
                     is_empty = false;
                     break;
                 }
@@ -2636,7 +2700,7 @@ class ProtoViewLogic {
 
             let is_empty = true;
             for (const i in target_array) {
-                if (Object.prototype.hasOwnProperty.call(target_array, i)) {
+                if (Object.hasOwn(target_array, i)) {
                     is_empty = false;
                     break;
                 }
@@ -2756,10 +2820,7 @@ class ProtoViewLogic {
                 //  the target element is already defined, it is overwritten to prevent to cause
                 //  unexpected behavior if it is not a non-null object.
                 if (listeners == null || typeof listeners !== "object") {
-                    Object.defineProperty(element, CustomKeys$ELEMENT_EVENT_LISTENERS, {
-                        configurable: true,
-                        value       : Object.create(null)
-                    });
+                    element[CustomKeys$ELEMENT_EVENT_LISTENERS] = Object.create(null);
                 }
             }
 
@@ -2770,15 +2831,30 @@ class ProtoViewLogic {
 
                 //  set listener.name as [event_type].
                 const listener = {
-                    [event_type]: async (ev) => {
-                        if (!(element[CustomKeys$ELEMENT_OWNER] instanceof ProtoViewLogic)) {
+                    /**
+                     * @param {Event} event
+                     */
+                    [event_type]: async event => {
+                        const origin = event.currentTarget;
+                        const owner  = ProtoViewLogic.getOwnerOf(origin);
+                        if (!(origin === element && owner instanceof ProtoViewLogic)) {
                             return;
                         }
-                        const owner = element[CustomKeys$ELEMENT_OWNER];
-                        const { node, key } = _getPrimaryProperty(element);
-                        const msg = owner.message(element[CustomKeys$ELEMENT_NAME], event_type, { event: ev, value: node?.[key] });
-                        owner.post(msg);
-                        ev.stopPropagation();
+                        const { node, key } = getPrimaryProperty(element);
+                        const value = node?.[key] ?? element.value;
+                        const msg = {
+                            id   : element[CustomKeys$ELEMENT_NAME],
+                            code : event_type,
+                            param: {
+                                event,
+                                value
+                            },
+                            origin
+                        };
+
+                        const discardDuplicates = element.getAttribute("duplicate-filter") === "discard";
+                        owner.post(msg, { discardDuplicates });
+                        event.stopPropagation();
                     }
                 }[event_type];
 
@@ -2895,7 +2971,7 @@ class ProtoViewLogic {
             }
             const listeners = element[CustomKeys$ELEMENT_EVENT_LISTENERS];
             for (const event_name in listeners) {
-                if (Object.prototype.hasOwnProperty.call(listeners, event_name)) {
+                if (Object.hasOwn(listeners, event_name)) {
                     deactivatedEvents.add(event_name);
                 }
             }
@@ -3184,7 +3260,7 @@ class ProtoViewLogic {
          */
         const errors = [];
         for (const k in descs) {
-            if (!Object.prototype.hasOwnProperty.call(descs, k)) { continue; }
+            if (!Object.hasOwn(descs, k)) { continue; }
 
             const desc = descs[k];
             if (Array.isArray(desc)) {
@@ -3393,7 +3469,7 @@ class ProtoViewLogic {
         if (attributes !== null && typeof attributes === "object") {
 
             for (const attribute_name in attributes) {
-                if (!Object.prototype.hasOwnProperty.call(attributes, attribute_name)) { continue; }
+                if (!Object.hasOwn(attributes, attribute_name)) { continue; }
                 const attribute_value = attributes[attribute_name];
                 const attribute_name_ = attribute_name.trim();
 
@@ -3504,13 +3580,19 @@ class ProtoViewLogic {
      * the given element.
      *
      * @param {Element} element
-     * the source element
+     * The element to inspect.
      *
-     * @returns an object representing relationship with its owner.
+     * @returns {({
+     *  owner: ProtoViewLogic,
+     *  name : string,
+     *  index: number?
+     * } | {})}
+     * an object representing relationship with its owner.
      */
     static getRelationshipOf(element) {
-        return (element instanceof Element) ? {
-                owner: element[CustomKeys$ELEMENT_OWNER],
+        const owner = ProtoViewLogic.getOwnerOf(element);
+        return owner != null ? {
+                owner,
                 name : element[CustomKeys$ELEMENT_NAME],
                 index: element[CustomKeys$ELEMENT_CACHED_INDEX]
             } :
@@ -3518,330 +3600,18 @@ class ProtoViewLogic {
         ;
     }
 
-    static #readyForDataBinding(element) {
-        if (element === null || typeof element !== "object") {
-            return element;
-        }
-        if (typeof element.reflectValues !== "function") {
-            Object.defineProperty(element, "reflectValues", {
-                enumerable  : false,
-                writable    : false,
-                configurable: true,
-                value       : function reflectValues(value_map) {
-                    const { node, key }  = _getPrimaryProperty(this);
-                    const element_name   = this[CustomKeys$ELEMENT_NAME];
-                    const updated_values = Object.create(null);
-                    if (key === ""   ||
-                        node == null ||
-                        !Object.prototype.hasOwnProperty.call(value_map, element_name)
-                    ) {
-                        return updated_values;
-                    }
-
-                    const new_value = value_map[element_name];
-
-                    node[key]           = new_value;
-                    updated_values[key] = new_value;
-
-                    if (typeof this?.source?.reflectValues === "function") {
-                        return this.source.reflectValues(updated_values);
-                    } else {
-                        return updated_values;
-                    }
-                }
-            });
-        }
-        if (typeof element.onDataBinding !== "function") {
-            Object.defineProperty(element, "onDataBinding", {
-                enumerable  : false,
-                writable    : false,
-                configurable: true,
-                value       : function onDataBinding(source) {
-                    const original_source = this.source;
-
-                    this.source = source;
-
-                    if (original_source != null) {
-                        return;
-                    }
-
-                    const { node, key } = _getPrimaryProperty(this);
-                    if (node == null) {
-                        return;
-                    }
-                    const desc = _getPropertyDescriptor(node, key);
-                    if (!desc.configurable && Object.prototype.hasOwnProperty.call(node, key)) {
-                        return;
-                    }
-                    if (this === node && key === "value") {
-                        const tag_name       = node.tagName.toLowerCase();
-                        let   listener_added = false;
-                        switch (tag_name) {
-                        case "input":
-                        {
-                            const node_type = node.type;
-
-                            if (node_type === "radio") {
-                                const radio = node;
-
-                                radio.addEventListener("input", (event) => {
-                                    const target = event.currentTarget;
-                                    const element_name = target[CustomKeys$ELEMENT_NAME];
-
-                                    if (typeof element_name !== "string" ||
-                                        typeof target?.source?.reflectValues !== "function"
-                                    ) {
-                                        return;
-                                    }
-
-                                    const owner        = target[CustomKeys$ELEMENT_OWNER];
-                                    const target_ref   = owner?.[element_name];
-
-                                    const reflected_values = Object.create(null);
-
-                                    const radio_group = [...target.ownerDocument.querySelectorAll(
-                                        `input[type="radio"][name=${CSS.escape(target.name)}]`
-                                    )].filter((other) => {
-                                        return (other !== target && other[CustomKeys$ELEMENT_OWNER] === owner);
-                                    });
-
-                                    for (const other of radio_group) {
-                                        const other_name = other[CustomKeys$ELEMENT_NAME];
-                                        if (typeof other_name !== "string") { continue; }
-
-                                        const other_ref  = owner?.[other_name];
-                                        if (other_ref === other) {
-                                            reflected_values[other_name] = other.checked;
-                                        } else if (Array.isArray(other_ref)) {
-                                            const words = ProtoViewLogic.#parseId(other.id);
-                                            const index = Number(words[words.length - 1]);
-                                            if (Number.isSafeInteger(index) && other_ref[index] === other) {
-                                                const checked = [];
-                                                checked[index] = other.checked;
-                                                reflected_values[other_name] = checked;
-                                            }
-                                        }
-                                    }
-
-                                    if (target_ref === target) {
-                                        reflected_values[element_name] = target.checked;
-
-                                        target.source.reflectValues(reflected_values);
-                                    } else if (Array.isArray(target_ref)) {
-                                        const words = ProtoViewLogic.#parseId(target.id);
-                                        const index = Number(words[words.length - 1]);
-                                        if (Number.isSafeInteger(index) && target_ref[index] === target) {
-                                            const checked  = [];
-
-                                            checked[index] = target.checked;
-                                            reflected_values[element_name] = checked;
-
-                                            target.source.reflectValues(reflected_values);
-                                        }
-                                    }
-                                }, { passive: true });
-                            } else if (node_type === "checkbox") {
-                                const checkbox = node;
-
-                                checkbox.addEventListener("input", (event) => {
-                                    //  ELEMENT_NAME and ELEMENT_OWNER should be taken on each calls
-                                    //  because they may be changed after registering this listener
-                                    //  function.
-                                    //  If they can be assumed as constants after registration,
-                                    //  you can store them into external local variables, however,
-                                    //  that assumption is untrue.
-                                    const target       = event.currentTarget;
-                                    const element_name = target[CustomKeys$ELEMENT_NAME];
-
-                                    if (typeof element_name !== "string" ||
-                                        typeof target?.source?.reflectValues !== "function"
-                                    ) {
-                                        return;
-                                    }
-
-                                    const owner        = target[CustomKeys$ELEMENT_OWNER];
-                                    const target_ref   = owner?.[element_name];
-
-                                    const reflected_values = Object.create(null);
-
-                                    if (target_ref === target) {
-                                        reflected_values[element_name] = target.checked;
-
-                                        target.source.reflectValues(reflected_values);
-                                    } else if (Array.isArray(target_ref)) {
-                                        const words = ProtoViewLogic.#parseId(target.id);
-                                        const index = Number(words[words.length - 1]);
-                                        if (Number.isSafeInteger(index) && target_ref[index] === target) {
-                                            const checked = [];
-                                            checked[index] = target.checked;
-                                            reflected_values[element_name] = checked;
-
-                                            target.source.reflectValues(reflected_values);
-                                        }
-                                    }
-                                }, { passive: true });
-                            } else {
-                                const input = node;
-
-                                input.addEventListener("input", (event) => {
-                                    const target = event.currentTarget;
-                                    const element_name = target[CustomKeys$ELEMENT_NAME];
-
-                                    if (typeof element_name !== "string" ||
-                                        typeof target?.source?.reflectValues !== "function"
-                                    ) {
-                                        return;
-                                    }
-
-                                    const owner        = target[CustomKeys$ELEMENT_OWNER];
-                                    const target_ref   = owner?.[element_name];
-
-                                    const reflected_values = Object.create(null);
-
-                                    if (target_ref === target) {
-                                        reflected_values[element_name] = target.value;
-
-                                        target.source.reflectValues(reflected_values);
-                                    } else if (Array.isArray(target_ref)) {
-                                        const words = ProtoViewLogic.#parseId(target.id);
-                                        const index = Number(words[words.length - 1]);
-                                        if (Number.isSafeInteger(index) && target_ref[index] === target) {
-                                            const values = [];
-                                            values[index] = target.value;
-                                            reflected_values[element_name] = values;
-
-                                            target.source.reflectValues(reflected_values);
-                                        }
-                                    }
-                                }, { passive: true });
-                            }
-
-                            listener_added = true;
-                            break;
-                        }
-                        case "textarea":
-                        {
-                            const textarea = node;
-
-                            textarea.addEventListener("input", (event) => {
-                                const target = event.currentTarget;
-                                const element_name = target[CustomKeys$ELEMENT_NAME];
-
-                                if (typeof element_name !== "string" ||
-                                    typeof target?.source?.reflectValues !== "function"
-                                ) {
-                                    return;
-                                }
-
-                                const owner        = target[CustomKeys$ELEMENT_OWNER];
-                                const target_ref   = owner?.[element_name];
-
-                                const reflected_values = Object.create(null);
-
-                                if (target_ref === target) {
-                                    reflected_values[element_name] = target.value;
-
-                                    target.source.reflectValues(reflected_values);
-                                } else if (Array.isArray(target_ref)) {
-                                    const words = ProtoViewLogic.#parseId(target.id);
-                                    const index = Number(words[words.length - 1]);
-                                    if (Number.isSafeInteger(index) && target_ref[index] === target) {
-                                        const values = [];
-                                        values[index] = target.value;
-                                        reflected_values[element_name] = values;
-
-                                        target.source.reflectValues(reflected_values);
-                                    }
-                                }
-                            }, { passive: true });
-
-                            listener_added = true;
-                            break;
-                        }
-                        case "select":
-                        {
-                            const select = node;
-
-                            select.addEventListener("input", (event) => {
-                                const target = event.currentTarget;
-                                const element_name = target[CustomKeys$ELEMENT_NAME];
-
-                                if (typeof element_name !== "string" ||
-                                    typeof target?.source?.reflectValues !== "function"
-                                ) {
-                                    return;
-                                }
-
-                                const owner        = target[CustomKeys$ELEMENT_OWNER];
-                                const target_ref   = owner?.[element_name];
-
-                                const reflected_values = Object.create(null);
-
-                                if (target_ref === target) {
-                                    if (target.multiple) {
-                                        const values = [...target.selectedOptions].map((option) => option.value);
-                                        reflected_values[element_name] = values;
-                                    } else {
-                                        reflected_values[element_name] = target.value;
-                                    }
-                                    target.source.reflectValues(reflected_values);
-                                } else if (Array.isArray(target_ref)) {
-                                    const words = ProtoViewLogic.#parseId(target.id);
-                                    const index = Number(words[words.length - 1]);
-                                    if (Number.isSafeInteger(index) && target_ref[index] === target) {
-                                        const value_list  = [];
-                                        if (target.multiple) {
-                                            const values = [...target.selectedOptions].map((option) => option.value);
-                                            value_list[index] = values;
-                                        } else {
-                                            value_list[index] = target.value;
-                                        }
-                                        reflected_values[element_name] = value_list;
-                                        target.source.reflectValues(reflected_values);
-                                    }
-                                }
-                            });
-
-                            listener_added = true;
-                            break;
-                        }
-                        default:
-                            break;
-                        }
-                        if (listener_added) {
-                            const input_listener = node[CustomKeys$ELEMENT_EVENT_LISTENERS]?.input;
-                            if (input_listener != null) {
-                                //  move input_listener to last to keep consistency viewed from
-                                //  owner's messageHandler. input_listener posts a message to
-                                //  the owner and therefore synchronization must be done before
-                                //  the owner handles that message.
-                                node.removeEventListener("input", input_listener);
-                                node.addEventListener("input", input_listener);
-                            }
-                        }
-                    }
-
-                    const element_name = this[CustomKeys$ELEMENT_NAME];
-                    let value = node[key];
-                    const getter = desc.get ?? function() {
-                        return this === node ? value : undefined;
-                    };
-                    const setter = (desc.set != null) ? function (new_value) {
-                        desc.set.call(this, new_value);
-                        this.source.reflectValues({ [element_name]: new_value });
-                    } : function (new_value) {
-                        value = new_value;
-                        this.source.reflectValues({ [element_name]: new_value });
-                    };
-
-                    Object.defineProperty(node, key, {
-                        get: getter,
-                        set: setter,
-                    });
-                }
-            });
-        }
-
+    /**
+     * Gets an owner of the given element.
+     *
+     * @param {Element} element
+     * the target element
+     *
+     * @returns {ProtoViewLogic | undefined}
+     * The owner of the given element if exists.
+     * Otherwise, `undefined`.
+     */
+    static getOwnerOf(element) {
+        return element?.[CustomKeys$ELEMENT_OWNER];
     }
 
     /**
@@ -3977,39 +3747,16 @@ class ProtoViewLogic {
      * - {@link disrelateViewLogics}
      */
     async #onPropertiesModified(addedProperties, removedProperties) {
-        let added_props   = addedProperties ?? null,
-            removed_props = removedProperties ?? null
+        //  Create copies of the given objecst to prevent to cause a spooky action at a distance
+        //  by modifying the given object directly.
+        const added_props = isEmpty(addedProperties) ?
+            null :
+            Object.assign(Object.create(null), addedProperties)
         ;
-
-        if (added_props != null) {
-            let is_empty = true;
-            for (const _ in added_props) {
-                is_empty = false;
-                break;
-            }
-
-            //  prevent to cause a spooky action at a distance
-            //  by modifying the given object directly.
-            added_props = is_empty ?
-                null :
-                Object.assign(Object.create(null), added_props)
-            ;
-        }
-
-        if (removed_props != null) {
-            let is_empty = true;
-            for (const _ in removed_props) {
-                is_empty = false;
-                break;
-            }
-
-            //  prevent to cause a spooky action at a distance
-            //  by modifying the given object directly.
-            removed_props = is_empty ?
-                null :
-                Object.assign(Object.create(null), removed_props)
-            ;
-        }
+        const removed_props = isEmpty(removedProperties) ?
+            null :
+            Object.assign(Object.create(null), removedProperties)
+        ;
 
         return this.post(
             this.message("vl$propertiesModified", null, {
@@ -4034,6 +3781,13 @@ class ProtoViewLogic {
      * @see {@link ProtoViewLogic.prototype.parent}
      */
     #parent = null;
+
+    /**
+     * A dictionary mapping a pair of id and code to a message being processed.
+     *
+     * @type {Map<string, Map<string, Messenger>>}
+     */
+    #messages = new Map();
 
     /**
      * Tests whether or not the given element is related to
@@ -4219,14 +3973,22 @@ class Messenger {
     /**
      * @constructor
      * @param {object} o
-     * @param {ProtoViewLogic?} o.origin
-     * Origin of the target message.
-     * @param {string|null} o.id
-     * the primary key used for invoking handler functions.
-     * @param {string|null} o.code
-     * the secondary key used for invoking handler functions.
-     * @param {any|null} o.param
+     * A message to deliver.
+     *
+     * @param {object?} o.origin
+     * The origin of the given message.
+     *
+     * @param {string?} o.id
+     * The primary key used for invoking handler functions.
+     *
+     * @param {string?} o.code
+     * The secondary key used for invoking handler functions.
+     *
+     * @param {any?} o.param
      * Optional parameters used in handler functions.
+     *
+     * @param {object?} o.target
+     * The original recipient of the given message.
      *
      * @throws {TypeError}
      * -  when the given `o.origin` is neither a `ProtoViewLogic` nor `null`
@@ -4253,10 +4015,10 @@ class Messenger {
                 param_  = o$param  ?? null
         ;
 
-        if (origin_ != null && !(origin_ instanceof ProtoViewLogic)) {
-            throw new TypeError(`${origin_} is neither a ProtoViewLogic nor null`);
-        } else if (target_ != null && !(target_ instanceof ProtoViewLogic)) {
-            throw new TypeError(`${target_} is neither a ProtoViewLogic nor null`);
+        if (origin_ != null && typeof origin_ !== "object") {
+            throw new TypeError(`${origin_} is neither null nor an object`);
+        } else if (target_ != null && typeof target_ !== "object") {
+            throw new TypeError(`${target_} is neither null nor an object`);
         } else if (typeof id_ !== "string") {
             throw new TypeError(`${id_} is not a string`);
         } else if (typeof code_ !== "string") {
@@ -4300,7 +4062,7 @@ class Messenger {
      * and it returned `true` or a non-boolean value.
      *
      * @param {({
-     *      [handler_name: string]: (msg: Messenger) => boolean
+     *      [handler_name: string]: (message: Messenger) => boolean
      * })} handlerMap
      * An object maps a string to a handler function.
      *
@@ -4352,7 +4114,7 @@ class Messenger {
      * no side-effect.
      *
      * @param {({
-     *      [handler_name: string]: (msg: Messenger) => boolean
+     *      [handler_name: string]: (message: Messenger) => boolean
      * })} handlerMap
      * An object maps a string to a handler function.
      *
@@ -4390,7 +4152,7 @@ class Messenger {
      * no side-effect.
      *
      * @param {({
-     *      [handler_name: string]: (msg: Messenger) => boolean
+     *      [handler_name: string]: (message: Messenger) => boolean
      * })} handlerMap
      * An object maps a string to a handler function.
      *
@@ -4418,7 +4180,7 @@ class Messenger {
     /**
      * @param {string} key
      * @param {({
-     *      [handler_name: string]: (msg: Messenger) => boolean
+     *      [handler_name: string]: (message: Messenger) => boolean
      * })} handlerMap
      */
     #deliverImpl(key, handlerMap) {
@@ -4453,9 +4215,9 @@ class Messenger {
         });
 
         const handler = (
-            Object.prototype.hasOwnProperty.call(handler_map, key_) ?
+            Object.hasOwn(handler_map, key_) ?
                 handler_map[key_] :
-            Object.prototype.hasOwnProperty.call(handler_map, "default") ?
+            Object.hasOwn(handler_map, "default") ?
                 handler_map.default :
                 null
         );

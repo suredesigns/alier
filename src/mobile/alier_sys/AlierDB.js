@@ -65,47 +65,46 @@ import { getDefaultConnector } from "./DefaultDBConnector.js";
  * })} DatabaseSchemaType
  */
 /**
- * @typedef {object} AlierTableConstructorOptions
+ * @typedef {object} AlierDBTableConstructorOptions
  * @property {AlierDB} database
  * The {@link AlierDB} associated with the table.
  * 
  * This is used for intializing the property
- * {@link AlierTable.prototype.database | database}.
+ * {@link AlierDBTable.prototype.database | database}.
  * 
  * @property {string} name
  * The name of the table.
  * 
  * This is used for intializing the property
- * {@link AlierTable.prototype.columns | columns}.
+ * {@link AlierDBTable.prototype.columns | columns}.
  * 
  * @property {(string | string[])?} columns
  * A list of the result columns.
  * 
  * This is used for intializing the property
- * {@link AlierTable.prototype.columns | columns}.
+ * {@link AlierDBTable.prototype.columns | columns}.
  * 
  * @property {string?} alias
  * The alias of the table.
  * 
  * This is used for intializing the property
- * {@link AlierTable.prototype.alias | alias}.
+ * {@link AlierDBTable.prototype.alias | alias}.
  * 
- * @typedef {object} VirtualAlierTableSpecificConstructorOptions
- * @property {AlierTable?} leftTable
+ * @property {AlierDBTable?} leftTable
  * The left-hand side operand of `JOIN` operation.
  * 
- * This parameter is set by {@link AlierTable.prototype.join | join()} method.
+ * This parameter is set by {@link AlierDBTable.prototype.join | join()} method.
  * 
  * This is used for intializing the property
- * {@link AlierTable.prototype.leftTable | leftTable}.
+ * {@link AlierDBTable.prototype.leftTable | leftTable}.
  * 
- * @property {AlierTable?} rightTable
+ * @property {AlierDBTable?} rightTable
  * The right-hand side operand of `JOIN` operation.
  * 
- * This parameter is set by {@link AlierTable.prototype.join | join()} method.
+ * This parameter is set by {@link AlierDBTable.prototype.join | join()} method.
  * 
  * This is used for intializing the property
- * {@link AlierTable.prototype.rightTable | rightTable}.
+ * {@link AlierDBTable.prototype.rightTable | rightTable}.
  * 
  * @property {DBJoinType?} joinType
  * An enumerator representing the kind of `JOIN` operation.
@@ -115,22 +114,20 @@ import { getDefaultConnector } from "./DefaultDBConnector.js";
  * By default, `INNER JOIN` is used ({@link DBJoinType.INNER_JOIN}).
  * 
  * This is used for intializing the property
- * {@link AlierTable.prototype.joinType | joinType}.
+ * {@link AlierDBTable.prototype.joinType | joinType}.
  * 
  * @property {string?} on
  * A string representing the conditional expression in the `ON` clause.
  * 
  * This is used for intializing the property
- * {@link AlierTable.prototype.on | on}.
+ * {@link AlierDBTable.prototype.on | on}.
  * 
- * @property {string[]?} using
+ * @property {(string | string[])?} using
  * An array of strings each of which represents the column name in
  * the `USING` clause.
  * 
  * This is used for intializing the property
- * {@link AlierTable.prototype.using | using}.
- * 
- * @typedef {AlierTableConstructorOptions & VirtualAlierTableSpecificConstructorOptions} VirtualAlierTableConstructorOptions
+ * {@link AlierDBTable.prototype.using | using}.
  * 
  * @typedef {object} AggregatorObjectType
  * @property {string} aggregate
@@ -141,8 +138,8 @@ import { getDefaultConnector } from "./DefaultDBConnector.js";
  * 
  * @typedef {AggregatorObjectType | AggregatorFunctionType} AggregatorType
  * 
- * @typedef {object} AlierTableGetDescriptorType
- * A data type of arguments for {@link AlierTable.prototype.get()}
+ * @typedef {object} AlierDBTableGetDescriptorType
+ * A data type of arguments for {@link AlierDBTable.prototype.get()}
  * function.
  * 
  * @property {string[]?} sort
@@ -225,18 +222,18 @@ import { getDefaultConnector } from "./DefaultDBConnector.js";
  * @typedef {({
  *      [updated_column: string]: any,
  *      filter?: string
- * })} AlierTablePutDescriptorType
- * Obects having parameters for {@link AlierTable.prototype.put()} method.
+ * })} AlierDBTablePutDescriptorType
+ * Obects having parameters for {@link AlierDBTable.prototype.put()} method.
  * 
  * @typedef {({
  *      [inserted_column: string]: any
- * })} AlierTablePostDescriptorType
- * Obects having parameters for {@link AlierTable.prototype.post()} method.
+ * })} AlierDBTablePostDescriptorType
+ * Obects having parameters for {@link AlierDBTable.prototype.post()} method.
  * 
  * @typedef {({
  *      filter?: string
- * })} AlierTableDeleteDescriptorType
- * Obects having parameters for {@link AlierTable.prototype.delete()} method.
+ * })} AlierDBTableDeleteDescriptorType
+ * Obects having parameters for {@link AlierDBTable.prototype.delete()} method.
  * 
  */
 
@@ -351,7 +348,7 @@ class PreparedStatement {
         for (const m of statement_.matchAll(/\?|'(?:[^']|'')*'|"(?:[^"]|"")*"/g)) {
             if (m[0] === "?") { placeholder_count++; }
         }
-        
+
         this.database         = database;
         this.name             = name;
         this.placeholderCount = placeholder_count;
@@ -421,7 +418,7 @@ class AlierDB {
      * Auto-connection is enabled when the flag is `true`,
      * `false` otherwise.
      * 
-     * This flag can affect all {@link AlierTable}s obtained from
+     * This flag can affect all {@link AlierDBTable}s obtained from
      * the target {@link AlierDB}.
      * 
      * By default, auto-connection is enabled (`true`).
@@ -435,7 +432,7 @@ class AlierDB {
      * Auto-transaction is enabled when the flag is `true`,
      * `false` otherwise.
      * 
-     * This flag can affect all {@link AlierTable}s obtained from
+     * This flag can affect all {@link AlierDBTable}s obtained from
      * the target {@link AlierDB}.
      * 
      * By default, auto-transaction is disabled (`false`).
@@ -517,7 +514,7 @@ class AlierDB {
      * Auto-connection is enabled when the flag is `true`,
      * `false` otherwise.
      * 
-     * This flag can affect all {@link AlierTable}s obtained from
+     * This flag can affect all {@link AlierDBTable}s obtained from
      * the target {@link AlierDB}.
      * 
      * By default, auto-connection is enabled (`true`).
@@ -528,7 +525,7 @@ class AlierDB {
      * Auto-transaction is enabled when the flag is `true`,
      * `false` otherwise.
      * 
-     * This flag can affect all {@link AlierTable}s obtained from
+     * This flag can affect all {@link AlierDBTable}s obtained from
      * the target {@link AlierDB}.
      * 
      * By default, auto-transaction is disabled (`false`).
@@ -665,7 +662,7 @@ class AlierDB {
             };
         }
     }
-    
+
     /**
      * @async
      * Disconnects the associated client from the database.
@@ -1063,7 +1060,7 @@ class AlierDB {
     removePreparedStatement(name) {
         this.preparedStatements.delete(name);
     }
-    
+
     /**
      * Executes a query by using the given prepared statement.
      * 
@@ -1179,7 +1176,7 @@ class AlierDB {
         });
 
         this.schema = update_notifier;
-        
+
         const table_schemata = schema_.tables;
         if (table_schemata == null) {
             throw new TypeError("'tables' is not defined in the given schema");
@@ -1220,7 +1217,7 @@ class AlierDB {
     }
 
     /**
-     * Gets a {@link AlierTable}.
+     * Gets a {@link AlierDBTable}.
      * 
      * @param {object} tableAttributes
      * @param {string} tableAttributes.table
@@ -1231,32 +1228,33 @@ class AlierDB {
      * 
      * If the list is not provided, all columns are retrieved.
      * 
+     * @param {({ [k: string]: string })?} tableAttributes.columnAlieses
+     * An object mapping column names to aliases.
+     * 
      * @param {(string)?} tableAttributes.alias
      * A string representing the alias of the target table.
      * 
-     * @returns {AlierTable?}
-     * An {@link AlierTable} if succeeded to get the table, `null` otherwise.
+     * @returns {AlierDBTable?}
+     * An {@link AlierDBTable} if succeeded to get the table, `null` otherwise.
      * 
      * @throws {TypeError}
      * When
      * -    the table name not specified
      */
     get(tableAttributes) {
-        const { table: table_name, columns, alias } = tableAttributes;
+        const { table: table_name, columns, columnAliases, alias } = tableAttributes;
         if (table_name == null) {
             throw new TypeError(`Table name ('table') not specified in the given table attributes`);
         }
         const args = {
-            database: this,
-            name    : table_name,
+            database      : this,
+            name          : table_name,
             columns,
+            columnAliases,
             alias
         };
         try {
-            return (columns != null) ?
-                new VirtualAlierTable(args) :   //  View of a physical table
-                new AlierTable(args)            //  Physical table
-            ;
+            return new AlierDBTable(args);
         } catch (e) {
             console.error(`${this.connector.database}: AlierDB.get an unexpected error has occurred : ${e.message}`);
             return null;
@@ -1359,7 +1357,7 @@ class AlierDB {
     }
 }
 
-class AlierTable {
+class AlierDBTable {
     /**
      * The associated `AlierDB` instance.
      * @type {AlierDB}
@@ -1379,6 +1377,12 @@ class AlierTable {
     columns = null;
 
     /**
+     * An object mapping column names to aliases.
+     * @type {({ [k: string]: string })?}
+     */
+    columnAliases = null;
+
+    /**
      * A string representing the alias of the target table.
      * @type {string?}
      */
@@ -1386,13 +1390,13 @@ class AlierTable {
 
     /**
      * Left side term of JOIN operator.
-     * @type {AlierTable?}
+     * @type {AlierDBTable?}
      */
     leftTable = null;
 
     /**
      * Right side term of JOIN operator.
-     * @type {AlierTable?}
+     * @type {AlierDBTable?}
      */
     rightTable = null;
 
@@ -1417,16 +1421,24 @@ class AlierTable {
 
     /**
      * @constructor
-     * Creates a new {@link AlierTable}.
+     * Creates a new {@link AlierDBTable}.
      * 
-     * @param {AlierTableConstructorOptions} param0
+     * @param {AlierDBTableConstructorOptions} o
      */
-    constructor({
-        database,
-        name,
-        columns,
-        alias
-    }) {
+    constructor(o) {
+        const o_ = o ?? {};
+        const {
+            database,
+            name,
+            columns,
+            columnAliases,
+            alias,
+            leftTable: left_table,
+            rightTable: right_table,
+            joinType: join_type,
+            on,
+            using
+        } = o_;
         if (!(database instanceof AlierDB)) {
             throw new TypeError("'database' is not an AlierDB");
         } else if (typeof name !== "string") {
@@ -1435,6 +1447,16 @@ class AlierTable {
             throw new TypeError("'alias' is not a string");
         } else if (columns != null && !(typeof columns === "string" || Array.isArray(columns))) {
             throw new TypeError("'columns' is neither a string nor an array");
+        } else if (left_table != null && !(left_table instanceof AlierDBTable)) {
+            throw new TypeError("'leftTable' is not an AlierDBTable");
+        } else if (right_table != null && !(right_table instanceof AlierDBTable)) {
+            throw new TypeError("'rightTable' is not an AlierDBTable");
+        } else if (join_type != null && !Object.values(DBJoinType).some(t => t === join_type)) {
+            throw new TypeError("'joinType' is neither one of DBJoinType");
+        } else if (on != null && typeof on !== "string") {
+            throw new TypeError("'on' is not a string");
+        } else if (using != null && !(typeof using === "string" || Array.isArray(using) && using.every(column => (typeof column === "string" && column.length > 0)))) {
+            throw new TypeError("'using' is neither a string nor a string array");
         }
 
         const columns_ = (typeof columns === "string" ?
@@ -1443,10 +1465,16 @@ class AlierTable {
             )?.filter(column => column.length > 0)    
         ;
 
-        this.database = database;
-        this.name     = name;
-        this.alias    = alias;
-        this.columns  = columns_ != null && columns_.length > 0 ? columns_ : null;
+        this.database      = database;
+        this.name          = name;
+        this.alias         = alias;
+        this.columns       = columns_ != null && columns_.length > 0 ? columns_ : null;
+        this.columnAliases = columnAliases;
+        this.leftTable     = left_table;
+        this.rightTable    = right_table;
+        this.joinType      = join_type ?? DBJoinType.INNER_JOIN;
+        this.on            = on ?? "";
+        this.using         = typeof using === "string" ? [ using ] : [...(using ?? [])];
     }
 
     get schema() {
@@ -1465,10 +1493,10 @@ class AlierTable {
      * A boolean indicating whether or not auto-connection is enabled.
      * 
      * This property is synced with the {@link AlierDB.autoConnect}
-     * of the `AlierDB` associated with the target {@link AlierTable}.
+     * of the `AlierDB` associated with the target {@link AlierDBTable}.
      * 
      * This value is used whenever invoking REST interfaces of
-     * {@link AlierTable}, i.e. {@link get()}, {@link post()},
+     * {@link AlierDBTable}, i.e. {@link get()}, {@link post()},
      * {@link put()}, and {@link delete()}.
      * 
      * @type {boolean}
@@ -1489,10 +1517,10 @@ class AlierTable {
      * A boolean indicating whether or not auto-connection is enabled.
      * 
      * This property is synced with the {@link AlierDB.autoTransaction}
-     * of the `AlierDB` associated with the target {@link AlierTable}.
+     * of the `AlierDB` associated with the target {@link AlierDBTable}.
      * 
      * This value is used whenever invoking REST interfaces of
-     * {@link AlierTable}, i.e. {@link get()}, {@link post()},
+     * {@link AlierDBTable}, i.e. {@link get()}, {@link post()},
      * {@link put()}, and {@link delete()}.
      * 
      * @type {boolean}
@@ -1517,7 +1545,7 @@ class AlierTable {
      * 
      * This method is associated with `SELECT` commands in SQL.
      * 
-     * @param {AlierTableGetDescriptorType} getDescriptor 
+     * @param {AlierDBTableGetDescriptorType} getDescriptor 
      * An object describing the "get" operation.
      * 
      * The `aggregate` property represents an aggregation operation.
@@ -1571,7 +1599,7 @@ class AlierTable {
 
         return this.#restImpl(getDescriptor, async desc => {
             /**
-             * @type {AlierTableGetDescriptorType}
+             * @type {AlierDBTableGetDescriptorType}
              */
             const desc_ = desc ?? {};
             try {
@@ -1632,7 +1660,7 @@ class AlierTable {
      * 
      * This method is associated with `UPDATE` commands in SQL.
      * 
-     * @param {AlierTablePutDescriptorType} putDescriptor 
+     * @param {AlierDBTablePutDescriptorType} putDescriptor 
      * An object describing the "put" operation.
      * 
      * Each property represents a pair of the column name and its value
@@ -1656,12 +1684,19 @@ class AlierTable {
      * -    {@link delete()}
      */
     async put(putDescriptor) {
+        if (!this.isPhysical()) {
+            return {
+                status : false,
+                message: "Cannot update a record in a virtual table."
+            };
+        }
+
         const { lock, resolve } = this.#getLockObject();
         this.#read_lock.push(lock);
 
         return this.#restImpl(putDescriptor, desc => {
             /**
-             * @type {AlierTablePutDescriptorType}
+             * @type {AlierDBTablePutDescriptorType}
              */
             const desc_ = desc ?? {};
             const statement = _createUpdateStatement(this, desc_);
@@ -1679,7 +1714,7 @@ class AlierTable {
      * 
      * This method is associated with `INSERT` commands in SQL.
      * 
-     * @param {AlierTablePostDescriptorType} postDescriptor 
+     * @param {AlierDBTablePostDescriptorType} postDescriptor 
      * An object describing the "post" operation.
      * 
      * Each property represents a pair of the column name and its value
@@ -1703,12 +1738,19 @@ class AlierTable {
      * -    {@link delete()}
      */
     async post(postDescriptor) {
+        if (!this.isPhysical()) {
+            return {
+                status : false,
+                message: "Cannot insert a record into a virtual table."
+            };
+        }
+
         const { lock, resolve } = this.#getLockObject();
         this.#read_lock.push(lock);
 
         return this.#restImpl(postDescriptor, desc => {
             /**
-             * @type {AlierTablePostDescriptorType} 
+             * @type {AlierDBTablePostDescriptorType} 
              */
             const desc_ = desc ?? {};
             const statement = _createInsertStatement(this, desc_);
@@ -1726,7 +1768,7 @@ class AlierTable {
      * 
      * This method is associated with `DELETE` commands in SQL.
      * 
-     * @param {AlierTableDeleteDescriptorType} deleteDescriptor 
+     * @param {AlierDBTableDeleteDescriptorType} deleteDescriptor 
      * An object describing the "delete" operation.
      * 
      * The `filter` property represents the conditional expression
@@ -1750,12 +1792,19 @@ class AlierTable {
      * -    {@link post()}
      */
     async delete(deleteDescriptor) {
+        if (!this.isPhysical()) {
+            return {
+                status : false,
+                message: "Cannot delete a record from a virtual table."
+            };
+        }
+
         const { lock, resolve } = this.#getLockObject();
         this.#read_lock.push(lock);
 
         return this.#restImpl(deleteDescriptor, desc => {
             /**
-             * @type {AlierTableDeleteDescriptorType}
+             * @type {AlierDBTableDeleteDescriptorType}
              */
             const desc_ = desc ?? {};
 
@@ -1768,18 +1817,32 @@ class AlierTable {
     }
 
     /**
-     * Tests whether or not the target {@link AlierTable} is obtained from {@link join()} method.
+     * Tests whether or not the target {@link AlierDBTable} is obtained from {@link join()} method.
      * 
-     * @returns {this is AlierTable & { leftTable: AlierTable, rightTable: AlierTable }}
+     * @returns {this is AlierDBTable & { leftTable: AlierDBTable, rightTable: AlierDBTable }}
      * `true` if the target table is obtained from {@link join()} method,
      * `false` otherwise.
      * 
      * It is also guaranteed that both the {@link leftTable} and
-     * {@link rightTable} have {@link AlierTable} instances when `true`
+     * {@link rightTable} have {@link AlierDBTable} instances when `true`
      * is returned.
      */
     isJoined() {
-        return (this.leftTable instanceof AlierTable) && (this.rightTable instanceof AlierTable);
+        return (this.leftTable instanceof AlierDBTable) && (this.rightTable instanceof AlierDBTable);
+    }
+
+    /**
+     * Tests whether or not the target {@link AlierDBTable} is a physical table.
+     * 
+     * @returns { this is AlierDBTable & { leftTable: null, rightTable: null, columns: null }} 
+     * `true` if the target table was not obtained from the {@link join()} method 
+     * and no {@link columns} were specified, `false` otherwise.
+     *
+     * It is also guaranteed that {@link isJoined()} returns `false` 
+     * and {@link columns} is null when `true` is returned.
+     */
+    isPhysical() {
+        return !(this.isJoined() || this.columns != null);
     }
 
     /**
@@ -1788,8 +1851,8 @@ class AlierTable {
      * @param {object} o
      * An object containing arguments.
      * 
-     * @param {AlierTable} o.table
-     * an {@link AlierTable} representing the right-hand operand of
+     * @param {AlierDBTable} o.table
+     * an {@link AlierDBTable} representing the right-hand operand of
      * `JOIN` operator.
      * 
      * @param {(string | string[])?} o.columns
@@ -1805,17 +1868,18 @@ class AlierTable {
      * An optional string representing the conditional expression in
      * the `ON` clause.
      * 
-     * @param {string[]?} o.using
-     * An optional string array representing a list of column names
-     * in the `USING` clause.
+     * @param {(string | string[])?} o.using
+     * An optional parameter representing a single column name or a list of column names.
+     * When a string is given, it is treated as a column name.
+     * When an array of string is given, it is treated as a list of column names.
      * 
-     * @returns {AlierTable | VirtualAlierTable}
-     * An `AlierTable` representing the result of `JOIN` operation.
+     * @returns {AlierDBTable}
+     * An `AlierDBTable` representing the result of `JOIN` operation.
      */
     join(o) {
-        const { table: right_table, joinType: join_type, on, using, columns } = o ?? {};
+        const { table: right_table, joinType: join_type, on, using, columns, columnAliases } = o ?? {};
 
-        if (!(right_table instanceof AlierTable)) {
+        if (!(right_table instanceof AlierDBTable)) {
             throw new DBError("Right-hand side operand of JOIN operator is not provided");
         } else if ((
             join_type === DBJoinType.INNER_JOIN       ||
@@ -1832,8 +1896,6 @@ class AlierTable {
             join_type === DBJoinType.NATURAL_FULL_OUTER_JOIN
         ) && ((on != null) || (using != null))) {
             throw new DBError("CROSS JOIN and NATURAL JOIN must not have an `ON` or `USING` clause");
-        } else if (this.isJoined() && right_table.isJoined()) {
-            throw new DBError("JOINing two JOIN results are not supported");
         } else if (
             !(right_table.database.connector instanceof this.database.connector.constructor) ||
             this.database.connector.database !== right_table.database.connector.database
@@ -1844,22 +1906,21 @@ class AlierTable {
         const join_type_ = join_type ?? DBJoinType.INNER_JOIN;
         const join_op    = _joinOperator(join_type_);
 
-        const join_table = new VirtualAlierTable({
-            //  Common parameters for AlierTables
-            database  : this.database,
-            name      : `${this.name} ${join_op} ${right_table.name}`,
-            columns   : columns,
-            //  VirtualAlierTable specific parameters
-            joinType  : join_type ?? DBJoinType.INNER_JOIN,
-            leftTable : this,
-            rightTable: right_table,
+        const join_table = new AlierDBTable({
+            database     : this.database,
+            name         : `${this.name} ${join_op} ${right_table.name}`,
+            columns      : columns,
+            columnAliases: columnAliases,
+            joinType     : join_type ?? DBJoinType.INNER_JOIN,
+            leftTable    : this,
+            rightTable   : right_table,
             on,
             using
         });
         //  Share lock objects with the joined table.
         //  To do so, share the array reference with each others instead
         //  sharing components of the array to align database access from multiple
-        //  instances of `AlierTable` targetting the same table.
+        //  instances of `AlierDBTable` targetting the same table.
         join_table.#read_lock = this.#read_lock;
 
         return join_table;
@@ -1954,7 +2015,7 @@ class AlierTable {
             }
 
             const task_result = await task();
-            
+
             const disconnect_result = await this.database.disconnect();
             if (!disconnect_result.status) {
                 console.error(disconnect_result.message);
@@ -1996,12 +2057,12 @@ class AlierTable {
 /**
  * Creates a `SELECT` statement from the given descriptor.
  * 
- * @param {AlierTable} targetTable
+ * @param {AlierDBTable} targetTable
  * 
- * @param {AlierTableGetDescriptorType} getDescriptor 
+ * @param {AlierDBTableGetDescriptorType} getDescriptor 
  * An object describing the "get" operation.
  * 
- * For more details, see {@link AlierTable.get()}.
+ * For more details, see {@link AlierDBTable.get()}.
  * 
  * @returns {string}
  * A `SELECT` statement.
@@ -2061,7 +2122,7 @@ function _createSelectStatement(targetTable, getDescriptor) {
                 Math.trunc(limit) :
                 0xffffffff
             ;
-        
+
             if (use_offset) {
                 const offset_ = Number.isNaN(offset) ?
                         0 :
@@ -2083,11 +2144,11 @@ function _createSelectStatement(targetTable, getDescriptor) {
 /**
  * Create a result column list.
  * 
- * @param {AlierTable} targetTable 
+ * @param {AlierDBTable} targetTable 
  * The target table.
  * 
- * @param {AlierTableGetDescriptorType} getDescriptor 
- * An object describing parameters for {@link AlierTable.get()} method.
+ * @param {AlierDBTableGetDescriptorType} getDescriptor 
+ * An object describing parameters for {@link AlierDBTable.get()} method.
  * 
  * @returns {string}
  * A string representing the result column list.
@@ -2097,43 +2158,26 @@ function _createResultColumnList(targetTable, getDescriptor) {
     const aggregate     = getDescriptor?.aggregate;
     const has_aggregate = aggregate !== null && typeof aggregate === "object";
     const columns       = targetTable.columns;
+    const columnAliases = targetTable.columnAliases;
 
     const result_columns = [];
 
     //  Build result-column-list.
     //  If the target table specifies the result columns, use it.
-    //  Or, if the target table is created from JOIN operations,
     //  
     if (columns != null) {
-        result_columns.push(...columns.map(x => db.asIdentifier(x)));
-    } else if (targetTable.isJoined()) {
-        const left  = targetTable.leftTable;
-        const right = targetTable.rightTable;
-
-        /**
-         * @param {AlierTable} table 
-         * @returns {string[]}
-         */
-        const get_result_columns = (table) => {
-            const column_names = [];
-            if (table.isJoined()) {
-                column_names.push(_createResultColumnList(table, getDescriptor));
+        result_columns.length = columns.length;
+        for (const i of columns.keys()) {
+            const column = columns[i];
+            const alias = columnAliases?.[column];
+            const escaped_column = db.asIdentifier(column);
+            if (alias != null) {
+                const escaped_alias = db.asIdentifier(alias);
+                result_columns[i] = `${escaped_column} AS ${escaped_alias}`;
             } else {
-                const table_name  = table.schema.name;
-                const table_alias = table.alias ?? table_name;
-                for (const column of Object.keys(table.schema.columns)) {
-                    const canonical_name = `${db.asIdentifier(table_name)}.${db.asIdentifier(column)}`;
-                    const alias = db.asIdentifier(`${table_alias}_${column}`);
-                    column_names.push(`${canonical_name} AS ${alias}`);
-                }
+                result_columns[i] = escaped_column;
             }
-            return column_names;
-        };
-
-        result_columns.push(
-            ...get_result_columns(left),
-            ...get_result_columns(right)
-        );
+        }
     } else if (!has_aggregate) {
         result_columns.push("*");
     }
@@ -2146,8 +2190,8 @@ function _createResultColumnList(targetTable, getDescriptor) {
 }
 
 /**
- * @param {AlierTable} targetTable
- * @param {AlierTablePutDescriptorType} putDescriptor 
+ * @param {AlierDBTable} targetTable
+ * @param {AlierDBTablePutDescriptorType} putDescriptor 
  * @returns {string}
  */
 function _createUpdateStatement(targetTable, putDescriptor) {
@@ -2171,7 +2215,7 @@ function _createUpdateStatement(targetTable, putDescriptor) {
 
     update_statement += " ";
     update_statement += `SET ${assignments.join(",")}`;
-    update_statement = _appendWhereClause(update_statement, { filter });
+    update_statement = _appendWhereClause(update_statement, { filter:filter ?? "1=0" });
 
     //  Extract the first statement and discard the rest.
     return _splitStatements(update_statement)[0];
@@ -2179,8 +2223,8 @@ function _createUpdateStatement(targetTable, putDescriptor) {
 
 /**
  * 
- * @param {AlierTable} targetTable
- * @param {AlierTablePostDescriptorType} postDescriptor 
+ * @param {AlierDBTable} targetTable
+ * @param {AlierDBTablePostDescriptorType} postDescriptor 
  * @returns {string}
  */
 function _createInsertStatement(targetTable, postDescriptor) {
@@ -2207,8 +2251,8 @@ function _createInsertStatement(targetTable, postDescriptor) {
 /**
  * Creates a `DELETE` statement from the given descriptor.
  * 
- * @param {AlierTable} targetTable
- * @param {AlierTableDeleteDescriptorType} deleteDescriptor 
+ * @param {AlierDBTable} targetTable
+ * @param {AlierDBTableDeleteDescriptorType} deleteDescriptor 
  * An object containing parameters for the delete operation.
  * 
  * @returns {string}
@@ -2220,24 +2264,24 @@ function _createDeleteStatement(targetTable, deleteDescriptor) {
     let delete_statement = "DELETE";
     delete_statement += " ";
     delete_statement += `FROM ${_createTableExpression(targetTable)}`;
-    delete_statement = _appendWhereClause(delete_statement, { filter });
+    delete_statement = _appendWhereClause(delete_statement, { filter: filter ?? "1=0" });
 
     //  Extract the first statement and discard the rest.
     return _splitStatements(delete_statement)[0];
 }
 /**
- * Creates a common-table-expression from the given {@link AlierTable}.
+ * Creates a common-table-expression from the given {@link AlierDBTable}.
  * 
- * @param {AlierTable} alierTable 
- * An {@link AlierTable} to create the associated common-table-expression.
+ * @param {AlierDBTable} alierDBTable 
+ * An {@link AlierDBTable} to create the associated common-table-expression.
  * 
  * @returns {string}
  * A string representing the common-table-expression associated with
- * the given {@link AlierTable}.
+ * the given {@link AlierDBTable}.
  */
-function _createTableExpression(alierTable) {
-    const alier_table = alierTable;
-    const db          = alierTable.database;
+function _createTableExpression(alierDBTable) {
+    const alier_table = alierDBTable;
+    const db          = alierDBTable.database;
 
     if (alier_table.isJoined()) {
         const join_op    = _joinOperator(alier_table.joinType);
@@ -2260,10 +2304,12 @@ function _createTableExpression(alierTable) {
     } else {
         const table_name = db.asIdentifier(alier_table.name);
         const alias      = alier_table.alias?.trim();
-        return (typeof alias === "string" && alias.length > 0) ?
+        const table_alias = alier_table.alias ?? alier_table.name;    
+        const table_text = (typeof alias === "string" && alias.length > 0) ?
                 `${table_name} AS ${db.asIdentifier(alias)}` :
                 table_name
         ;
+        return `(SELECT ${_createResultColumnList(alier_table)} FROM ${table_text}) AS ${db.asIdentifier(table_alias)}` 
     }
 }
 
@@ -2290,64 +2336,6 @@ function _appendWhereClause(statement, { filter }) {
         `${statement} WHERE ${filter_}` :
         statement
     ;
-}
-
-class VirtualAlierTable extends AlierTable {
-
-    /**
-     * @constructor
-     * 
-     * Creates a new {@link VirtualAlierTable}.
-     * 
-     * This is invoked from the {@link join()} and {@link get()} methods
-     * and not intended for direct use.
-     * 
-     * @param {VirtualAlierTableConstructorOptions} o 
-     * An object containing named parameters.
-     * 
-     */
-    constructor(o) {
-        const o_ = o ?? {};
-        super(o_);
-        const {
-            leftTable: left_table,
-            rightTable: right_table,
-            joinType: join_type,
-            on,
-            using
-        } = o_;
-        if (left_table != null && !(left_table instanceof AlierTable)) {
-            throw new TypeError("'leftTable' is not an AlierTable");
-        } else if (right_table != null && !(right_table instanceof AlierTable)) {
-            throw new TypeError("'rightTable' is not an AlierTable");
-        } else if (join_type != null && !Object.values(DBJoinType).some(t => t === join_type)) {
-            throw new TypeError("'joinType' is neither one of DBJoinType");
-        } else if (on != null && typeof on !== "string") {
-            throw new TypeError("'on' is not a string");
-        } else if (using != null && (!Array.isArray(using) || using.some(column => (typeof column !== "string" || column.length <= 0)))) {
-            throw new TypeError("'using' is not a string array");
-        }
-
-        this.leftTable  = left_table;
-        this.rightTable = right_table;
-        this.joinType   = join_type ?? DBJoinType.INNER_JOIN;
-        this.on         = on ?? "";
-        this.using      = using != null ? [...using] : [];
-    }
-
-    async post() {
-        return {
-            status: false,
-            message: "'post()' is not implemented for VirtualAlierTable"
-        };
-    }
-
-    async delete() {
-        return {
-            status: false,
-            message: "'delete()' is not implemented for VirtualAlierTable"
-        };
-    }
 }
 
 /**
@@ -2559,7 +2547,7 @@ function _makeAggregateObject(aggregate, group, having) {
  * an expression in the `HAVING` clause in the statement if exists.
  * 
  * @see
- * -    {@link AlierTable.get()}
+ * -    {@link AlierDBTable.get()}
  */
 function $count(o) {
     const column    = o?.column ?? "*";
@@ -2616,7 +2604,7 @@ function $count(o) {
  * an expression in the `HAVING` clause in the statement if exists.
  * 
  * @see
- * -    {@link AlierTable.get()}
+ * -    {@link AlierDBTable.get()}
  */
 function $sum(o) {
     const column    = o?.column;
@@ -2676,7 +2664,7 @@ function $sum(o) {
  * an expression in the `HAVING` clause in the statement if exists.
  * 
  * @see
- * -    {@link AlierTable.get()}
+ * -    {@link AlierDBTable.get()}
  */
 function $avg(o) {
     const column    = o?.column;
@@ -2725,7 +2713,7 @@ function $avg(o) {
  * an expression in the `HAVING` clause in the statement if exists.
  * 
  * @see
- * -    {@link AlierTable.get()}
+ * -    {@link AlierDBTable.get()}
  */
 function $max(o) {
     const column    = o?.column;
@@ -2771,7 +2759,7 @@ function $max(o) {
  * an expression in the `HAVING` clause in the statement if exists.
  * 
  * @see
- * -    {@link AlierTable.get()}
+ * -    {@link AlierDBTable.get()}
  */
 function $min(o) {
     const column    = o?.column;
@@ -2787,7 +2775,7 @@ function $min(o) {
 /// PLATFORM-SPECIFIC SECTION: BEGIN
 export {
     AlierDB,
-    AlierTable,
+    AlierDBTable,
     DBJoinType,
     $count,
     $sum,

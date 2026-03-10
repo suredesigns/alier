@@ -9,14 +9,14 @@
 #       dependency-name = "version name"
 #   to refer from build.gradle:
 #       libs.versions.dependency.name
-#   
+#
 #   NOTE:
 #       values MUST be strings even if they are supposed to be interpreted as numbers.
 #       Hence, type casting such like `libs.versions.minSdk.get().toInteger()` is required whenever using values as numbers.
 #       see <https://docs.gradle.org/current/userguide/version_catalogs.html#sec:common-version-numbers>
 
-alier-versionCode = "1"
-alier-versionName = "0.4.1"
+alier-versionCode = "7"
+alier-versionName = "0.4.7"
 
 project-compileSdk = "36"
 project-targetSdk  = "35"

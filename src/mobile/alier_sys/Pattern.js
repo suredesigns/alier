@@ -472,7 +472,7 @@ class Pattern {
                 }
             }
             for (const k of this.#label_name_pos_dict.keys()) {
-                if (!Object.prototype.hasOwnProperty.call(params, k)) {
+                if (!Object.hasOwn(params, k)) {
                     throw new TypeError(`Value of a variable ${JSON.stringify(k)} was not provided`);
                 }
             }

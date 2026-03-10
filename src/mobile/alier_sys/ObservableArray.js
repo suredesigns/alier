@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 import { ObservableObject } from "./ObservableObject.js";
+import getPropertyDescriptor from "./GetPropertyDescriptor.js";
 
 const validateIndex = (index, len, fallback) => {
     index = Number(index);
@@ -45,91 +46,6 @@ const validateCount = (count, max, fallback) => {
     }
     return count;
 }
-
-/**
- * Makes a copy of the given object.
- * 
- * If a non-object value or null was given, just returns it.
- * Otherwise, creates a copy of the given object and returns the copy.
- * 
- * In addition, in the case of the frozen object was given,
- * just return the given object if either shallow copy is desired or the object has no object properties.
- * 
- * To copy the given object, this function uses its constructor.
- * Hence if the target object's constructor prohibits the use of the copy/conversion constructor
- * or it is simply lacking them, this function will not work as expected.
- * 
- * The returned object will have the same prototype and properties of the original object.
- * In addition, attributes of the properties, e.g. writable, configurable, enumerable, will also be conserved.
- * 
- * One of the exceptions is the case of applying to DOM Nodes.
- * This function has the same effect as {@link https://developer.mozilla.org/docs/Web/API/Node/cloneNode | Node.prototype.cloneNode} 
- * when applied to a Node object.
- * 
- * @param {*} x
- * an object to be cloned.
- * 
- * @param {boolean} deep
- * a boolean representing whether or not to create a deep copy.
- * This function returns a deep copy of the given object if `true` was given,
- * returns a shallow copy of the given object otherwise. 
- * 
- * @returns
- * a copy of the given value or object.
- * 
- * @throws {TypeError}
- * when `deep` was not a boolean.
- */
-const clone = (x, deep = false) => {
-    //  requires
-    if (typeof deep !== "boolean") {
-        throw new TypeError("'deep' must be a boolean");
-    }
-
-    //  do
-    if (typeof x !== "object" || x === null || Object.isFrozen(x)) {
-        return x;
-    }
-    if (Object.isFrozen(x)) {
-        if (!deep) {
-            return x;
-        } else if (Object.values(x).every(v => typeof v !== "object" || v === null)) {
-            return x;
-        }
-    }
-    if ((x instanceof Date) || (x instanceof String) || (x instanceof Number) || (x instanceof Boolean)) {
-        return new x.constructor(x.valueOf());
-    } else if (Array.isArray(x)) {
-        return deep ?
-            x.map(y => clone(y, deep)) :
-            [...x]
-        ;
-    } else if (typeof x[Symbol.iterator] === "function" || typeof x.length === "number") {
-        return deep ? 
-        new x.constructor(Array.from(x).map(y => clone(y, deep))) :
-        new x.constructor(x)
-    ;
-    } else if (x instanceof Node) {
-        return x.cloneNode(deep);
-    } else {
-        const copy = Object.create(Object.getPrototypeOf(x));
-        const descriptors = Object.getOwnPropertyDescriptors(x);
-        if (!deep) {
-            return Object.defineProperties(copy, descriptors);
-        } else {
-            for (const [key, desc] of Object.entries(descriptors)) {
-                if ("value" in desc) {
-                    // Q.  Why cloning here?
-                    // A.  It is needed for cloning before define property due to existence of non writable (i.e. read-only) properties.
-                    //     Once you define a read-only property, you cannot replace it with its clone (w/o delete operation).
-                    desc.value = clone(desc.value, deep);
-                }
-                Object.defineProperty(copy, key, desc);
-            }
-            return copy;
-        }
-    }
-};
 
 /**
  * Enumerator representing kinds of operations on `ObservableArray`.
@@ -241,37 +157,6 @@ class Operation extends null {
 }
 
 /**
- * Gets a property descriptor of the target object or its prototypes.
- * 
- * Unlike `Object.getOwnPropertyDescriptor()`,
- * this function seeks the property in a prototype of the target object.
- * 
- * @param {object} target 
- * @param {string} key 
- * @returns {PropertyDescriptor | undefined}
- */
-const getPropertyDescriptor = (target, key) => {
-    // get own property descriptor of the given target
-    let desc = Object.getOwnPropertyDescriptor(target, key);
-
-    // loop until descriptor is not found
-    for (let o = target; desc === undefined; desc = Object.getOwnPropertyDescriptor(o, key)) {
-        o = Object.getPrototypeOf(o);
-        //  Object.getOwnPropertyDescriptor() works only for non-null objects and functions,
-        //  so break the loop if the prototype is null.
-        //  (Object.getPrototypeOf() returns either null or an non-null object or a function).
-        //
-        //  Note that Object.getPrototypeOf(Object.prototype) will returns null and
-        //  Object.getPrototypeOf(Function.prototype) will returns Object.prototype,
-        //  so it is guaranteed that this loop stops in finite time.
-        if (o === null) {
-            break;
-        }
-    }
-    return desc;
-};
-
-/**
  * A class for observing a sequential data.
  * 
  * Conceptually, an ObservableArray is a sequence of ObservableObjects of homogeneous data.
@@ -337,6 +222,26 @@ class ObservableArray {
         }
     }
 
+    /**
+     * @param {object} archetype
+     * An object can be [structured cloned](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#supported_types)
+     * used as an archetype of array entries.
+     * 
+     * @param {object} options
+     * A set of options.
+     * 
+     * @param {boolean} [options.twoWay=false]
+     * A boolean indicating whether or not to allow two-way binding.
+     * Two-way binding is allowed if the parameter is `true` and is not
+     * allowed otherwise.
+     * 
+     * By default this parameter is set to `false`.
+     * 
+     * @param {number} [options.initCount = 0]
+     * An integer representing the initial length of an array to create.
+     * 
+     * By default this parameter is set to `0`.
+     */
     constructor(archetype, options) {
         //  apply default values
         const two_way    = options?.twoWay    ?? true;
@@ -352,7 +257,7 @@ class ObservableArray {
         }
 
         //  do - initialization
-        this.#archetype = clone(archetype, true);
+        this.#archetype = structuredClone(archetype);
         this.twoWay = two_way;
         Object.defineProperty(this, "twoWay", {
             writable    : false,
@@ -1241,7 +1146,7 @@ class ObservableArray {
     }
 
     #makeObservableObject() {
-        const src = clone(this.#archetype, true);
+        const src = structuredClone(this.#archetype);
         return new ObservableObject(src, this.twoWay);
     }
 

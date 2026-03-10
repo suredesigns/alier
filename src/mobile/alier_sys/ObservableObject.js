@@ -14,31 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const isEmpty = (o) => {
-    if (o === null || (typeof o !== "string" && typeof o !== "function" && typeof o !== "object")) {
-        return true;
-    } else if (typeof o === "string") {
-        return o === "";
-    } else if (Array.isArray(o)) {
-        return o.length === 0;
-    } else if (typeof o[Symbol.iterator] === "function") {
-        for (const _ of o) {
-            return false;
-        }
-        return true;
-    } else {
-        for (const k in o) {
-            if (Object.prototype.hasOwnProperty.call(o, k)) {
-                return false;
-            }
-        }
-        return true;
-    }
-};
+import isEmpty from "./isEmpty.js";
+import isEquivalent from "./isEquivalent.js";
 
 /**
  * Converts the given string to a value of the given type.
- * 
+ *
  *  @param {string} s a string representing a serialized value
  *  @param {function} ctor a destination type
  */
@@ -75,7 +56,7 @@ const _strto = (s, ctor) => {
 class TwoWayDataConnector {
     #source;
     #target;
-    
+
     get target() {
         return this.#target;
     }
@@ -102,7 +83,7 @@ class TwoWayDataConnector {
 class OneWayDataConnector {
     #source;
     #target;
-    
+
     get target() {
         return this.#target;
     }
@@ -126,23 +107,22 @@ class OneWayDataConnector {
         const source_state = this.curateValues();
         const diff = Object.create(null);
         for (const k in source_state) {
-            if (!Object.prototype.hasOwnProperty.call(value_map, k)) { continue; }
-            
+            if (!Object.hasOwn(value_map, k)) { continue; }
+
             const source_value = source_state[k];
 
             const target_value_equiv = _strto(value_map[k], source_value?.constructor);
-            if (target_value_equiv !== source_value) {
+            if (!isEquivalent(target_value_equiv, source_value)) {
                 diff[k] = source_value;
             }
         }
 
         //  if diff has a property, reflect it into the target.
-        for (const _ in diff) {
-            //  since diff is null-prototype, all properties are its own properties.
-            return target.reflectValues(Object.freeze(diff));
-        }
         //  otherwise, return an empty object.
-        return Object.create(null);
+        return isEmpty(diff) ?
+            Object.create(null) :
+            target.reflectValues(Object.freeze(diff))
+        ;
     }
 }
 
@@ -192,8 +172,8 @@ class ObservableObject {
                         [key]: function(...args) {
                             // function expression does not capture the lexical "this"
                             // and hence "this" appeared in this function is not necessarily identical with ObservableObject itself.
-                            
-                            // to avoid crashing due to access private properties, 
+
+                            // to avoid crashing due to access private properties,
                             // pass self as thisArg instead of proxy if the method invoked from proxy.
                             const result = method.apply(this === proxy ? self : this, args);
 
@@ -210,7 +190,7 @@ class ObservableObject {
             set (self, key, value, _proxy) {
                 if (!(key in self)) {
                     return false;
-                } else if (self[key] === value) {
+                } else if (isEquivalent(self[key], value)) {
                     return true;
                 } else if (!datatypes.has(key)) {
                     return false;
@@ -249,7 +229,7 @@ class ObservableObject {
         for (const k of this.#datatypes.keys()) {
             o[k] = this[k];
         }
-        return o;
+        return structuredClone(o);
     }
 
     bindData(target, twoWay = this.allowsTwoWay) {
@@ -272,7 +252,7 @@ class ObservableObject {
             return bound_by_this;
         }
 
-        const connector = (this.allowsTwoWay && twoWay) ? 
+        const connector = (this.allowsTwoWay && twoWay) ?
             new TwoWayDataConnector(this.#proxy, target) :
             new OneWayDataConnector(this.#proxy, target)
         ;
@@ -312,11 +292,11 @@ class ObservableObject {
         const updated_values = Object.create(null);
 
         for (const k in value_map) {
-            if (!Object.prototype.hasOwnProperty.call(value_map, k)) { continue; }
-            if (!Object.prototype.hasOwnProperty.call(this, k)) { continue; }
+            if (!Object.hasOwn(value_map, k)) { continue; }
+            if (!Object.hasOwn(this, k)) { continue; }
 
             const target_value_equiv = _strto(value_map[k], this[k]?.constructor);
-            if (this[k] !== target_value_equiv) {
+            if (!isEquivalent(this[k], target_value_equiv)) {
                 if (this.#datatypes.get(k) === typeof target_value_equiv) {
                     updated_values[k] = target_value_equiv;
                     // assign value to this directly because proxy traps set event and calls reflectValues().

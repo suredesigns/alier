@@ -30,12 +30,13 @@ import "./_dependency_Web.js";
 import "./_AlierCore.js";
 
 import { AlierView } from "./AlierView.js";
-import { ListView } from "./ListView.js";
+import { AlierListView } from "./ListView.js";
 import "./AlierText.js";
 import "./AlierButton.js";
 import "./TextField.js";
 import "./Checkbox.js";
 import "./AlierSlider.js";
+import "./AlierComposite.js";
 
 // ViewLogic.js:546
 // In `ViewLogic.attachTo`, check that new host is the instance of `AlierView`.
@@ -48,7 +49,7 @@ const defineIfNotDefined = (tag, ctor, options = undefined) => {
 };
 
 defineIfNotDefined("alier-view", AlierView);
-defineIfNotDefined("alier-list-view", ListView);
+defineIfNotDefined("alier-list-view", AlierListView);
 defineIfNotDefined("alier-container", class ContainerView extends HTMLElement {});
 
 let running_task = null;

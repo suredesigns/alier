@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright 2024 Suredesigns Corp.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@ limitations under the License.
 import { LazyNew } from "./LazyNew.js";
 import { ObservableObject } from "./ObservableObject.js";
 import { ObservableArray } from "./ObservableArray.js";
+import { ObservableValue } from "./ObservableValue.js";
 import { WebApi } from "./WebApi.js";
 import { AgentRepository } from "./Auth.js";
 import { MessagePorter } from "./MessagePorter.js";
@@ -27,29 +28,29 @@ const xml_parser = new DOMParser();
 
 /**
  * Builds a model interface from the given XML document.
- * 
+ *
  * As a result, `Alier.Model` is replaced with the model interface
  * newly created.
- * 
+ *
  * This function is recursive and each parameters is used for two
  * purposes. one for the initial call and another for recursive calls.
- * 
+ *
  * @param {Element} element
  * A root element of the XML.
- * 
+ *
  * In recursive calls, the node currently in focus is given as
  * this parameter.
- * 
+ *
  * @param {object?} position
  * This parameter is used only in recursive calls.
- *  
- * In recursive calls, a part of the model interface associated with 
+ *
+ * In recursive calls, a part of the model interface associated with
  * the focused node of the given XML document is given as
  * this parameter.
- * 
+ *
  * @param {string?} class_name
  * This parameter is used only in recursive calls.
- *  
+ *
  * In recursive calls, a string representing the model class name is
  * given as this parameter.
  * The class name is used for retrieving the model properties.
@@ -58,7 +59,8 @@ function _setInterface(element, position, class_name) {
     //  NOTE:
     //  This function is recursive and the given parameters are
     //  intentionally modified during the process.
-    switch (element.tagName.toLowerCase()) {
+    const tag_name = element.tagName.toLowerCase();
+    switch (tag_name) {
         case "interface": {
             globalThis.Alier.Model = {};
             if (element.className) {
@@ -147,51 +149,38 @@ function _setInterface(element, position, class_name) {
             }
             break;
         }
-        case "observable-object": {
+        case "observable-object":
+        case "observable-array":
+        case "observable-value": {
             if (element.className) {
                 const model_class = new model_module[element.className]();
                 if (model_class instanceof AlierModel) {
                     class_name = element.className;
                 }
             }
-            if (class_name) {
-                const model_class = new model_module[class_name]();
-                const attributes = element.attributes;
-                const locale = attributes.getNamedItem("locale")?.value ?? "local";
-                if (locale === "local") {
-                    const path = attributes.getNamedItem("path").value;
-                    const name = attributes.getNamedItem("name").value;
-                    const observable_obj = model_class[path];
-                    if (observable_obj instanceof ObservableObject) {
-                        position[name] = {
-                            bindData: observable_obj.bindData.bind(observable_obj)
-                        };
-                    }
-                }
+            if (!class_name) {
+                break;
             }
-            break;
-        }
-        case "observable-array": {
-            if (element.className) {
-                const model_class = new model_module[element.className]();
-                if (model_class instanceof AlierModel) {
-                    class_name = element.className;
+            const model_class = new model_module[class_name]();
+            const attributes = element.attributes;
+            const locale = attributes.getNamedItem("locale")?.value ?? "local";
+            if (locale === "local") {
+                const path = attributes.getNamedItem("path").value;
+                const source = model_class[path];
+
+                const tag_instance_map = {
+                    "observable-object": source instanceof ObservableObject,
+                    "observable-array": source instanceof ObservableArray,
+                    "observable-value": source instanceof ObservableValue,
+                };
+                if (!tag_instance_map[tag_name]) {
+                    break;
                 }
-            }
-            if (class_name) {
-                const model_class = new model_module[class_name]();
-                const attributes = element.attributes;
-                const locale = attributes.getNamedItem("locale")?.value ?? "local";
-                if (locale === "local") {
-                    const path = attributes.getNamedItem("path").value;
-                    const name = attributes.getNamedItem("name").value;
-                    const observable_arr = model_class[path];
-                    if (observable_arr instanceof ObservableArray) {
-                        position[name] = {
-                            bindData: observable_arr.bindData.bind(observable_arr)
-                        };
-                    }
-                }
+
+                const name = attributes.getNamedItem("name").value;
+                position[name] = {
+                    bindData: source.bindData.bind(source)
+                };
             }
             break;
         }
@@ -238,13 +227,13 @@ function _setInterface(element, position, class_name) {
 
 /**
  * Sets up the model interface object defined in the given XML text.
- * 
+ *
  * This function initializes `Alier.Model`.
- * 
+ *
  * @param {string | Promise<string>} xmlText
  * A string or a `Promise` that resolves to a string representing
  * the XML document that defines the model interface to be set up.
- * 
+ *
  * @returns {Promise<void>}
  * A Promise settled when the setup is completed.
  */
@@ -270,14 +259,14 @@ async function setupModelInterfaceFromText(xmlText) {
 
 /**
  * Sets up the model interface object defined in the given XML file.
- * 
+ *
  * This function initializes `Alier.Model`.
- * 
+ *
  * @param {object} xmlObj
  * @param {string} xmlObj.xml
  * A string representing the XML file path that defines
  * the model interface to be set up.
- * 
+ *
  * @returns {Promise<void>}
  * A Promise settled when the setup is completed.
  */
@@ -289,14 +278,14 @@ async function setupModelInterface(xmlObj) {
 
 /**
  * A class of `<restful-object>` interface objects.
- * 
+ *
  * The instances represent objects conforming to the REST interface.
  */
 class RestfulObject {
     /**
      * Creates a wrapper object for the given REST object.
-     * 
-     * @param {object} restObj 
+     *
+     * @param {object} restObj
      * an object that conforms to the REST interface.
      */
     constructor(restObj) {

@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import isEmpty from "./isEmpty.js";
 import { Overload } from "./Overload.js";
 
 function countChars(s) {
@@ -129,10 +130,7 @@ function diff(expected, actual) {
                     diff_result.actual[i]   = d.actual;
                 }
             }
-            for (const _ in diff_result.expected) {
-                return diff_result;
-            }
-            return {};
+            return isEmpty(diff_result.expected) ? {} : diff_result;
         } else {
             // Other general objects
             const diff_result    = { expected: {}, actual: {} };
@@ -144,10 +142,7 @@ function diff(expected, actual) {
                     diff_result.actual[k]   = d.actual;
                 }
             }
-            for (const _ in diff_result.expected) {
-                return diff_result;
-            }
-            return {};
+            return isEmpty(diff_result.expected) ? {} : diff_result;
         }
     } else if (typeof expected === "number") {
         if (typeof actual !== "number") {
@@ -1138,7 +1133,7 @@ const shapeOf = (o, refs) => {
          */
         const shape = Object.create(null);
         for (const k in o) {
-            if (!Object.prototype.hasOwnProperty.call(o, k)) { continue; }
+            if (!Object.hasOwn(o, k)) { continue; }
 
             const v = o[k];
 

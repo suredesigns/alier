@@ -20,7 +20,7 @@ import { ProtoViewLogic } from "./ProtoViewLogic.js";
 
 import { ViewLogic } from "./ViewLogic.js";
 import { AlierView } from "./AlierView.js";
-import { ListView } from "./ListView.js";
+import { AlierListView } from "./ListView.js";
 import { AlierText } from "./AlierText.js";
 /**
  * Setup Alier environment.
@@ -49,7 +49,7 @@ export {
     setupAlier,
     AlierModel,
     ViewLogic,
-    ListView,
+    AlierListView,
     AlierText,
     setupModelInterfaceFromText,
     setupModelInterface,

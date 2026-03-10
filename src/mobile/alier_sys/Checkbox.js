@@ -13,9 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import { AlierCustomElement, html } from "./AlierCustomElement.js";
+import { AlierUiElement, html } from "./AlierUiElement.js";
 
-class AlierCheckBox extends AlierCustomElement {
+class AlierCheckBox extends AlierUiElement {
 
     static tagName = "alier-checkbox";
     static formAssociated = true;
@@ -489,6 +489,10 @@ class AlierCheckBox extends AlierCustomElement {
         }
         if(!this.hasAttribute("data-active-events")){
             this.setAttribute("data-active-events", "change");
+        }
+
+        if(!this.hasAttribute("data-primary")) {
+            this.dataset.primary = "checked";
         }
 
         const observer = new MutationObserver(() => {

@@ -25,12 +25,13 @@ import { setupModelInterface, setupModelInterfaceFromText } from "./SetupInterfa
 import { ProtoViewLogic } from "./ProtoViewLogic.js";
 import { ViewLogic } from "./ViewLogic.js";
 import { AlierView } from "./AlierView.js";
-import { ListView } from "./ListView.js";
+import { AlierListView } from "./ListView.js";
 import "./AlierText.js";
 import "./AlierButton.js";
 import "./TextField.js";
 import "./Checkbox.js";
 import "./AlierSlider.js";
+import "./AlierComposite.js"
 
 /**
  * Setup Alier environment.
@@ -63,7 +64,7 @@ export {
     setupAlier,
     AlierModel,
     ViewLogic,
-    ListView,
+    AlierListView,
     setupModelInterfaceFromText,
     setupModelInterface,
     AlierView,

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { AlierCustomElement, html } from "./AlierCustomElement.js";
+import { AlierUiElement, html } from "./AlierUiElement.js";
 
 /**
  * @template T
@@ -32,7 +32,7 @@ import { AlierCustomElement, html } from "./AlierCustomElement.js";
  * @typedef {Object.<string, PropertyDescriptor<*>>} PropertyDescriptors
  */
 
-class AlierTextField extends AlierCustomElement {
+class AlierTextField extends AlierUiElement {
     static tagName = "alier-textfield";
 
     static attachShadowOptions = { mode: "closed", delegatesFocus: true };
@@ -91,21 +91,13 @@ class AlierTextField extends AlierCustomElement {
             asAttr: (propVal) => propVal < 0 ? null : String(propVal),
         },
         pattern: {
-            default: "",
             validate: (_target, value) => {
                 return value === null || typeof value === "string";
-            },
-            asProp: (attrVal) => {
-                return attrVal === null ? "" : attrVal;
             },
         },
         placeholder: {
-            default: "",
             validate: (_target, value) => {
                 return value === null || typeof value === "string";
-            },
-            asProp: (attrVal) => {
-                return attrVal === null ? "" : attrVal;
             },
         },
         readOnly: {

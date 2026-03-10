@@ -250,11 +250,11 @@ class ListViewContainer extends ViewLogic {
  * A `AlierView` representing a list of monomorphic items.
  * 
  * Due to duality of AlierView and ViewLogic,
- * ListView also has ViewLogic as its counter-part.
- * However unlike plain AlierViews, ListView's dual is provided by itself but not the user.
+ * AlierListView also has ViewLogic as its counter-part.
+ * However unlike plain AlierViews, AlierListView's dual is provided by itself but not the user.
  * The user can provide ListItemView's ViewLogic instead.
  */
-class ListView extends AlierView {
+class AlierListView extends AlierView {
 
     static tagName = "alier-list-view";
 
@@ -265,7 +265,7 @@ class ListView extends AlierView {
         /**
          * @type {ViewLogic[]?}
          */
-        const items = this.container?.items;
+        const items = this.logic?.items;
         return items != null ? items.length : 0;
     }
 
@@ -276,7 +276,7 @@ class ListView extends AlierView {
         /**
          * @type {ViewLogic[]?}
          */
-        const items = this.container?.items;
+        const items = this.logic?.items;
         if (items == null) { return undefined; }
 
         let index_ = index;
@@ -299,7 +299,7 @@ class ListView extends AlierView {
         /**
          * @type {ViewLogic[]?}
          */
-        const items = this.container?.items;
+        const items = this.logic?.items;
         if (items == null) { return; }
 
         let start_index = startIndex;
@@ -341,42 +341,42 @@ class ListView extends AlierView {
     }
 
     /**
-     * Gets an iterator of the target `ListView`'s contents.
+     * Gets an iterator of the target `AlierListView`'s contents.
      * 
-     * @returns an iterator of the `ListView`'s contents.
+     * @returns an iterator of the `AlierListView`'s contents.
      */
     values() {
         /** @type { ViewLogic[] } */
-        const items = this.container?.items ?? [];
+        const items = this.logic?.items ?? [];
         return items.values();
     }
 
     /**
-     * Gets an iterator of indices of the target `ListView`'s contents.
+     * Gets an iterator of indices of the target `AlierListView`'s contents.
      * 
-     * @returns an iterator of indices of the `ListView`'s contents.
+     * @returns an iterator of indices of the `AlierListView`'s contents.
      */
     keys() {
         /** @type { ViewLogic[] } */
-        const items = this.container?.items ?? [];
+        const items = this.logic?.items ?? [];
         return items.keys();
     }
 
     /**
-     * Gets an iterator of the target `ListView`'s contents with their indices.
+     * Gets an iterator of the target `AlierListView`'s contents with their indices.
      * 
-     * @returns an iterator of indices of the `ListView`'s contents with their indices.
+     * @returns an iterator of indices of the `AlierListView`'s contents with their indices.
      */
     entries() {
         /** @type { ViewLogic[] } */
-        const items = this.container?.items ?? [];
+        const items = this.logic?.items ?? [];
         return items.entries();
     }
 
     /**
-     * Gets an iterator of the target `ListView`'s contents.
+     * Gets an iterator of the target `AlierListView`'s contents.
      * 
-     * @returns an iterator of the `ListView`'s contents.
+     * @returns an iterator of the `AlierListView`'s contents.
      */
     [Symbol.iterator]() {
         return this.values();
@@ -399,7 +399,7 @@ class ListView extends AlierView {
      * - when `archetype` is not an instance of `ViewLogic`
      * 
      * @see
-     * - {@link ListView.prototype.detach}
+     * - {@link AlierListView.prototype.detach}
      */
     attach(archetype) {
         //  requires
@@ -411,7 +411,7 @@ class ListView extends AlierView {
         }
 
         //  init - attach ListViewContainer if not attached yet
-        if (this.container == null) {
+        if (this.logic == null) {
             super.attach(new ListViewContainer);
         }
 
@@ -426,13 +426,13 @@ class ListView extends AlierView {
      * Detaches template and its instances. 
      * 
      * @see
-     * - {@link ListView.prototype.attach}
+     * - {@link AlierListView.prototype.attach}
      */
     detach() {
         if (this.#template == null) {
             return [];
         }
-        const items = this.container?.items;
+        const items = this.logic?.items;
         if (items == null || items.length <= 0) {
             this.#template = null;
             return [];
@@ -459,7 +459,7 @@ class ListView extends AlierView {
         /**
          * @type {ListViewContainer?}
          */
-        const container = this.container;
+        const container = this.logic;
         if (container == null) {
             return this;
         }
@@ -484,7 +484,7 @@ class ListView extends AlierView {
         /**
          * @type {ListViewContainer?}
          */
-        const container = this.container;
+        const container = this.logic;
         if (container == null) {
             return this;
         }
@@ -531,7 +531,7 @@ class ListView extends AlierView {
         /**
          * @type {ListViewContainer?}
          */
-        const container = this.container;
+        const container = this.logic;
         //  requires - returns if container is not attached.
         if (container == null || this.#template == null) {
             return [];
@@ -607,18 +607,18 @@ class ListView extends AlierView {
     }
 
     syncComponents(operation) {
-        if (operation == null || operation.from === this || this.container == null) {
+        if (operation == null || operation.from === this || this.logic == null) {
             return;
         }
         switch (operation.kind) {
             case ObservableArray.OperationKind.SORT: {
                 this.#onSorted(operation.from, operation.indexMap);
-                this.container.post(this.container.message("viewUpdated", "sort", { targetView: this }));
+                this.logic.post(this.logic.message("viewUpdated", "sort", { targetView: this }));
                 break;
             }
             case ObservableArray.OperationKind.SPLICE: {
                 this.#onSpliced(operation.from, operation.startIndex, operation.deleteCount, operation.insertedItems);
-                this.container.post(this.container.message("viewUpdated", "splice", { targetView: this }));
+                this.logic.post(this.logic.message("viewUpdated", "splice", { targetView: this }));
                 break;
             }
             default:
@@ -639,8 +639,8 @@ class ListView extends AlierView {
      * 
      * @type {(() => ViewLogic)?}
      * @see
-     * - {@link ListView.prototype.attach}
-     * - {@link ListView.prototype.detach}
+     * - {@link AlierListView.prototype.attach}
+     * - {@link AlierListView.prototype.detach}
      * 
      */
     #template = null;
@@ -648,7 +648,7 @@ class ListView extends AlierView {
     /**
      * Function invoked when items are sorted.
      * 
-     * @param {ListView|ObservableArray} from 
+     * @param {AlierListView|ObservableArray} from 
      * manipulated object
      * 
      * @param {({from: number, to: number})[]} indexMap 
@@ -672,7 +672,7 @@ class ListView extends AlierView {
             /**
              * @type {ListViewContainer?}
              */
-            const container = this.container;
+            const container = this.logic;
             if (container == null) { return; }
             /**
              * @type {ViewLogic[]?}
@@ -697,7 +697,7 @@ class ListView extends AlierView {
     /**
      * Function invoked when items are spliced.
      * 
-     * @param {ListView|ObservableArray} from 
+     * @param {AlierListView|ObservableArray} from 
      * manipulated object
      * 
      * @param {number} startIndex 
@@ -727,7 +727,7 @@ class ListView extends AlierView {
             /**
              * @type {ListViewContainer?}
              */
-            const container = this.container;
+            const container = this.logic;
             if (container == null) { return; }
 
             /** @type {ObservableObject[]} */
@@ -752,6 +752,6 @@ class ListView extends AlierView {
     }
 }
 
-ListView.use();
+AlierListView.use();
 
-export { ListView };
+export { AlierListView };

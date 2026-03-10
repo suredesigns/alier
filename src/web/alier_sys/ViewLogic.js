@@ -16,6 +16,7 @@ limitations under the License.
 
 import { ProtoViewLogic } from "./ProtoViewLogic.js";
 import { AlierView } from "./AlierView.js";
+import { AlierLogic } from "./AlierLogic.js";
 
 /**
  * @class
@@ -30,11 +31,11 @@ class ViewLogic extends ProtoViewLogic {
     get container() { return this.#container; }
     
     /**
-     * A {@link AlierView} hosting this `ViewLogic` instance.
+     * A {@link AlierLogic} hosting this `ViewLogic` instance.
      * 
      * `this.host` changes to `null` when the host has detached this ViewLogic.
      * 
-     * `this.host` changes to some `AlierView` when that `AlierView` has attached this ViewLogic.
+     * `this.host` changes to some `AlierLogic` when that `AlierLogic` has attached this ViewLogic.
      * 
      * By default, this value is `null`.
      * 
@@ -46,7 +47,7 @@ class ViewLogic extends ProtoViewLogic {
     
     /**
      * A &lt;div&gt; element containing &lt;style&gt; elements as its children.
-     * Any CSS rules in this &lt;div&gt; is applied to the DOM tree under the host `AlierView`.
+     * Any CSS rules in this &lt;div&gt; is applied to the DOM tree under the host `AlierLogic`.
      * 
      * &lt;style&gt; elements are moved from its original document when contents are loaded to the container.
      * 
@@ -65,48 +66,52 @@ class ViewLogic extends ProtoViewLogic {
      * 
      * This method overrides the {@link ProtoViewLogic.prototype.post} method.
      * 
-     * @param {({ id?: string, code?: string, param?: any, origin?: any })} message 
-     * @returns {Promise<boolean>} `true` if the message is consumed,
+     * @param {object} message
+     * A message to post.
+     * 
+     * @param {string?} message.id
+     * The primary identifier of the message.
+     *
+     * @param {string?} message.code
+     * The secondary identifier of the message.
+     *
+     * @param {any?} message.param
+     * An optional parameter object of the message.
+     *
+     * @param {object} message.origin
+     * The original sender of the message.
+     *
+     * @param {object} options
+     * A collection of optional arguments.
+     * 
+     * @param {boolean} options.discardDuplicates
+     * A boolean indicating whether or not to discard a message if duplicated.
+     * Duplicates are discarded if the parameter is `true`.
+     * 
+     * By default, this parameter is set to `false`.
+     * 
+     * @returns {Promise<boolean>}
+     * A Promise that resolves to a boolean which indicates
+     * whether or not the posted message has been consumed.
+     * `true` if the message has been consumed,
      * `false` otherwise.
      */
-    async post(message) {
-        const result = super.post(message);
-        if (this.parent != null || this.#host == null) {
-            return result;
-        }
-
-        const consumed = await result;
+    async post(message, options) {
+        const options_ = { ...(options ?? {}) };
+        const consumed = await super.post(message, options_);
         if (consumed) {
             return consumed;
         }
 
-        const host = this.#host;
-        if (this.parent != null || host == null) {
-            return consumed;
-        }
-
-        const { owner } = ProtoViewLogic.getRelationshipOf(host);
-        return (
-            !(owner instanceof ProtoViewLogic) ||
-            owner === this ||
-            owner.getAncestors().has(this)
-        ) ? 
+        const host_owner = ProtoViewLogic.getOwnerOf(this.host);
+        return (!(
+            host_owner instanceof ProtoViewLogic &&
+            host_owner != this                   &&
+            host_owner != this.parent            &&
+            !host_owner.getAncestors().has(this)
+        )) ?
             consumed :
-            owner.post({
-                id      : message.id,
-                code    : message.code,
-                origin  : message.origin,
-                param   : message.param,
-                repostBy: host,
-                last    : {
-                    //  message.target is set by ProtoViewLogic's post(),
-                    //  hence message.target is null if this override
-                    //  is directly invoked.
-                    target: message.target ?? this,
-                    last: message.last,
-                    repostBy: message.repostBy
-                }
-            })
+            host_owner.post(message, options_)
         ;
     }
 
@@ -397,7 +402,7 @@ class ViewLogic extends ProtoViewLogic {
                 k === "gridAutoRows"        ||
                 k === "gridAutoFlow"
             ) { continue; }
-            if (!Object.prototype.hasOwnProperty.call(container_style_options, k)) { continue; }
+            if (!Object.hasOwn(container_style_options, k)) { continue; }
 
             grid_container.style[k] = container_style_options[k];
         }
@@ -518,14 +523,37 @@ class ViewLogic extends ProtoViewLogic {
 
         return this.setContainer(grid_container);
     }
+    
+    /**
+     * Assigns an {@link AlierLogic} instance as the host of this ViewLogic.
+     *
+     * @param {AlierLogic} newHost 
+     * 
+     * @throws {TypeError}
+     * If `newHost` is not an instance of AlierLogic.
+     * 
+     * @throws {Error} 
+     * If `newHost.logic` is not exactly this ViewLogic instance.
+     */
+    assignHost(newHost) {
+         if (!(newHost instanceof AlierLogic)) {
+            throw new TypeError(`${newHost} is not a ${AlierLogic.name}`);
+        }
+        const logic = newHost.logic;
+        if (logic !== this) {
+            throw new Error("the given AlierLogic doesn't have this AlierLogic as its logic");
+        }
+        this.#host = newHost;
+    }
+    
 
     /**
-     * Attaches the given ViewLogic to the given AlierView.
+     * Attaches the given ViewLogic to the given AlierLogic.
      * 
      * Suppose `vl` is the given ViewLogic and `av` is the given AlierView,
      * then this function is equivalent to `av.attach(vl)`.
      * 
-     * @param {ViewLogic} containerToBeAttached
+     * @param {ViewLogic} viewLogicToAttach
      * ViewLogic to be attached.
      * 
      * @param {AlierView} newHost
@@ -537,8 +565,8 @@ class ViewLogic extends ProtoViewLogic {
      * @see
      * - {@link AlierView.prototype.attach}
      */
-    static attachTo(containerToBeAttached, newHost) {
-        const vl = containerToBeAttached;
+    static attachTo(viewLogicToAttach, newHost) {
+        const vl = viewLogicToAttach;
         const new_host = newHost;
         const old_host = vl.#host;
 
@@ -548,13 +576,13 @@ class ViewLogic extends ProtoViewLogic {
             throw new TypeError(`${new_host} is not a ${AlierView.name}`);
         } else if (new_host === old_host) {
             return null;
-        } else if (new_host.container !== vl) {
+        } else if (new_host.logic !== vl) {
             return new_host.attach();
         }
 
-        let detached_container = null;
+        let detached_logic = null;
         if (old_host !== null) {
-            detached_container = old_host.detach();
+            detached_logic = old_host.detach();
         }
 
         vl.#host = new_host;
@@ -565,7 +593,7 @@ class ViewLogic extends ProtoViewLogic {
             })
         );
 
-        return detached_container;
+        return detached_logic;
     }
     
     /**
@@ -574,7 +602,7 @@ class ViewLogic extends ProtoViewLogic {
      * Suppose `vl` is the given ViewLogic and `av` is the given AlierView,
      * then this function is equivalent to `av.detach()` if `vl` is attached to `av`.
      * 
-     * @param {ViewLogic} containerToBeDetached
+     * @param {ViewLogic} viewLogicToDetach
      * ViewLogic to be detached.
      * 
      * @param {AlierView} oldHost
@@ -586,8 +614,8 @@ class ViewLogic extends ProtoViewLogic {
      * @see
      * - {@link AlierView.prototype.detach}
      */
-    static detachFrom(containerToBeDetached, oldHost) {
-        const vl = containerToBeDetached;
+    static detachFrom(viewLogicToDetach, oldHost) {
+        const vl = viewLogicToDetach;
         const old_host = oldHost;
 
         if (!(vl instanceof ViewLogic)) {
@@ -596,7 +624,7 @@ class ViewLogic extends ProtoViewLogic {
             throw new TypeError(`${old_host} is not a ${AlierView.name}`);
         } else if (old_host !== vl.#host) {
             return null;
-        } else if (old_host.container !== null) {
+        } else if (old_host.logic !== null) {
             return old_host.detach();
         }
 
@@ -778,9 +806,9 @@ class ViewLogic extends ProtoViewLogic {
     #container = document.createElement("div");
     
     /**
-     * a {@link AlierView} attaching this ViewLogic.
+     * a {@link AlierLogic} attaching this ViewLogic.
      * 
-     * @type {AlierView | null}
+     * @type {AlierLogic | null}
      * @see {@link ViewLogic.prototype.host}
      */
     #host = null;

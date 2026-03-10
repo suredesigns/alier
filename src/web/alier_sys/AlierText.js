@@ -14,13 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { AlierCustomElement, html } from "./AlierCustomElement.js";
+import { AlierUiElement, html } from "./AlierUiElement.js";
+
 class AnimationAsort{
     defalutAnimation={
         "down-slide-in":`
         .down-slide-in{
             position: relative;
-            animation: fade-in var(--alier-text-transition-speed) ease-out 0s 1 running;         
+            animation: fade-in var(--alier-text-transition-speed) ease 0s 1 running;
         }
         @keyframes fade-in{
             0% {
@@ -48,7 +49,7 @@ class AnimationAsort{
     }
 }
 
-class AlierText extends AlierCustomElement {
+class AlierText extends AlierUiElement {
     #shadowRoot;
     #animationAsort = new AnimationAsort();
     #animationStyleId = "animation";
